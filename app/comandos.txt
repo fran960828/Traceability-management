@@ -1,0 +1,3 @@
+curl -X POST http://localhost:8000/api/token/ \
+     -H "Content-Type: application/json" \
+     -d '{"username":"enologo@ontalba.es", "password":"A123456789_"}'
