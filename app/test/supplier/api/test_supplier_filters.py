@@ -27,7 +27,7 @@ class TestSupplierFilters:
         assert response.status_code == status.HTTP_200_OK
         # Deben venir exactamente 2, no los 3
         assert len(response.data) == 2
-        assert all(s["category_name"] == "Vidrio" for s in response.data)
+        assert all(s["category_name"] == "VIDRIO" for s in response.data)
 
     def test_search_suppliers_by_name_or_tax_id(self, auth_client, supplier_factory):
         """Verifica que el parámetro ?search= filtra por nombre o NIF"""

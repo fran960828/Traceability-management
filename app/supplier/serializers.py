@@ -1,8 +1,12 @@
 from rest_framework import serializers
 
 from supplier.models import Category, Supplier
-from utils.validators import (clean_whitespace, phone_validator,
-                              tax_id_validator)
+from utils.validators import (
+    clean_whitespace,
+    phone_validator,
+    sanitize_upper_strip,
+    tax_id_validator,
+)
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -14,6 +18,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class SupplierSerializer(serializers.ModelSerializer):
     category_name = serializers.ReadOnlyField(source="category.name")
     supplier_code = serializers.ReadOnlyField()
+    tax_id = serializers.CharField()
 
     class Meta:
         model = Supplier
@@ -34,7 +39,7 @@ class SupplierSerializer(serializers.ModelSerializer):
 
     def validate_tax_id(self, value):
         """Sanitiza y valida el NIF/CIF usando el validador centralizado."""
-        value = value.strip().upper()
+        value = sanitize_upper_strip(value)
         # Ejecutamos el validador de utils manualmente si queremos control extra
         tax_id_validator(value)
         return value

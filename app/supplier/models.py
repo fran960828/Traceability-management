@@ -3,7 +3,7 @@ import datetime
 from django.core.validators import EmailValidator
 from django.db import models
 
-from utils.validators import phone_validator, tax_id_validator
+from utils.validators import clean_whitespace, phone_validator, tax_id_validator
 
 
 class Category(models.Model):
@@ -12,6 +12,7 @@ class Category(models.Model):
         unique=True,
         help_text="Nombre único de la categoría de suministro.",
     )
+
     class Meta:
         verbose_name = "Categoría"
         verbose_name_plural = "Categorías"
@@ -90,6 +91,12 @@ class Supplier(models.Model):
             self.name = self.name.strip()
 
     def save(self, *args, **kwargs):
+        if self.name:
+            self.name = clean_whitespace(self.name)
+
+        if self.tax_id:
+            self.tax_id = self.tax_id.strip().upper()
+
         self.full_clean()  # Ejecuta los validadores antes de guardar en BD
 
         if not self.supplier_code:

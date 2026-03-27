@@ -6,6 +6,7 @@ from client.models import CustomUser
 
 @admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
+    readonly_fields = ("employee_id",)
     # Campos que se muestran en la lista principal del admin
     list_display = ("username", "email", "role", "is_staff", "is_active")
 
@@ -22,7 +23,7 @@ class CustomUserAdmin(UserAdmin):
     add_fieldsets = UserAdmin.add_fieldsets + (
         (
             "Información de Bodega",
-            {"fields": ("email", "role", "phone_number", "employee_id")},
+            {"fields": ("email", "role", "phone_number")},
         ),
     )
 

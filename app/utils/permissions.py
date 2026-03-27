@@ -1,7 +1,7 @@
 from rest_framework import permissions
 
 
-class SupplierRolePermission(permissions.BasePermission):
+class RolePermission(permissions.BasePermission):
     """
     Reglas de Negocio de Ontalba:
     - ENOLOGO: Control total (CRUD).

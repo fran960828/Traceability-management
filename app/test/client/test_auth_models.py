@@ -23,8 +23,12 @@ def test_employee_id_generation_logic(user_factory):
     """Verifica que el ID de empleado sigue el formato EMP-YYYY-00X"""
     year = timezone.now().year
 
-    user1 = user_factory(username="paco", password="password123")
-    user2 = user_factory(username="pepe", password="password123")
+    user1 = user_factory(
+        username="paco", password="password123", email="prueba@gmail.com"
+    )
+    user2 = user_factory(
+        username="pepe", password="password123", email="prueba1@gmail.com"
+    )
 
     assert user1.employee_id == f"EMP-{year}-001"
     assert user2.employee_id == f"EMP-{year}-002"
@@ -33,11 +37,14 @@ def test_employee_id_generation_logic(user_factory):
 @pytest.mark.django_db
 def test_employee_id_is_unique(user_factory):
     """Verifica que no se puede repetir un employee_id (IntegrityError)"""
-    user1 = user_factory(username="user1")
 
-    # Intentamos crear otro usuario y forzamos manualmente el mismo ID
-    # Esto debería saltar por el unique=True del modelo
-    user2 = user_factory(username="user2")
+    user1 = user_factory(
+        username="paco", password="password123", email="prueba@gmail.com"
+    )
+    user2 = user_factory(
+        username="pepe", password="password123", email="prueba1@gmail.com"
+    )
+
     user2.employee_id = user1.employee_id
 
     with pytest.raises(IntegrityError):

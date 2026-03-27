@@ -1,9 +1,13 @@
-from drf_spectacular.utils import (OpenApiParameter, OpenApiResponse,
-                                   extend_schema, extend_schema_view)
+from drf_spectacular.utils import (
+    OpenApiParameter,
+    OpenApiResponse,
+    extend_schema,
+    extend_schema_view,
+)
 from rest_framework import filters, viewsets
 from rest_framework.permissions import IsAuthenticated
 
-from supplier.permissions import SupplierRolePermission
+from utils.permissions import RolePermission
 from supplier.serializers import CategorySerializer, SupplierSerializer
 
 from .models import Category, Supplier
@@ -84,7 +88,7 @@ class SupplierViewSet(viewsets.ModelViewSet):
 
     queryset = Supplier.objects.all().order_by("-created_at")
     serializer_class = SupplierSerializer
-    permission_classes = [IsAuthenticated, SupplierRolePermission]
+    permission_classes = [IsAuthenticated, RolePermission]
 
     # Añadimos el motor de búsqueda nativo de DRF
     filter_backends = [filters.SearchFilter]

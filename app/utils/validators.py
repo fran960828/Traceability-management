@@ -20,3 +20,9 @@ def clean_whitespace(value):
     if not isinstance(value, str):
         return value
     return " ".join(value.split())
+
+
+def sanitize_upper_strip(value):
+    if not value:
+        return value
+    return value.strip().upper()

@@ -1,38 +1,31 @@
 import pytest
+from django.contrib.auth import get_user_model
 
-from supplier.models import Category, Supplier
+from test.supplier.factories import CategoryFactory, SupplierFactory
 
-# ... (tus fixtures de user_factory, api_client y auth_client se mantienen)
+# --- FIXTURES DE FACTORIES ---
+User = get_user_model()
 
 
 @pytest.fixture
 def category_factory(db):
-    def _make_category(name="General"):
-        # get_or_create evita errores si ya existe una categoría con ese nombre
-        category, _ = Category.objects.get_or_create(name=name)
-        return category
-
-    return _make_category
+    return CategoryFactory
 
 
 @pytest.fixture
-def supplier_factory(db, category_factory):
-    # Usamos una lista para que el contador persista entre llamadas
-    count = [0]
+def supplier_factory(db):
+    return SupplierFactory
 
-    def _make_supplier(name="Prov", tax_id=None, category=None):
-        count[0] += 1
-        if tax_id is None:
-            tax_id = f"B{count[0]:08d}"  # Genera B00000001, B00000002...
 
-        if category is None:
-            category = category_factory()
 
-        return Supplier.objects.create(
-            name=name,
-            tax_id=tax_id,
-            category=category,
-            email_pedidos=f"test{count[0]}@ontalba.es",
-        )
+# --- FIXTURES DE OBJETOS INSTANCIADOS ---
 
-    return _make_supplier
+
+@pytest.fixture
+def category(db, category_factory):
+    return category_factory()
+
+
+@pytest.fixture
+def supplier(db, supplier_factory):
+    return supplier_factory()
