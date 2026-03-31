@@ -1,13 +1,14 @@
 from drf_spectacular.utils import (
-    extend_schema,
-    extend_schema_view,
     OpenApiParameter,
     OpenApiResponse,
+    extend_schema,
+    extend_schema_view,
 )
-from rest_framework import viewsets, filters
+from rest_framework import filters, viewsets
 from rest_framework.permissions import IsAuthenticated
 
 from utils.permissions import RolePermission
+
 from ..models.packaging_material_model import PackagingMaterialModel
 from ..serializers.packaging_material_serializer import PackagingMaterialSerializer
 
@@ -60,7 +61,7 @@ from ..serializers.packaging_material_serializer import PackagingMaterialSeriali
 class PackagingMaterialViewSet(viewsets.ModelViewSet):
     queryset = PackagingMaterialModel.objects.all().order_by("-created_at")
     serializer_class = PackagingMaterialSerializer
-    permission_classes = [IsAuthenticated,RolePermission]
+    permission_classes = [IsAuthenticated, RolePermission]
     filter_backends = [filters.SearchFilter]
     search_fields = ["name", "internal_code"]
 

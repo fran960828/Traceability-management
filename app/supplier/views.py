@@ -7,8 +7,8 @@ from drf_spectacular.utils import (
 from rest_framework import filters, viewsets
 from rest_framework.permissions import IsAuthenticated
 
-from utils.permissions import RolePermission
 from supplier.serializers import CategorySerializer, SupplierSerializer
+from utils.permissions import RolePermission
 
 from .models import Category, Supplier
 

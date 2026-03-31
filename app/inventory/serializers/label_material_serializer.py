@@ -1,6 +1,8 @@
 from rest_framework import serializers
-from ..models.label_material_model import LabelMaterialModel
+
 from utils.validators import clean_whitespace
+
+from ..models.label_material_model import LabelMaterialModel
 
 
 class LabelMaterialSerializer(serializers.ModelSerializer):
@@ -38,21 +40,22 @@ class LabelMaterialSerializer(serializers.ModelSerializer):
         if value:
             return clean_whitespace(value).upper()
         return value
-    
+
     def validate_name(self, value):
-        """Sanitización del nombre """
+        """Sanitización del nombre"""
         if value:
             return clean_whitespace(value).upper()
         return value
 
     def validate(self, data):
-    # 1. Validación de Unidad de Medida
+        # 1. Validación de Unidad de Medida
         if "unit_mesure" in data:
             uom = data.get("unit_mesure")
             if uom not in ["UNIDAD", "MILLAR"]:
                 raise serializers.ValidationError(
-                    {"unit_mesure": "Las etiquetas solo pueden medirse en UNIDAD o MILLAR."}
+                    {
+                        "unit_mesure": "Las etiquetas solo pueden medirse en UNIDAD o MILLAR."
+                    }
                 )
 
-       
         return data

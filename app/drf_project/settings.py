@@ -44,7 +44,9 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "client",
     "supplier",
-    "inventory"
+    "inventory",
+    "wines",
+    "purchase"
 ]
 
 MIDDLEWARE = [

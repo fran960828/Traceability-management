@@ -13,6 +13,8 @@ class PackagingMaterialModel(AbstractBaseMaterialModel):
 
     TYPE_CHOICES = [
         ("VIDRIO", "Vidrio (Botellas)"),
+        ("BIB", "BAG IN BOX"),
+        ("PLASTICO", "GARRAFA / PET"),
         ("CIERRE", "Cierres (Corchos/Tapones/Rosca)"),
         ("CAPSULA", "Cápsulas"),
         ("ETIQUETA", "Etiquetado (Frontal/Contra/Tirilla)"),

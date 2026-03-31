@@ -1,7 +1,7 @@
+from test.supplier.factories import CategoryFactory, SupplierFactory
+
 import pytest
 from django.contrib.auth import get_user_model
-
-from test.supplier.factories import CategoryFactory, SupplierFactory
 
 # --- FIXTURES DE FACTORIES ---
 User = get_user_model()
@@ -15,7 +15,6 @@ def category_factory(db):
 @pytest.fixture
 def supplier_factory(db):
     return SupplierFactory
-
 
 
 # --- FIXTURES DE OBJETOS INSTANCIADOS ---

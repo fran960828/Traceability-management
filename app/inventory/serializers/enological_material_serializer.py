@@ -1,6 +1,8 @@
 from rest_framework import serializers
-from ..models.enological_material_model import EnologicalMaterialModel
+
 from utils.validators import clean_whitespace
+
+from ..models.enological_material_model import EnologicalMaterialModel
 
 
 class EnologicalMaterialSerializer(serializers.ModelSerializer):
@@ -54,7 +56,7 @@ class EnologicalMaterialSerializer(serializers.ModelSerializer):
         if uom == "UNIDAD":
             raise serializers.ValidationError(
                 {
-                    "unit_mesure": "Los productos enológicos no suelen medirse por unidades simples. Revise si debe usar KG o LITRO."
+                    "unit_mesure": "Los productos enológicos no suelen medirse por unidades"
                 }
             )
         return data

@@ -1,5 +1,5 @@
 import pytest
-from inventory.models.enological_material_model import EnologicalMaterialModel
+
 
 @pytest.mark.django_db
 class TestEnologicalMaterialModel:
@@ -7,8 +7,7 @@ class TestEnologicalMaterialModel:
     def test_enological_sanitization(self, enological_factory):
         """Prueba que el formato comercial también se limpie"""
         material = enological_factory(
-            name="acido tartárico",
-            commercial_format="  saco 25 kg  "
+            name="acido tartárico", commercial_format="  saco 25 kg  "
         )
         assert material.name == "ACIDO TARTÁRICO"
         assert material.commercial_format == "SACO 25 KG"

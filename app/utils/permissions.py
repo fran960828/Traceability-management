@@ -32,3 +32,39 @@ class RolePermission(permissions.BasePermission):
 
         # Por defecto, si el rol no coincide con nada, denegar
         return False
+
+
+
+class PurchaseRolePermission(permissions.BasePermission):
+    """
+    Permisos específicos para el flujo de Compras:
+    - ENOLOGO: Control total.
+    - COMPRAS: CRUD (Menos borrar).
+    - BODEGUERO: Ver + Confirmar Recepción (PATCH de estado/cantidad).
+    """
+
+    def has_permission(self, request,view):
+        if not request.user or not request.user.is_authenticated:
+            return False
+
+        user_role = getattr(request.user, "role", None)
+
+        # --- ENOLOGO: Dios en la bodega ---
+        if user_role == "ENOLOGO":
+            return True
+
+        # --- COMPRAS: Gestión comercial ---
+        if user_role == "COMPRAS":
+            return True
+
+        # --- BODEGUERO: El receptor de mercancía ---
+        if user_role == "BODEGUERO":
+            # 1. Puede consultar (GET)
+            if request.method in permissions.SAFE_METHODS:
+                return True
+            # 2. Puede hacer PATCH para recibir mercancía o cerrar orden
+            # (El serializer filtrará que NO cambie el precio)
+            if request.method == "PATCH":
+                return True
+            
+        return False

@@ -1,9 +1,11 @@
 import pytest
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
+import uuid
 
 # --- FIXTURES DE AUTENTICACIÓN ---
 User = get_user_model()
+
 
 @pytest.fixture
 def user_factory(db):
@@ -14,7 +16,9 @@ def user_factory(db):
 
     def create_user(**kwargs):
         if "username" not in kwargs:
-            kwargs["username"] = "testuser"
+            kwargs["username"] = f"user_{uuid.uuid4().hex[:6]}"
+        if "email" not in kwargs:
+            kwargs["email"] = f"{kwargs['username']}@ontalba.com"
         if "role" not in kwargs:
             kwargs["role"] = "BODEGUERO"
         return User.objects.create_user(**kwargs)
@@ -37,5 +41,3 @@ def auth_client(db, api_client, user_factory):
     user = user_factory(username="admin_test")
     api_client.force_authenticate(user=user)
     return api_client
-
-

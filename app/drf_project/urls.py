@@ -28,7 +28,9 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/auth/", include("client.urls")),
     path("api/supplier/", include("supplier.urls")),
-    path('api/inventory/', include('inventory.urls')),
+    path("api/inventory/", include("inventory.urls")),
+    path("api/wines", include("wines.urls")),
+    path('api/purchase',include("purchase.urls"))
 ]
 
 if settings.DEBUG:

@@ -1,13 +1,14 @@
 from drf_spectacular.utils import (
-    extend_schema,
-    extend_schema_view,
     OpenApiParameter,
     OpenApiResponse,
+    extend_schema,
+    extend_schema_view,
 )
-from rest_framework import viewsets, filters
+from rest_framework import filters, viewsets
 from rest_framework.permissions import IsAuthenticated
 
 from utils.permissions import RolePermission
+
 from ..models.label_material_model import LabelMaterialModel
 from ..serializers.label_material_serializer import LabelMaterialSerializer
 
@@ -65,7 +66,7 @@ from ..serializers.label_material_serializer import LabelMaterialSerializer
 class LabelMaterialViewSet(viewsets.ModelViewSet):
     queryset = LabelMaterialModel.objects.all().order_by("-created_at")
     serializer_class = LabelMaterialSerializer
-    permission_classes = [IsAuthenticated,RolePermission]
+    permission_classes = [IsAuthenticated, RolePermission]
     filter_backends = [filters.SearchFilter]
     # En etiquetas incluimos brand_reference en la búsqueda por ser crítico operativamente
     search_fields = ["name", "internal_code", "brand_reference"]
@@ -79,5 +80,5 @@ class LabelMaterialViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(label_type=l_type)
         if vintage:
             queryset = queryset.filter(vintage=vintage)
-            
+
         return queryset

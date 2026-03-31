@@ -1,6 +1,8 @@
 from rest_framework import serializers
-from ..models.packaging_material_model import PackagingMaterialModel
+
 from utils.validators import clean_whitespace
+
+from ..models.packaging_material_model import PackagingMaterialModel
 
 
 class PackagingMaterialSerializer(serializers.ModelSerializer):
@@ -53,12 +55,15 @@ class PackagingMaterialSerializer(serializers.ModelSerializer):
         if value:
             return clean_whitespace(value).upper()
         return value
+
     def validate(self, data):
-    # Solo validamos si el campo viene en la petición (soporte para PATCH)
+        # Solo validamos si el campo viene en la petición (soporte para PATCH)
         if "unit_mesure" in data:
             uom = data.get("unit_mesure")
             if uom != "UNIDAD":
                 raise serializers.ValidationError(
-                    {"unit_mesure": "Los materiales de acondicionamiento deben medirse en UNIDAD."}
+                    {
+                        "unit_mesure": "Los materiales de acondicionamiento deben medirse en UNIDAD."
+                    }
                 )
         return data
