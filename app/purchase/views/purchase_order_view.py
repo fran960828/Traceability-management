@@ -1,16 +1,12 @@
-from drf_spectacular.utils import (
-    OpenApiParameter,
-    OpenApiResponse,
-    extend_schema,
-    extend_schema_view,
-)
-from rest_framework import filters, viewsets, status
+from drf_spectacular.utils import (OpenApiParameter, OpenApiResponse,
+                                   extend_schema, extend_schema_view)
+from rest_framework import filters, status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from utils.permissions import PurchaseRolePermission
 from purchase.models import PurchaseOrder
 from purchase.serializers import PurchaseOrderSerializer
+from utils.permissions import PurchaseRolePermission
 
 
 @extend_schema_view(
@@ -45,7 +41,9 @@ from purchase.serializers import PurchaseOrderSerializer
         tags=["Gestión de Compras"],
         responses={
             201: PurchaseOrderSerializer,
-            400: OpenApiResponse(description="Error de validación (ej. Orden sin items o precio negativo)"),
+            400: OpenApiResponse(
+                description="Error de validación (ej. Orden sin items o precio negativo)"
+            ),
         },
     ),
     retrieve=extend_schema(
@@ -56,11 +54,10 @@ from purchase.serializers import PurchaseOrderSerializer
     update=extend_schema(
         summary="Actualizar orden (Completo)",
         description="Actualiza cabecera e items. Bloqueado si la orden está CLOSED o CANCELLED.",
-        tags=["Gestión de Compras"]
+        tags=["Gestión de Compras"],
     ),
     partial_update=extend_schema(
-        summary="Actualizar orden (Parcial)", 
-        tags=["Gestión de Compras"]
+        summary="Actualizar orden (Parcial)", tags=["Gestión de Compras"]
     ),
     destroy=extend_schema(
         summary="Eliminar orden de compra",
@@ -93,7 +90,11 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
         Usamos select_related para el proveedor y prefetch_related para los items
         para evitar el problema de consultas N+1.
         """
-        queryset = PurchaseOrder.objects.select_related('supplier').prefetch_related('items').all()
+        queryset = (
+            PurchaseOrder.objects.select_related("supplier")
+            .prefetch_related("items")
+            .all()
+        )
 
         status_param = self.request.query_params.get("status")
         supplier_param = self.request.query_params.get("supplier")
@@ -108,13 +109,10 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         """
-        Sobrescribimos para capturar el ValidationError del modelo 
+        Sobrescribimos para capturar el ValidationError del modelo
         al intentar borrar órdenes cerradas y devolver un 400 limpio.
         """
         try:
             return super().destroy(request, *args, **kwargs)
         except Exception as e:
-            return Response(
-                {"detail": str(e)},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)

@@ -34,7 +34,6 @@ class RolePermission(permissions.BasePermission):
         return False
 
 
-
 class PurchaseRolePermission(permissions.BasePermission):
     """
     Permisos específicos para el flujo de Compras:
@@ -43,7 +42,7 @@ class PurchaseRolePermission(permissions.BasePermission):
     - BODEGUERO: Ver + Confirmar Recepción (PATCH de estado/cantidad).
     """
 
-    def has_permission(self, request,view):
+    def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
 
@@ -66,5 +65,5 @@ class PurchaseRolePermission(permissions.BasePermission):
             # (El serializer filtrará que NO cambie el precio)
             if request.method == "PATCH":
                 return True
-            
+
         return False

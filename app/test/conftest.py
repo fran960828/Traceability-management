@@ -1,7 +1,8 @@
+import uuid
+
 import pytest
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
-import uuid
 
 # --- FIXTURES DE AUTENTICACIÓN ---
 User = get_user_model()

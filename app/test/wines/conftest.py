@@ -1,10 +1,7 @@
-from test.inventory.conftest import (
-    label_factory,
-    label_material,
-    packaging_factory,
-    packaging_material,
-)
-from test.inventory.factories import LabelMaterialFactory, PackagingMaterialFactory
+from test.inventory.conftest import (label_factory, label_material,
+                                     packaging_factory, packaging_material)
+from test.inventory.factories import (LabelMaterialFactory,
+                                      PackagingMaterialFactory)
 from test.wines.factories import WineFactory
 
 import pytest

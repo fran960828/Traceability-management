@@ -1,16 +1,13 @@
-from drf_spectacular.utils import (
-    OpenApiParameter,
-    OpenApiResponse,
-    extend_schema,
-    extend_schema_view,
-)
+from drf_spectacular.utils import (OpenApiParameter, OpenApiResponse,
+                                   extend_schema, extend_schema_view)
 from rest_framework import filters, viewsets
 from rest_framework.permissions import IsAuthenticated
 
 from utils.permissions import RolePermission
 
 from ..models.enological_material_model import EnologicalMaterialModel
-from ..serializers.enological_material_serializer import EnologicalMaterialSerializer
+from ..serializers.enological_material_serializer import \
+    EnologicalMaterialSerializer
 
 
 @extend_schema_view(

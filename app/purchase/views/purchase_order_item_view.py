@@ -1,17 +1,11 @@
-from drf_spectacular.utils import (
-    OpenApiParameter,
-    extend_schema,
-    extend_schema_view,
-)
+from drf_spectacular.utils import (OpenApiParameter, extend_schema,
+                                   extend_schema_view)
 from rest_framework import filters, viewsets
 from rest_framework.permissions import IsAuthenticated
 
-from utils.permissions import PurchaseRolePermission
 from purchase.models import PurchaseOrderItem
 from purchase.serializers import PurchaseOrderItemSerializer
-
-
-
+from utils.permissions import PurchaseRolePermission
 
 
 @extend_schema_view(
@@ -53,27 +47,21 @@ class PurchaseOrderItemViewSet(viewsets.ModelViewSet):
     """
     Controlador para la gestión individual de las líneas de productos.
     """
+
     queryset = PurchaseOrderItem.objects.all()
     serializer_class = PurchaseOrderItemSerializer
     permission_classes = [IsAuthenticated, PurchaseRolePermission]
-    
+
     # Permitimos buscar por el nombre del material (usando los nombres de los modelos relacionados)
     filter_backends = [filters.SearchFilter]
-    search_fields = [
-        "packaging__name", 
-        "label__name", 
-        "enological__name"
-    ]
+    search_fields = ["packaging__name", "label__name", "enological__name"]
 
     def get_queryset(self):
         """
         Optimización de consultas para evitar el N+1 al traer los nombres de los materiales.
         """
         queryset = PurchaseOrderItem.objects.select_related(
-            'purchase_order', 
-            'packaging', 
-            'label', 
-            'enological'
+            "purchase_order", "packaging", "label", "enological"
         ).all()
 
         po_id = self.request.query_params.get("purchase_order")
@@ -81,21 +69,21 @@ class PurchaseOrderItemViewSet(viewsets.ModelViewSet):
 
         if po_id:
             queryset = queryset.filter(purchase_order_id=po_id)
-            
+
         if material_type:
             # Filtro dinámico: solo devolvemos los que tienen ese campo relleno
-            if material_type == 'packaging':
+            if material_type == "packaging":
                 queryset = queryset.exclude(packaging__isnull=True)
-            elif material_type == 'label':
+            elif material_type == "label":
                 queryset = queryset.exclude(label__isnull=True)
-            elif material_type == 'enological':
+            elif material_type == "enological":
                 queryset = queryset.exclude(enological__isnull=True)
 
         return queryset
 
     def perform_destroy(self, instance):
         """
-        Aseguramos que el ValidationError del modelo al borrar 
+        Aseguramos que el ValidationError del modelo al borrar
         se lance correctamente durante la petición DELETE.
         """
         instance.delete()

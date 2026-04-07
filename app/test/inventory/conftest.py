@@ -1,14 +1,8 @@
-from test.inventory.factories import (
-    EnologicalMaterialFactory,
-    LabelMaterialFactory,
-    PackagingMaterialFactory,
-)
-from test.supplier.conftest import (
-    category,
-    category_factory,
-    supplier,
-    supplier_factory,
-)
+from test.inventory.factories import (EnologicalMaterialFactory,
+                                      LabelMaterialFactory,
+                                      PackagingMaterialFactory)
+from test.supplier.conftest import (category, category_factory, supplier,
+                                    supplier_factory)
 
 import pytest
 

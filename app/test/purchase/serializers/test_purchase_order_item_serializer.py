@@ -1,5 +1,7 @@
 import pytest
+
 from purchase.serializers import PurchaseOrderItemSerializer
+
 
 @pytest.mark.django_db
 class TestPurchaseOrderItemSerializer:
@@ -8,23 +10,21 @@ class TestPurchaseOrderItemSerializer:
     def test_valid_packaging_item_serializer(self, packaging_factory):
         """ESCENARIO: Validar un ítem de packaging correctamente."""
         pack = packaging_factory()
-        data = {
-            "packaging": pack.id,
-            "quantity_ordered": 500,
-            "unit_price": "1.2500"
-        }
+        data = {"packaging": pack.id, "quantity_ordered": 500, "unit_price": "1.2500"}
         serializer = PurchaseOrderItemSerializer(data=data)
         assert serializer.is_valid()
-        assert serializer.validated_data['packaging'] == pack
+        assert serializer.validated_data["packaging"] == pack
 
     # --- EDGE CASES ---
-    def test_error_multiple_materials_in_serializer(self, packaging_factory, label_factory):
+    def test_error_multiple_materials_in_serializer(
+        self, packaging_factory, label_factory
+    ):
         """EDGE CASE: El serializer debe capturar el error del modelo 'Solo un material'."""
         data = {
             "packaging": packaging_factory().id,
             "label": label_factory().id,
             "quantity_ordered": 10,
-            "unit_price": "10.00"
+            "unit_price": "10.00",
         }
         serializer = PurchaseOrderItemSerializer(data=data)
         assert not serializer.is_valid()
@@ -36,7 +36,7 @@ class TestPurchaseOrderItemSerializer:
         data = {
             "packaging": packaging_factory().id,
             "quantity_ordered": 100,
-            "unit_price": "-0.01"
+            "unit_price": "-0.01",
         }
         serializer = PurchaseOrderItemSerializer(data=data)
         assert not serializer.is_valid()

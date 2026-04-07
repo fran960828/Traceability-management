@@ -1,7 +1,9 @@
 import pytest
 from django.core.exceptions import ValidationError
-from purchase.models import PurchaseOrder
 from django.db import IntegrityError
+
+from purchase.models import PurchaseOrder
+
 
 @pytest.mark.django_db
 class TestPurchaseOrderModel:
@@ -27,7 +29,7 @@ class TestPurchaseOrderModel:
         """VULNERABILIDAD: Impedir cambios en una orden CERRADA (Audit Trail)"""
         po = purchase_order_factory(status=PurchaseOrder.Status.CLOSED)
         po.notes = "Cambiando notas ilegalmente"
-        
+
         with pytest.raises(ValidationError) as exc:
             po.full_clean()
         assert "Esta orden está CERRADA" in str(exc.value)
@@ -36,7 +38,7 @@ class TestPurchaseOrderModel:
         """EDGE CASE: Una orden cancelada no puede volver a abrirse (Integridad)"""
         po = purchase_order_factory(status=PurchaseOrder.Status.CANCELLED)
         po.status = PurchaseOrder.Status.OPEN
-        
+
         with pytest.raises(ValidationError) as exc:
             po.full_clean()
         assert "No se puede reactivar una orden que ha sido cancelada" in str(exc.value)
@@ -48,13 +50,15 @@ class TestPurchaseOrderModel:
             po.delete()
         assert "No se puede eliminar una orden que ya está cerrada" in str(exc.value)
 
-    def test_unique_order_number(self, purchase_order_factory,supplier_factory):
+    def test_unique_order_number(self, purchase_order_factory, supplier_factory):
         """EDGE CASE: El número de orden debe ser único en DB"""
         po1 = purchase_order_factory()
 
         real_supplier = supplier_factory()
         # Forzamos mismo número manualmente para testear restricción DB
-        po2 = purchase_order_factory.build(order_number=po1.order_number,supplier=real_supplier)
-        
+        po2 = purchase_order_factory.build(
+            order_number=po1.order_number, supplier=real_supplier
+        )
+
         with pytest.raises(IntegrityError):
             po2.save()

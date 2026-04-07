@@ -3,7 +3,8 @@ import datetime
 from django.core.validators import EmailValidator
 from django.db import models
 
-from utils.validators import clean_whitespace, phone_validator, tax_id_validator
+from utils.validators import (clean_whitespace, phone_validator,
+                              tax_id_validator)
 
 
 class Category(models.Model):

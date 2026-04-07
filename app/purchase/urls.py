@@ -1,7 +1,7 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from purchase.views import PurchaseOrderViewSet, PurchaseOrderItemViewSet
+from purchase.views import PurchaseOrderItemViewSet, PurchaseOrderViewSet
 
 # El namespace debe coincidir con el que uses en tus tests (ej: reverse('purchase:order-list'))
 app_name = "purchase"

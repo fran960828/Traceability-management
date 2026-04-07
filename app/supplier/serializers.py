@@ -1,12 +1,8 @@
 from rest_framework import serializers
 
 from supplier.models import Category, Supplier
-from utils.validators import (
-    clean_whitespace,
-    phone_validator,
-    sanitize_upper_strip,
-    tax_id_validator,
-)
+from utils.validators import (clean_whitespace, phone_validator,
+                              sanitize_upper_strip, tax_id_validator)
 
 
 class CategorySerializer(serializers.ModelSerializer):
