@@ -24,7 +24,7 @@ class LabelMaterialAdmin(admin.ModelAdmin):
         "label_type",
         "brand_reference",
         "vintage",
-        "uom",
+        "unit_mesure",
         "min_stock_level",
         "is_active",
         "description",

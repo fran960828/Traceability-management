@@ -63,7 +63,7 @@ class PurchaseRolePermission(permissions.BasePermission):
                 return True
             # 2. Puede hacer PATCH para recibir mercancía o cerrar orden
             # (El serializer filtrará que NO cambie el precio)
-            if request.method == "PATCH":
+            if request.method in ["PATCH", "POST"]:
                 return True
 
         return False

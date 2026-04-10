@@ -65,4 +65,5 @@ class PurchaseOrder(models.Model):
             self.order_number = (
                 f"PO-{self.date_issued.year if self.id else 2026}-{next_id:04d}"
             )
+
         super().save(*args, **kwargs)

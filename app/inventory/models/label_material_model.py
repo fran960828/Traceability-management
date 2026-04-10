@@ -52,7 +52,7 @@ class LabelMaterialModel(AbstractBaseMaterialModel):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.internal_code} | {self.brand_reference}{self.vintage}"
+        return f"{self.internal_code} | {self.brand_reference} {self.vintage} {self.label_type}"
 
     def generate_internal_code(self):
 

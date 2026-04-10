@@ -32,8 +32,14 @@ from utils.permissions import PurchaseRolePermission
         summary="Detalle de una línea de pedido",
         tags=["Gestión de Compras - Líneas"],
     ),
+    create=extend_schema(summary="Crear línea de pedido",description="Crear una linea de compra", tags=["Gestión de Compras - Líneas"]),
     update=extend_schema(
-        summary="Actualizar línea de pedido",
+        summary="Actualizar línea de pedido (Put)",
+        description="Modifica cantidad o precio de una línea. Bloqueado si la orden padre está cerrada.",
+        tags=["Gestión de Compras - Líneas"],
+    ),
+    partial_update=extend_schema(
+        summary="Actualizar línea de pedido (Patch)",
         description="Modifica cantidad o precio de una línea. Bloqueado si la orden padre está cerrada.",
         tags=["Gestión de Compras - Líneas"],
     ),

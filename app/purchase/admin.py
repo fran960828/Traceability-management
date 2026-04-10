@@ -80,6 +80,12 @@ class PurchaseOrderAdmin(admin.ModelAdmin):
 # Opcional: Registrar los ítems por separado por si se quiere buscar un lote o producto específico
 @admin.register(PurchaseOrderItem)
 class PurchaseOrderItemAdmin(admin.ModelAdmin):
+    fields=("purchase_order",
+        ("packaging", "label", "enological"),
+        "quantity_ordered",
+        "quantity_received", # <--- Lo incluimos aquí...
+        "unit_price",)
+    readonly_fields = ("quantity_received",)
     list_display = ("purchase_order", "material_name", "quantity_ordered", "unit_price")
     list_filter = ("purchase_order__status", "purchase_order__supplier")
     search_fields = (

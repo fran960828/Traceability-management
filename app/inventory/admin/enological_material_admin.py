@@ -23,7 +23,7 @@ class EnologicalMaterialAdmin(admin.ModelAdmin):
         "supplier",
         "enological_type",
         "commercial_format",
-        "uom",
+        "unit_mesure",
         "min_stock_level",
         "is_active",
         "description",

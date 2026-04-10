@@ -32,7 +32,7 @@ class PackagingMaterialAdmin(admin.ModelAdmin):
         "packaging_type",
         "specification",
         "color",
-        "uom",
+        "unit_mesure",
         "min_stock_level",
         "is_active",
         "description",
