@@ -1,13 +1,17 @@
-from drf_spectacular.utils import (OpenApiParameter, OpenApiResponse,
-                                   extend_schema, extend_schema_view)
+from drf_spectacular.utils import (
+    OpenApiParameter,
+    OpenApiResponse,
+    extend_schema,
+    extend_schema_view,
+)
 from rest_framework import filters, viewsets
 from rest_framework.permissions import IsAuthenticated
 
+from inventory.views.mixins import InventoryAlertMixin
 from utils.permissions import RolePermission
 
 from ..models.packaging_material_model import PackagingMaterialModel
-from ..serializers.packaging_material_serializer import \
-    PackagingMaterialSerializer
+from ..serializers.packaging_material_serializer import PackagingMaterialSerializer
 
 
 @extend_schema_view(
@@ -54,8 +58,14 @@ from ..serializers.packaging_material_serializer import \
             403: OpenApiResponse(description="No autorizado"),
         },
     ),
+    alerts=extend_schema(
+        summary="Listar packaging bajo mínimos",
+        description="Devuelve los productos packaging cuyo stock actual es inferior al mínimo establecido.",
+        tags=["Inventario - Packaging"],
+        responses={200: PackagingMaterialModel},
+    ),
 )
-class PackagingMaterialViewSet(viewsets.ModelViewSet):
+class PackagingMaterialViewSet(InventoryAlertMixin, viewsets.ModelViewSet):
     queryset = PackagingMaterialModel.objects.all().order_by("-created_at")
     serializer_class = PackagingMaterialSerializer
     permission_classes = [IsAuthenticated, RolePermission]

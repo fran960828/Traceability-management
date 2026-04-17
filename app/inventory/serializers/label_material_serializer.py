@@ -13,6 +13,8 @@ class LabelMaterialSerializer(serializers.ModelSerializer):
     unit_mesure_display = serializers.CharField(
         source="get_unit_mesure_display", read_only=True
     )
+    current_stock = serializers.ReadOnlyField()
+    is_low_stock = serializers.ReadOnlyField()
 
     class Meta:
         model = LabelMaterialModel
@@ -32,6 +34,8 @@ class LabelMaterialSerializer(serializers.ModelSerializer):
             "description",
             "created_at",
             "updated_at",
+            "current_stock",
+            "is_low_stock",
         ]
         read_only_fields = ["internal_code", "created_at", "updated_at"]
 

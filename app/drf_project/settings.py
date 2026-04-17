@@ -14,6 +14,8 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+import analytics
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -42,12 +44,15 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "drf_spectacular",
+    "django_extensions",
     "client",
     "supplier",
     "inventory",
     "wines",
     "purchase",
-    "stock"
+    "stock",
+    "production_record",
+    "analytics",
 ]
 
 MIDDLEWARE = [

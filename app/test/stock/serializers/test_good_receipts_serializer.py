@@ -1,6 +1,8 @@
 import pytest
-from stock.serializers import GoodsReceptionItemSerializer
+
 from purchase.models import PurchaseOrder
+from stock.serializers import GoodsReceptionItemSerializer
+
 
 @pytest.mark.django_db
 class TestGoodsReceptionItemSerializer:
@@ -13,7 +15,7 @@ class TestGoodsReceptionItemSerializer:
             "order_item": item.id,
             "location": loc.id,
             "batch_number": "BATCH-001",
-            "quantity": 500  # Pedido original de la fixture: 1000
+            "quantity": 500,  # Pedido original de la fixture: 1000
         }
         serializer = GoodsReceptionItemSerializer(data=data)
         assert serializer.is_valid(), serializer.errors
@@ -26,11 +28,11 @@ class TestGoodsReceptionItemSerializer:
             "order_item": item.id,
             "location": loc.id,
             "batch_number": "BATCH-X",
-            "quantity": 1500  # Excede los 1000 pedidos
+            "quantity": 1500,  # Excede los 1000 pedidos
         }
         serializer = GoodsReceptionItemSerializer(data=data)
         assert not serializer.is_valid()
-        assert "Cantidad excedida" in str(serializer.errors['non_field_errors'])
+        assert "Cantidad excedida" in str(serializer.errors["non_field_errors"])
 
     def test_reception_item_invalid_po_status(self, batch_con_po, location_factory):
         """EDGE CASE: No se recibe mercancía si la PO está cerrada o cancelada."""
@@ -43,8 +45,10 @@ class TestGoodsReceptionItemSerializer:
             "order_item": item.id,
             "location": location_factory().id,
             "batch_number": "B-1",
-            "quantity": 100
+            "quantity": 100,
         }
         serializer = GoodsReceptionItemSerializer(data=data)
         assert not serializer.is_valid()
-        assert "No se puede recibir mercancía" in str(serializer.errors['non_field_errors'])
+        assert "No se puede recibir mercancía" in str(
+            serializer.errors["non_field_errors"]
+        )

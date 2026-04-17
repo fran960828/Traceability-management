@@ -13,6 +13,7 @@ class CategoryAdmin(admin.ModelAdmin):
 class SupplierAdmin(admin.ModelAdmin):
     # 1. Columnas que se ven en la tabla principal
     list_display = (
+        "id",
         "supplier_code",
         "name",
         "tax_id",

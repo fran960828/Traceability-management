@@ -8,7 +8,7 @@ from client.models import CustomUser
 class CustomUserAdmin(UserAdmin):
     readonly_fields = ("employee_id",)
     # Campos que se muestran en la lista principal del admin
-    list_display = ("username", "email", "role", "is_staff", "is_active")
+    list_display = ("id", "username", "email", "role", "is_staff", "is_active")
 
     # Filtros laterales para segmentar usuarios rápidamente
     list_filter = ("role", "is_staff", "is_active")

@@ -94,6 +94,17 @@ class WineModel(models.Model):
         verbose_name="Precinto / Tirilla DOP",
         related_name="wines_as_seal",
     )
+    default_capsule = models.ForeignKey(
+        PackagingMaterialModel,
+        related_name="wine_capsules",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        limit_choices_to={
+            "packaging_type": "CAPSULA"
+        },  # Asegúrate de tener este tipo en tus Choices
+        verbose_name="Cápsula",
+    )
 
     class Meta:
         ordering = ["-vintage", "name"]

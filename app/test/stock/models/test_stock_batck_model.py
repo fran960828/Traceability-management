@@ -1,8 +1,10 @@
+from test.stock.factories import BatchFactory
+
 import pytest
 from django.core.exceptions import ValidationError
+
 from stock.models import Batch
-from test.stock.factories import BatchFactory
-from test.purchase.factories import PurchaseOrderItemFactory
+
 
 @pytest.mark.django_db
 class TestBatchModel:
@@ -29,13 +31,17 @@ class TestBatchModel:
     def test_batch_number_unique_constraint(self):
         """VALIDACIÓN: No pueden existir dos lotes con el mismo número."""
         BatchFactory(batch_number="LOTE_UNICO")
-        duplicate = BatchFactory.build(batch_number="  LOTE_UNICO  ") # .build() no guarda en DB
-        
+        duplicate = BatchFactory.build(
+            batch_number="  LOTE_UNICO  "
+        )  # .build() no guarda en DB
+
         with pytest.raises(ValidationError):
             duplicate.save()
 
     # --- RELACIONES Y PROPIEDADES ---
-    def test_batch_properties_access_correct_data(self, purchase_order_item_factory, packaging_factory):
+    def test_batch_properties_access_correct_data(
+        self, purchase_order_item_factory, packaging_factory
+    ):
         """HAPPY PATH: Las propiedades deben devolver los datos reales del pedido original."""
         pack = packaging_factory(name="BOTELLA BORDELÉSA")
         item = purchase_order_item_factory(packaging=pack)
@@ -55,5 +61,5 @@ class TestBatchModel:
         """EDGE CASE: La fecha de caducidad es opcional (muchos packagings no la tienen)."""
         batch = batch_con_po
         batch.expiry_date = None
-        batch.save() # No debe lanzar error
+        batch.save()  # No debe lanzar error
         assert batch.expiry_date is None

@@ -10,6 +10,7 @@ class PurchaseOrderItemInline(admin.TabularInline):
     model = PurchaseOrderItem
     extra = 1  # Muestra una línea vacía lista para rellenar
     fields = (
+        "id",
         "packaging",
         "label",
         "enological",
@@ -17,7 +18,10 @@ class PurchaseOrderItemInline(admin.TabularInline):
         "unit_price",
         "total_line",
     )
-    readonly_fields = ("total_line",)
+    readonly_fields = (
+        "id",
+        "total_line",
+    )
 
     def total_line(self, obj):
         if obj.quantity_ordered and obj.unit_price:
@@ -31,6 +35,7 @@ class PurchaseOrderItemInline(admin.TabularInline):
 class PurchaseOrderAdmin(admin.ModelAdmin):
     # --- LISTADO PRINCIPAL ---
     list_display = (
+        "id",
         "order_number",
         "supplier",
         "status_colored",
@@ -80,11 +85,13 @@ class PurchaseOrderAdmin(admin.ModelAdmin):
 # Opcional: Registrar los ítems por separado por si se quiere buscar un lote o producto específico
 @admin.register(PurchaseOrderItem)
 class PurchaseOrderItemAdmin(admin.ModelAdmin):
-    fields=("purchase_order",
+    fields = (
+        "purchase_order",
         ("packaging", "label", "enological"),
         "quantity_ordered",
-        "quantity_received", # <--- Lo incluimos aquí...
-        "unit_price",)
+        "quantity_received",  # <--- Lo incluimos aquí...
+        "unit_price",
+    )
     readonly_fields = ("quantity_received",)
     list_display = ("purchase_order", "material_name", "quantity_ordered", "unit_price")
     list_filter = ("purchase_order__status", "purchase_order__supplier")

@@ -1,30 +1,25 @@
 from django.db import models
+from django.db.models import Sum
+
 
 class Batch(models.Model):
     # El número de lote físico que viene en el palet/caja
     batch_number = models.CharField(
-        max_length=50, 
-        unique=True, 
-        verbose_name="Número de Lote"
+        max_length=50, unique=True, verbose_name="Número de Lote"
     )
-    
+
     # El origen de este lote: una línea específica de un pedido
     order_item = models.ForeignKey(
-        'purchase.PurchaseOrderItem', 
-        on_delete=models.PROTECT, 
-        related_name='batches',
-        verbose_name="Línea de Pedido de Origen"
+        "purchase.PurchaseOrderItem",
+        on_delete=models.PROTECT,
+        related_name="batches",
+        verbose_name="Línea de Pedido de Origen",
     )
-    
+
     # Datos temporales necesarios para el stock
-    arrival_date = models.DateField(
-        auto_now_add=True, 
-        verbose_name="Fecha de Entrada"
-    )
+    arrival_date = models.DateField(auto_now_add=True, verbose_name="Fecha de Entrada")
     expiry_date = models.DateField(
-        null=True, 
-        blank=True, 
-        verbose_name="Fecha de Caducidad"
+        null=True, blank=True, verbose_name="Fecha de Caducidad"
     )
 
     @property
@@ -36,6 +31,11 @@ class Batch(models.Model):
     def material_name(self):
         """Acceso al nombre del material (Packaging, Label o Enological)"""
         return self.order_item.material_name
+
+    @property
+    def current_stock(self):
+        """Calcula el stock actual sumando todos los movimientos de este lote."""
+        return self.movements.aggregate(total=Sum("quantity"))["total"] or 0
 
     def clean(self):
         """Elimina espacios accidentales pero mantiene las mayúsculas/minúsculas."""
@@ -52,4 +52,4 @@ class Batch(models.Model):
     class Meta:
         verbose_name = "Lote"
         verbose_name_plural = "Lotes"
-        ordering = ['-arrival_date']
+        ordering = ["-arrival_date"]

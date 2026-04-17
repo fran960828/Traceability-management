@@ -1,13 +1,17 @@
-from drf_spectacular.utils import (OpenApiParameter, OpenApiResponse,
-                                   extend_schema, extend_schema_view)
+from drf_spectacular.utils import (
+    OpenApiParameter,
+    OpenApiResponse,
+    extend_schema,
+    extend_schema_view,
+)
 from rest_framework import filters, viewsets
 from rest_framework.permissions import IsAuthenticated
 
+from inventory.views.mixins import InventoryAlertMixin
 from utils.permissions import RolePermission
 
 from ..models.enological_material_model import EnologicalMaterialModel
-from ..serializers.enological_material_serializer import \
-    EnologicalMaterialSerializer
+from ..serializers.enological_material_serializer import EnologicalMaterialSerializer
 
 
 @extend_schema_view(
@@ -54,8 +58,14 @@ from ..serializers.enological_material_serializer import \
             403: OpenApiResponse(description="No autorizado"),
         },
     ),
+    alerts=extend_schema(
+        summary="Listar enológicos bajo mínimos",
+        description="Devuelve los productos enológicos cuyo stock actual es inferior al mínimo establecido.",
+        tags=["Inventario - Enológicos"],
+        responses={200: EnologicalMaterialSerializer},
+    ),
 )
-class EnologicalMaterialViewSet(viewsets.ModelViewSet):
+class EnologicalMaterialViewSet(InventoryAlertMixin, viewsets.ModelViewSet):
     queryset = EnologicalMaterialModel.objects.all().order_by("-created_at")
     serializer_class = EnologicalMaterialSerializer
     permission_classes = [IsAuthenticated, RolePermission]

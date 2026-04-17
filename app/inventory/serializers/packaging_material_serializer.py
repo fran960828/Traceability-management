@@ -15,6 +15,8 @@ class PackagingMaterialSerializer(serializers.ModelSerializer):
     unit_mesure_display = serializers.CharField(
         source="get_unit_mesure_display", read_only=True
     )
+    current_stock = serializers.ReadOnlyField()
+    is_low_stock = serializers.ReadOnlyField()
 
     class Meta:
         model = PackagingMaterialModel
@@ -32,8 +34,11 @@ class PackagingMaterialSerializer(serializers.ModelSerializer):
             "min_stock_level",
             "is_active",
             "description",
+            "capacity",
             "created_at",
             "updated_at",
+            "current_stock",
+            "is_low_stock",
         ]
         # El código interno nunca debe ser enviado por el cliente, lo genera el servidor
         read_only_fields = ["internal_code", "created_at", "updated_at"]
@@ -57,13 +62,42 @@ class PackagingMaterialSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, data):
-        # Solo validamos si el campo viene en la petición (soporte para PATCH)
+        """
+        Validación cruzada para asegurar coherencia entre el tipo de material,
+        la capacidad y el color.
+        """
+        # 1. Recuperamos los valores de la petición o del objeto existente (para PATCH)
+        # Esto asegura que si solo actualizas el color, sepamos de qué tipo es el material
+        p_type = data.get(
+            "packaging_type", getattr(self.instance, "packaging_type", None)
+        )
+        capacity = data.get("capacity", getattr(self.instance, "capacity", None))
+        color = data.get("color", getattr(self.instance, "color", None))
+
+        # 2. Validación de Unidad de Medida (Existente)
         if "unit_mesure" in data:
-            uom = data.get("unit_mesure")
-            if uom != "UNIDAD":
+            if data.get("unit_mesure") != "UNIDAD":
                 raise serializers.ValidationError(
                     {
                         "unit_mesure": "Los materiales de acondicionamiento deben medirse en UNIDAD."
                     }
                 )
+
+        # 3. Validación de Capacidad (Solo para contenedores)
+        # Definimos qué tipos son considerados envases de líquido
+        container_types = ["VIDRIO", "BIB", "GARRAFA"]
+        if capacity is not None and p_type not in container_types:
+            raise serializers.ValidationError(
+                {
+                    "capacity": f"La capacidad solo se permite en envases ({', '.join(container_types)})."
+                }
+            )
+
+        # 4. Validación de Color (Solo para vidrio o cápsulas)
+        color_types = ["VIDRIO", "CAPSULA"]
+        if color and p_type not in color_types:
+            raise serializers.ValidationError(
+                {"color": "El color solo es aplicable a botellas o cápsulas."}
+            )
+
         return data

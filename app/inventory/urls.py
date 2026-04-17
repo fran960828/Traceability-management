@@ -1,8 +1,11 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from .views import (EnologicalMaterialViewSet, LabelMaterialViewSet,
-                    PackagingMaterialViewSet)
+from .views import (
+    EnologicalMaterialViewSet,
+    LabelMaterialViewSet,
+    PackagingMaterialViewSet,
+)
 
 # Definimos el namespace para la app de inventario
 app_name = "inventory"

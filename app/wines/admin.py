@@ -7,7 +7,7 @@ from .models import WineModel
 class WineAdmin(admin.ModelAdmin):
     # 1. Columnas que se ven en la lista principal
     list_display = (
-        "internal_code",
+        "id",
         "name",
         "vintage",
         "appellation_type",
@@ -53,6 +53,7 @@ class WineAdmin(admin.ModelAdmin):
                     "default_front_label",
                     "default_back_label",
                     "default_dop_seal",
+                    "default_capsule",
                 ),
             },
         ),

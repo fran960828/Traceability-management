@@ -1,20 +1,7 @@
-from test.inventory.conftest import (enological_factory, enological_material,
-                                     label_factory, label_material,
-                                     packaging_factory, packaging_material)
-from test.purchase.factories import (PurchaseOrderFactory,
-                                     PurchaseOrderItemFactory)
+from test.purchase.factories import PurchaseOrderFactory, PurchaseOrderItemFactory
 from test.supplier.factories import SupplierFactory
 
 import pytest
-
-__all__ = [
-    "enological_factory",
-    "enological_material",
-    "label_factory",
-    "label_material",
-    "packaging_factory",
-    "packaging_material",
-]
 
 
 @pytest.fixture

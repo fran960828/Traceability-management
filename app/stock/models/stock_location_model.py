@@ -1,23 +1,20 @@
 import re
-from django.db import models
+
 from django.core.exceptions import ValidationError
+from django.db import models
+
 
 class Location(models.Model):
     name = models.CharField(
-        max_length=50, 
-        unique=True, 
+        max_length=50,
+        unique=True,
         verbose_name="Nombre de la Ubicación",
-        help_text="Ej: ALMACEN_GENERAL, BODEGA_FINAL"
+        help_text="Ej: ALMACEN_GENERAL, BODEGA_FINAL",
     )
     description = models.TextField(
-        max_length=250,
-        blank=True,
-        verbose_name="Descripción técnica"
+        max_length=250, blank=True, verbose_name="Descripción técnica"
     )
-    is_active = models.BooleanField(
-        default=True,
-        verbose_name="Estado Operativo"
-    )
+    is_active = models.BooleanField(default=True, verbose_name="Estado Operativo")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def clean(self):
@@ -29,13 +26,15 @@ class Location(models.Model):
             # Quitamos espacios al principio y final
             self.name = self.name.strip().upper()
             # Reemplazamos espacios intermedios por guiones bajos para consistencia tipo ID
-            self.name = re.sub(r'\s+', '_', self.name)
-            
+            self.name = re.sub(r"\s+", "_", self.name)
+
             # Validación: Solo permitimos caracteres alfanuméricos y guiones bajos
-            if not re.match(r'^[A-Z0-9_ÁÉÍÓÚÜÑ]+$', self.name):
-                raise ValidationError({
-                    'name': "El nombre solo puede contener letras, números y guiones bajos (_)."
-                })
+            if not re.match(r"^[A-Z0-9_ÁÉÍÓÚÜÑ]+$", self.name):
+                raise ValidationError(
+                    {
+                        "name": "El nombre solo puede contener letras, números y guiones bajos (_)."
+                    }
+                )
 
         # 2. Limpieza de la Descripción
         if self.description:
@@ -54,4 +53,4 @@ class Location(models.Model):
     class Meta:
         verbose_name = "Ubicación"
         verbose_name_plural = "Ubicaciones"
-        ordering = ['name']
+        ordering = ["name"]

@@ -1,8 +1,13 @@
-from drf_spectacular.utils import (OpenApiParameter, OpenApiResponse,
-                                   extend_schema, extend_schema_view)
+from drf_spectacular.utils import (
+    OpenApiParameter,
+    OpenApiResponse,
+    extend_schema,
+    extend_schema_view,
+)
 from rest_framework import filters, viewsets
 from rest_framework.permissions import IsAuthenticated
 
+from utils.mixins import CloneMixin
 from utils.permissions import RolePermission
 from wines.models import WineModel
 from wines.serializers import WineSerializer
@@ -65,8 +70,17 @@ from wines.serializers import WineSerializer
             403: OpenApiResponse(description="No autorizado"),
         },
     ),
+    clone_prefill=extend_schema(
+        summary="Preparar datos para clonar",
+        description=(
+            "Recupera los datos técnicos de un vino existente, limpiando IDs, códigos únicos "
+            "y etiquetas (ya que la añada cambiará). Ideal para pre-rellenar el formulario de creación."
+        ),
+        tags=["Gestión de Vinos"],
+        responses={200: WineSerializer},  # Devuelve la estructura del vino pero limpia
+    ),
 )
-class WineViewSet(viewsets.ModelViewSet):
+class WineViewSet(CloneMixin, viewsets.ModelViewSet):
     """
     CRUD completo para la gestión de Vinos (Fichas Técnicas)
     """
@@ -78,6 +92,16 @@ class WineViewSet(viewsets.ModelViewSet):
     # Motor de búsqueda nativo para el nombre del vino
     filter_backends = [filters.SearchFilter]
     search_fields = ["name", "appellation_name", "internal_code"]
+    # Definimos qué campos limpiar específicamente para Vinos
+    clone_reset_fields = [
+        "id",
+        "internal_code",
+        "vintage",  # Forzamos a que el usuario elija el nuevo año
+        "default_front_label",  # Eliminamos etiquetas porque la añada no coincidirá
+        "default_back_label",
+        "default_dop_seal",
+        "created_at",
+    ]
 
     def get_queryset(self):
         """
@@ -96,3 +120,28 @@ class WineViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(wine_type=wine_type.upper())
 
         return queryset
+
+    def prepare_clone_data(self, data, instance):
+        """
+        Refinamos los datos antes de enviarlos al formulario del frontend.
+        """
+        # 1. Sugerimos un nombre para evitar errores de "único" al principio
+        data["name"] = f"COPIA - {instance.name}"
+
+        # 2. El estado inicial
+        data["is_active"] = True
+
+        # 3. Mantenemos el packaging (botella, corcho, cápsula)
+        # Esto no lo tocamos, por lo que el JSON ya lleva los IDs de esos materiales.
+
+        return data
+
+    def perform_create(self, serializer):
+        # Primero guardamos el nuevo vino de forma normal
+        new_wine = serializer.save()
+
+        # Solo si el usuario no ha cambiado el nombre (es el mismo producto)
+        # buscamos la añada anterior para desactivarla
+        WineModel.objects.filter(name=new_wine.name, is_active=True).exclude(
+            id=new_wine.id
+        ).update(is_active=False)

@@ -1,8 +1,18 @@
+# flake8: noqa
 import uuid
+from test.inventory.conftest import *
+from test.production_record.conftest import *
+from test.purchase.conftest import *
+from test.stock.conftest import *
+from test.supplier.conftest import *
+from test.wines.conftest import *
 
 import pytest
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
+
+# from test.production_record.conftest import *
+
 
 # --- FIXTURES DE AUTENTICACIÓN ---
 User = get_user_model()

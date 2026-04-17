@@ -1,11 +1,16 @@
-from drf_spectacular.utils import (OpenApiParameter, OpenApiResponse,
-                                   extend_schema, extend_schema_view)
+from drf_spectacular.utils import (
+    OpenApiParameter,
+    OpenApiResponse,
+    extend_schema,
+    extend_schema_view,
+)
 from rest_framework import filters, status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from purchase.models import PurchaseOrder
 from purchase.serializers import PurchaseOrderSerializer
+from utils.mixins import CloneMixin
 from utils.permissions import PurchaseRolePermission
 
 
@@ -69,8 +74,17 @@ from utils.permissions import PurchaseRolePermission
             403: OpenApiResponse(description="No autorizado"),
         },
     ),
+    clone_prefill=extend_schema(
+        summary="Preparar datos para clonar pedido",
+        description=(
+            "Recupera los datos de un pedido anterior (proveedor e ítems) para generar uno nuevo. "
+            "Limpia números de orden, fechas de entrega y resetea el estado a DRAFT."
+        ),
+        tags=["Gestión de Compras"],
+        responses={200: PurchaseOrderSerializer},
+    ),
 )
-class PurchaseOrderViewSet(viewsets.ModelViewSet):
+class PurchaseOrderViewSet(CloneMixin, viewsets.ModelViewSet):
     """
     Controlador para el ciclo de vida de las Órdenes de Compra.
     Maneja la creación anidada de items y las restricciones de estado.
@@ -83,6 +97,14 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
     # Motor de búsqueda para el número de orden y nombre del proveedor
     filter_backends = [filters.SearchFilter]
     search_fields = ["order_number", "supplier__name"]
+
+    clone_reset_fields = [
+        "id",
+        "order_number",  # El código PO-2026-XXXX se generará al guardar
+        "date_issued",  # Se pondrá la fecha de hoy
+        "date_delivery_expected",  # El usuario debe negociar una nueva fecha
+        "status",  # Forzamos DRAFT
+    ]
 
     def get_queryset(self):
         """
@@ -116,3 +138,22 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
             return super().destroy(request, *args, **kwargs)
         except Exception as e:
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    def prepare_clone_data(self, data, instance):
+        """
+        Limpia los ítems y ajusta la cabecera para el pre-llenado.
+        """
+        # 1. Estado inicial por defecto
+        data["status"] = PurchaseOrder.Status.DRAFT
+
+        # 2. Procesamos los ítems anidados (PurchaseOrderItem)
+        # El serializer de PurchaseOrder suele devolver una lista en 'items'
+        if "items" in data:
+            for item in data["items"]:
+                # Limpiamos IDs de las líneas y cantidades recibidas
+                item.pop("id", None)
+                item.pop("purchase_order", None)
+                item["quantity_received"] = 0
+                # Mantenemos: packaging/label/enological, quantity_ordered y unit_price
+
+        return data

@@ -1,5 +1,4 @@
-from drf_spectacular.utils import (OpenApiParameter, extend_schema,
-                                   extend_schema_view)
+from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import filters, viewsets
 from rest_framework.permissions import IsAuthenticated
 
@@ -32,7 +31,11 @@ from utils.permissions import PurchaseRolePermission
         summary="Detalle de una línea de pedido",
         tags=["Gestión de Compras - Líneas"],
     ),
-    create=extend_schema(summary="Crear línea de pedido",description="Crear una linea de compra", tags=["Gestión de Compras - Líneas"]),
+    create=extend_schema(
+        summary="Crear línea de pedido",
+        description="Crear una linea de compra",
+        tags=["Gestión de Compras - Líneas"],
+    ),
     update=extend_schema(
         summary="Actualizar línea de pedido (Put)",
         description="Modifica cantidad o precio de una línea. Bloqueado si la orden padre está cerrada.",

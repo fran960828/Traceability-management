@@ -1,7 +1,10 @@
+from test.stock.factories import LocationFactory
+
 import pytest
 from django.core.exceptions import ValidationError
+
 from stock.models import Location
-from test.stock.factories import LocationFactory
+
 
 @pytest.mark.django_db
 class TestLocationModel:
@@ -10,8 +13,7 @@ class TestLocationModel:
     def test_location_creation_is_successful(self):
         """HAPPY PATH: Crear una ubicación con datos válidos."""
         loc = Location.objects.create(
-            name="ALMACEN_CENTRAL",
-            description="Ubicación principal de la bodega"
+            name="ALMACEN_CENTRAL", description="Ubicación principal de la bodega"
         )
         assert loc.id is not None
         assert loc.name == "ALMACEN_CENTRAL"
@@ -41,15 +43,18 @@ class TestLocationModel:
         loc = Location(name="ALMACEN@PROHIBIDO")
         with pytest.raises(ValidationError) as excinfo:
             loc.save()
-        assert 'name' in excinfo.value.message_dict
-        assert "El nombre solo puede contener letras, números y guiones bajos" in excinfo.value.message_dict['name'][0]
+        assert "name" in excinfo.value.message_dict
+        assert (
+            "El nombre solo puede contener letras, números y guiones bajos"
+            in excinfo.value.message_dict["name"][0]
+        )
 
     def test_location_unique_name_constraint(self):
         """EDGE CASE: No pueden existir dos ubicaciones con el mismo nombre (normalizado)."""
         LocationFactory(name="ALMACEN_A")
         # Intentamos crear otro que al normalizar sea igual
         duplicate_loc = Location(name="  almacen a  ")
-        
+
         with pytest.raises(ValidationError):
             duplicate_loc.save()
 

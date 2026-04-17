@@ -1,7 +1,8 @@
 import pytest
 
-from inventory.serializers.enological_material_serializer import \
-    EnologicalMaterialSerializer
+from inventory.serializers.enological_material_serializer import (
+    EnologicalMaterialSerializer,
+)
 
 
 @pytest.mark.django_db
@@ -20,7 +21,6 @@ class TestEnologicalSerializers:
         serializer = EnologicalMaterialSerializer(data=data)
         assert not serializer.is_valid()
         assert "unit_mesure" in serializer.errors
-        assert (
-            "Los productos enológicos no suelen medirse por unidades"
-            in str(serializer.errors["unit_mesure"][0])
+        assert "Los productos enológicos no suelen medirse por unidades" in str(
+            serializer.errors["unit_mesure"][0]
         )

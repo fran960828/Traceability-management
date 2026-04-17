@@ -1,13 +1,10 @@
-from test.inventory.conftest import (label_factory, label_material,
-                                     packaging_factory, packaging_material)
-from test.inventory.factories import (LabelMaterialFactory,
-                                      PackagingMaterialFactory)
-from test.wines.factories import WineFactory
+from test.wines.factories import (
+    LabelMaterialFactory,
+    PackagingMaterialFactory,
+    WineFactory,
+)
 
 import pytest
-
-# --- FIXTURES DE FACTORIES ---
-__all__ = ["label_factory", "label_material", "packaging_factory", "packaging_material"]
 
 
 @pytest.fixture

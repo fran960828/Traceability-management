@@ -1,7 +1,9 @@
 import pytest
 from rest_framework.exceptions import ValidationError
-from stock.serializers import StockTransferSerializer
+
 from stock.models import StockMovement
+from stock.serializers import StockTransferSerializer
+
 
 @pytest.mark.django_db
 class TestStockTransferSerializer:
@@ -13,22 +15,17 @@ class TestStockTransferSerializer:
         loc_origin = location_factory(name="ORIGEN")
         loc_dest = location_factory(name="DESTINO")
         batch = batch_factory()
-        
+
         # Creamos una entrada inicial de 100 unidades
         StockMovement.objects.create(
             batch=batch,
             location=loc_origin,
             quantity=100,
-            movement_type='IN',
-            user=user
+            movement_type="IN",
+            user=user,
         )
-        
-        return {
-            "batch": batch,
-            "origin": loc_origin,
-            "dest": loc_dest,
-            "user": user
-        }
+
+        return {"batch": batch, "origin": loc_origin, "dest": loc_dest, "user": user}
 
     # --- HAPPY PATH ---
     def test_transfer_valid_data(self, setup_stock):
@@ -38,12 +35,12 @@ class TestStockTransferSerializer:
             "origin_location": setup_stock["origin"].id,
             "destination_location": setup_stock["dest"].id,
             "quantity": 50,
-            "notes": "Traslado parcial"
+            "notes": "Traslado parcial",
         }
-        
+
         serializer = StockTransferSerializer(data=data)
         assert serializer.is_valid(), serializer.errors
-        assert serializer.validated_data['quantity'] == 50
+        assert serializer.validated_data["quantity"] == 50
 
     # --- VALIDACIONES Y EDGE CASES ---
 
@@ -55,12 +52,12 @@ class TestStockTransferSerializer:
             "destination_location": setup_stock["dest"].id,
             "quantity": 150,  # Intentamos mover 150 pero solo hay 100
         }
-        
+
         serializer = StockTransferSerializer(data=data)
-        
+
         with pytest.raises(ValidationError) as excinfo:
             serializer.is_valid(raise_exception=True)
-        
+
         assert "Stock insuficiente" in str(excinfo.value)
 
     def test_transfer_same_location_fails(self, setup_stock):
@@ -68,15 +65,15 @@ class TestStockTransferSerializer:
         data = {
             "batch": setup_stock["batch"].id,
             "origin_location": setup_stock["origin"].id,
-            "destination_location": setup_stock["origin"].id, # MISMO DESTINO
-            "quantity": 10
+            "destination_location": setup_stock["origin"].id,  # MISMO DESTINO
+            "quantity": 10,
         }
-        
+
         serializer = StockTransferSerializer(data=data)
-        
+
         with pytest.raises(ValidationError) as excinfo:
             serializer.is_valid(raise_exception=True)
-            
+
         assert "destino no puede ser igual a la de origen" in str(excinfo.value)
 
     def test_transfer_negative_quantity_fails(self, setup_stock):
@@ -85,9 +82,9 @@ class TestStockTransferSerializer:
             "batch": setup_stock["batch"].id,
             "origin_location": setup_stock["origin"].id,
             "destination_location": setup_stock["dest"].id,
-            "quantity": -5
+            "quantity": -5,
         }
-        
+
         serializer = StockTransferSerializer(data=data)
         assert not serializer.is_valid()
         assert "quantity" in serializer.errors
@@ -102,17 +99,17 @@ class TestStockTransferSerializer:
             batch=setup_stock["batch"],
             location=setup_stock["origin"],
             quantity=-60,
-            movement_type='OUT',
-            user=setup_stock["user"]
+            movement_type="OUT",
+            user=setup_stock["user"],
         )
-        
+
         data = {
             "batch": setup_stock["batch"].id,
             "origin_location": setup_stock["origin"].id,
             "destination_location": setup_stock["dest"].id,
-            "quantity": 50 # 100 - 60 = 40. Intentar 50 debe fallar.
+            "quantity": 50,  # 100 - 60 = 40. Intentar 50 debe fallar.
         }
-        
+
         serializer = StockTransferSerializer(data=data)
         assert not serializer.is_valid()
-        assert "Stock insuficiente" in str(serializer.errors['quantity'])
+        assert "Stock insuficiente" in str(serializer.errors["quantity"])

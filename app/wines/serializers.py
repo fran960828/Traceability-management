@@ -37,6 +37,7 @@ class WineSerializer(serializers.ModelSerializer):
             "default_front_label",
             "default_back_label",
             "default_dop_seal",
+            "default_capsule",
             # Nombres para lectura
             "container_name",
             "cork_name",
@@ -86,6 +87,11 @@ class WineSerializer(serializers.ModelSerializer):
                 {"default_back_label": "Debe ser de tipo CONTRA."}
             )
 
+        capsule = data.get("default_capsule")
+        if capsule and capsule.packaging_type != "CAPSULA":
+            raise serializers.ValidationError(
+                {"default_back_label": "Debe ser de tipo CAPSULA."}
+            )
         return data
 
     def create(self, validated_data):

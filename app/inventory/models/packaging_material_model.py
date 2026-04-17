@@ -1,5 +1,7 @@
 import datetime
+from decimal import Decimal
 
+from django.core.validators import MinValueValidator
 from django.db import models
 
 from utils.validators import clean_whitespace
@@ -38,9 +40,28 @@ class PackagingMaterialModel(AbstractBaseMaterialModel):
         max_length=50, blank=True, help_text="Solo para vidrio y botellas"
     )
 
+    capacity = models.DecimalField(
+        max_digits=5,
+        decimal_places=3,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(Decimal("0.001"))],
+        help_text="Capacidad en litros. Solo para botellas, BIB, etc.",
+    )
+
     class Meta:
         verbose_name = "Material de Acondicionamiento"
         verbose_name_plural = "Materiales de Acondicionamiento"
+
+    def clean(self):
+        # Evitamos la confusión: si no es un contenedor, la capacidad debe ser None
+        if (
+            self.packaging_type not in ["VIDRIO", "BIB", "GARRAFA"]
+            and self.capacity is not None
+        ):
+            self.capacity = None
+        if self.packaging_type not in ["VIDRIO", "CAPSULA"] and self.color is not None:
+            self.color = None
 
     def save(self, *args, **kwargs):
         # 1. Sanitización de Color: Siempre MAYÚSCULAS y sin espacios extra

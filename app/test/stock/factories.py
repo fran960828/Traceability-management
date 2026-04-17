@@ -1,9 +1,12 @@
-import factory
-from django.contrib.auth import get_user_model
-from stock.models import Location, Batch, StockMovement
 from test.purchase.factories import PurchaseOrderItemFactory
 
+import factory
+from django.contrib.auth import get_user_model
+
+from stock.models import Batch, Location, StockMovement
+
 User = get_user_model()
+
 
 class LocationFactory(factory.django.DjangoModelFactory):
     class Meta:
@@ -32,9 +35,11 @@ class StockMovementFactory(factory.django.DjangoModelFactory):
     location = factory.SubFactory(LocationFactory)
     quantity = 100
     movement_type = StockMovement.MovementType.IN
-    
+
     # Vinculamos la PO automáticamente a través del batch
-    reference_po = factory.LazyAttribute(lambda obj: obj.batch.order_item.purchase_order)
-    
+    reference_po = factory.LazyAttribute(
+        lambda obj: obj.batch.order_item.purchase_order
+    )
+
     user = None
     notes = factory.Faker("sentence")

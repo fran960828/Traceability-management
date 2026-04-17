@@ -1,6 +1,9 @@
-import pytest
-from stock.serializers import LocationSerializer
 from test.stock.factories import LocationFactory
+
+import pytest
+
+from stock.serializers import LocationSerializer
+
 
 @pytest.mark.django_db
 class TestLocationSerializer:
@@ -24,7 +27,7 @@ class TestLocationSerializer:
     def test_location_serializer_unique_name(self):
         """EDGE CASE: El serializer detecta nombres duplicados automáticamente."""
         LocationFactory(name="ALMACEN_A")
-        data = {"name": "ALMACEN_A"} # Al normalizar será igual
+        data = {"name": "ALMACEN_A"}  # Al normalizar será igual
         serializer = LocationSerializer(data=data)
         assert not serializer.is_valid()
-        assert 'name' in serializer.errors
+        assert "name" in serializer.errors

@@ -1,5 +1,4 @@
-from test.inventory.factories import (LabelMaterialFactory,
-                                      PackagingMaterialFactory)
+from test.inventory.factories import LabelMaterialFactory, PackagingMaterialFactory
 
 import factory
 
@@ -37,6 +36,12 @@ class WineFactory(factory.django.DjangoModelFactory):
         PackagingMaterialFactory,
         packaging_type="CIERRE",
         name=factory.Sequence(lambda n: f"CORCHO NATURAL {n}"),
+    )
+
+    default_capsule = factory.SubFactory(
+        PackagingMaterialFactory,
+        packaging_type="CAPSULA",
+        name=factory.Sequence(lambda n: f"CAPSULA {n}"),
     )
 
     # Etiqueta Frontal: Sincronizada con el año del vino

@@ -1,7 +1,9 @@
 import datetime
 
 from django.db import models
+from django.db.models import Sum
 
+from stock.models import StockMovement
 from utils.validators import clean_whitespace
 
 
@@ -77,3 +79,40 @@ class AbstractBaseMaterialModel(models.Model):
         prefix = f"{self.CODE_PREFIX}-{year}-"
 
         return f"{prefix}000"
+
+    @property
+    def current_stock(self):
+
+        # 1. Identificamos qué tipo de material es este objeto
+        model_name = self._meta.model_name  # ej: 'labelmaterialmodel'
+
+        # 2. Mapeamos el nombre del modelo al nombre del campo en PurchaseOrderItem
+        # REVISA: Estos nombres deben ser EXACTOS a como definiste las FKs en PurchaseOrderItem
+        field_mapping = {
+            "labelmaterialmodel": "label",
+            "packagingmaterialmodel": "packaging",
+            "enologicalmaterialmodel": "enological",
+        }
+
+        target_field = field_mapping.get(model_name)
+
+        if not target_field:
+            return 0
+
+        # 3. EL FILTRO CORRECTO:
+        # Entramos hasta el campo del material dentro del item de compra
+        filter_kwargs = {f"batch__order_item__{target_field}": self}
+
+        return (
+            StockMovement.objects.filter(**filter_kwargs).aggregate(
+                total=Sum("quantity")
+            )["total"]
+            or 0
+        )
+
+    @property
+    def is_low_stock(self):
+        """Compara el stock actual con el mínimo si existe."""
+        if self.min_stock_level == 0:
+            return False
+        return self.current_stock < self.min_stock_level

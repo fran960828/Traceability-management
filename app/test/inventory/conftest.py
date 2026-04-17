@@ -1,14 +1,10 @@
-from test.inventory.factories import (EnologicalMaterialFactory,
-                                      LabelMaterialFactory,
-                                      PackagingMaterialFactory)
-from test.supplier.conftest import (category, category_factory, supplier,
-                                    supplier_factory)
+from test.inventory.factories import (
+    EnologicalMaterialFactory,
+    LabelMaterialFactory,
+    PackagingMaterialFactory,
+)
 
 import pytest
-
-# --- FIXTURES DE FACTORIES ---
-# Estas permiten crear objetos con datos personalizados: packaging_factory(name="BOTELLA ESPECIAL")
-__all__ = ["category", "category_factory", "supplier", "supplier_factory"]
 
 
 @pytest.fixture
