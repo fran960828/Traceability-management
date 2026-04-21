@@ -1,5 +1,4 @@
 from test.inventory.factories import PackagingMaterialFactory
-
 # Asumiendo que tienes una factory para proveedores
 from test.supplier.factories import SupplierFactory
 

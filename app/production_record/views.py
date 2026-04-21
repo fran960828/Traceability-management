@@ -1,12 +1,14 @@
 from django.core.exceptions import ValidationError as DjangoValidationError
-from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
+from drf_spectacular.utils import (OpenApiParameter, extend_schema,
+                                   extend_schema_view)
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from utils.mixins import CloneMixin
-from utils.permissions import PurchaseRolePermission  # Reutilizamos según tu indicación
+from utils.permissions import \
+    PurchaseRolePermission  # Reutilizamos según tu indicación
 
 from .models import ProductionOrder
 from .serializers import ProductionOrderSerializer
@@ -95,9 +97,6 @@ class ProductionOrderViewSet(CloneMixin, viewsets.ModelViewSet):
             for item in data["enological_materials"]:
                 item.pop("id", None)
                 item.pop("production_order", None)
-
-                # Opcional: Podríamos recalcular aquí si pasamos un query param
-                # con el 'target_quantity'. Si no, el frontend lo hará al cambiar el input.
 
         return data
 

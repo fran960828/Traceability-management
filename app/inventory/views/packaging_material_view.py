@@ -1,9 +1,5 @@
-from drf_spectacular.utils import (
-    OpenApiParameter,
-    OpenApiResponse,
-    extend_schema,
-    extend_schema_view,
-)
+from drf_spectacular.utils import (OpenApiParameter, OpenApiResponse,
+                                   extend_schema, extend_schema_view)
 from rest_framework import filters, viewsets
 from rest_framework.permissions import IsAuthenticated
 
@@ -11,7 +7,8 @@ from inventory.views.mixins import InventoryAlertMixin
 from utils.permissions import RolePermission
 
 from ..models.packaging_material_model import PackagingMaterialModel
-from ..serializers.packaging_material_serializer import PackagingMaterialSerializer
+from ..serializers.packaging_material_serializer import \
+    PackagingMaterialSerializer
 
 
 @extend_schema_view(

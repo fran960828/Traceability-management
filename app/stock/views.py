@@ -1,6 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
-from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
+from drf_spectacular.utils import (OpenApiParameter, extend_schema,
+                                   extend_schema_view)
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -9,12 +10,8 @@ from rest_framework.response import Response
 from utils.permissions import PurchaseRolePermission
 
 from .models import Location, StockMovement
-from .serializers import (
-    BulkReceptionSerializer,
-    LocationSerializer,
-    StockMovementSerializer,
-    StockTransferSerializer,
-)
+from .serializers import (BulkReceptionSerializer, LocationSerializer,
+                          StockMovementSerializer, StockTransferSerializer)
 
 
 @extend_schema_view(

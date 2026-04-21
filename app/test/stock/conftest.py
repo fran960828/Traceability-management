@@ -1,4 +1,5 @@
-from test.stock.factories import BatchFactory, LocationFactory, StockMovementFactory
+from test.stock.factories import (BatchFactory, LocationFactory,
+                                  StockMovementFactory)
 
 import pytest
 

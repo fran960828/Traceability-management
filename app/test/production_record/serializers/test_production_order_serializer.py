@@ -1,4 +1,5 @@
-from test.inventory.factories import EnologicalMaterialFactory, PackagingMaterialFactory
+from test.inventory.factories import (EnologicalMaterialFactory,
+                                      PackagingMaterialFactory)
 from test.wines.factories import WineFactory
 
 import pytest

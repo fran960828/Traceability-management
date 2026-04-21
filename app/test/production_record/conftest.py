@@ -1,8 +1,6 @@
 from test.inventory.factories import EnologicalMaterialFactory
-from test.production_record.factories import (
-    ProductionEnologicalItemFactory,
-    ProductionOrderFactory,
-)
+from test.production_record.factories import (ProductionEnologicalItemFactory,
+                                              ProductionOrderFactory)
 from test.stock.factories import BatchFactory
 
 import pytest

@@ -1,11 +1,8 @@
 from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
-from drf_spectacular.views import (
-    SpectacularAPIView,
-    SpectacularRedocView,
-    SpectacularSwaggerView,
-)
+from drf_spectacular.views import (SpectacularAPIView, SpectacularRedocView,
+                                   SpectacularSwaggerView)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -17,6 +14,7 @@ urlpatterns = [
     path("api/stock/", include("stock.urls")),
     path("api/production/", include("production_record.urls")),
     path("api/analytics/", include("analytics.urls")),
+    path("api/traceability/",include("traceability.urls"))
 ]
 
 if settings.DEBUG:

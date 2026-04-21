@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models, transaction
 
-from production_record.utils import validate_production_order_immutability, validate_production_volume_integrity
+from production_record.utils import validate_production_volume_integrity
 from stock.services import FIFOService
 
 
@@ -83,13 +83,24 @@ class ProductionOrder(models.Model):
     @property
     def loss_percentage(self):
         """Porcentaje de merma sobre el total extraído"""
-        if self.bulk_liters_withdrawn > 0:
-            return (self.loss_liters / self.bulk_liters_withdrawn) * 100
-        return 0
+        if self.bulk_liters_withdrawn and self.bulk_liters_withdrawn > 0:
+            # Convertimos el resultado final a Decimal para evitar el error de float
+            percentage = (self.loss_liters / self.bulk_liters_withdrawn) * Decimal("100")
+            return percentage.quantize(Decimal("0.01")) # Porcentaje con 2 decimales
+        return Decimal("0.00")
+    
+    def _check_immutability(self):
+        """Valida que no se alteren datos críticos en órdenes confirmadas"""
+        if self.pk and self.status == self.Status.CONFIRMED:
+            original = self.__class__.objects.get(pk=self.pk)
+            
+            if original.quantity_produced != self.quantity_produced:
+                raise ValidationError(
+                    "No se puede modificar la cantidad de una orden confirmada.")
 
     def clean(self):
         """Validaciones de robustez antes de guardar"""
-        validate_production_order_immutability(self)
+        self._check_immutability()
         validate_production_volume_integrity(
             total_liters=self.total_liters,
             bulk_liters_withdrawn=self.bulk_liters_withdrawn

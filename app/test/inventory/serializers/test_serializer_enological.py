@@ -1,8 +1,7 @@
 import pytest
 
-from inventory.serializers.enological_material_serializer import (
-    EnologicalMaterialSerializer,
-)
+from inventory.serializers.enological_material_serializer import \
+    EnologicalMaterialSerializer
 
 
 @pytest.mark.django_db

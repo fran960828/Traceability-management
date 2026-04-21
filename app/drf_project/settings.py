@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "stock",
     "production_record",
     "analytics",
+    "traceability"
 ]
 
 MIDDLEWARE = [

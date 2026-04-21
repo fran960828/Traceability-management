@@ -37,7 +37,7 @@ class PackagingMaterialModel(AbstractBaseMaterialModel):
 
     # Color es crítico para vidrio y cápsulas
     color = models.CharField(
-        max_length=50, blank=True, help_text="Solo para vidrio y botellas"
+        max_length=50, blank=True,null=True, help_text="Solo para vidrio y botellas"
     )
 
     capacity = models.DecimalField(

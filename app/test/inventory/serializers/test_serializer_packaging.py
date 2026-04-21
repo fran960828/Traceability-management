@@ -1,8 +1,7 @@
 import pytest
 
-from inventory.serializers.packaging_material_serializer import (
-    PackagingMaterialSerializer,
-)
+from inventory.serializers.packaging_material_serializer import \
+    PackagingMaterialSerializer
 
 
 @pytest.mark.django_db

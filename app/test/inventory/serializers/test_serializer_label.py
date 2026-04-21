@@ -1,6 +1,7 @@
 import pytest
 
-from inventory.serializers.label_material_serializer import LabelMaterialSerializer
+from inventory.serializers.label_material_serializer import \
+    LabelMaterialSerializer
 
 
 @pytest.mark.django_db

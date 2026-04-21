@@ -1,7 +1,9 @@
 from drf_spectacular.utils import OpenApiResponse, extend_schema
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.views import (TokenObtainPairView,
+                                            TokenRefreshView)
 
-from client.serializers import MyTokenObtainPairSerializer, MyTokenRefreshSerializer
+from client.serializers import (MyTokenObtainPairSerializer,
+                                MyTokenRefreshSerializer)
 
 
 @extend_schema(

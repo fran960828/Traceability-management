@@ -1,6 +1,5 @@
-from test.supplier.factories import (
-    SupplierFactory,
-)  # Reutilizamos tu factoría existente
+from test.supplier.factories import \
+    SupplierFactory  # Reutilizamos tu factoría existente
 
 import factory
 

@@ -1,4 +1,5 @@
-from test.purchase.factories import PurchaseOrderFactory, PurchaseOrderItemFactory
+from test.purchase.factories import (PurchaseOrderFactory,
+                                     PurchaseOrderItemFactory)
 from test.supplier.factories import SupplierFactory
 
 import pytest

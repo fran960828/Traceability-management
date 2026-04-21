@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Informe de Trazabilidad - {{ order_details.lot_number }}</title>
+    <style>
+        /* Configuración de la página física */
+        @page {
+            size: A4;
+            margin: 2.5cm;
+            @bottom-left {
+                content: "ID de Integridad: {{ integrity_hash|truncatechars:15 }}";
+                font-size: 8pt;
+                color: #666;
+            }
+            @bottom-right {
+                content: "Página " counter(page) " de " counter(pages);
+                font-size: 8pt;
+            }
+        }
+
+        /* Estilos generales */
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 10pt;
+            line-height: 1.4;
+            color: #333;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #800020; /* Color Burdeos/Vino */
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+        }
+
+        h1 { color: #800020; margin-bottom: 5px; }
+        h2 { border-left: 4px solid #800020; padding-left: 10px; margin-top: 20px; background: #f9f9f9; }
+
+        /* Tablas de datos */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th { background-color: #f2f2f2; font-weight: bold; }
+
+        .footer-hash {
+            margin-top: 50px;
+            padding: 10px;
+            background: #eee;
+            font-family: monospace;
+            font-size: 8pt;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>INFORME DE TRAZABILIDAD</h1>
+        <p>Bodega Digital - Registro de Control de Calidad</p>
+    </div>
+
+    <section>
+        <h2>1. Información del Lote</h2>
+        <table>
+            <tr>
+                <th>Número de Lote:</th>
+                <td>{{ order_details.lot_number }}</td>
+                <th>Fecha de Producción:</th>
+                <td>{{ generated_at }}</td>
+            </tr>
+            <tr>
+                <th>Producto:</th>
+                <td>{{ order_details.wine_name }}</td>
+                <th>Responsable:</th>
+                <td>{{ order_details.user_responsible }}</td>
+            </tr>
+        </table>
+    </section>
+
+    <section>
+        <h2>2. Balance de Masas y Eficiencia</h2>
+        <table>
+            <tr>
+                <th>Cantidad Producida:</th>
+                <td>{{ order_details.quantity_produced }} uds.</td>
+                <th>Merma/Pérdida:</th>
+                <td>{{ efficiency.loss_percentage }}</td>
+            </tr>
+        </table>
+    </section>
+    <section>
+        <h2>3. Componentes de Envasado</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Componente</th>
+                    <th>Referencia/Nombre</th>
+                    <th>Lote Proveedor</th>
+                    <th>Cantidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in packaging_materials %}
+                <tr>
+                    <td>{{ item.type|capitalize }}</td>
+                    <td>{{ item.name }}</td>
+                    <td><strong>{{ item.lot_number }}</strong></td>
+                    <td>{{ item.quantity }} {{ item.unit }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">No se han registrado materiales de envasado.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <section>
+        <h2>4. Tratamientos y Productos Enológicos</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Lote Proveedor</th>
+                    <th>Dosis Utilizada</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in enological_additives %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td><strong>{{ item.lot_number }}</strong></td>
+                    <td>{{ item.quantity }} {{ item.unit }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3">No se han registrado aditivos enológicos.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <div class="footer-hash">
+        <strong>FIRMA DIGITAL DE INTEGRIDAD (SHA-256):</strong><br>
+        {{ integrity_hash }}
+    </div>
+
+</body>
+</html>

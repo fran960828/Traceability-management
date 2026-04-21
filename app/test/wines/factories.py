@@ -1,4 +1,5 @@
-from test.inventory.factories import LabelMaterialFactory, PackagingMaterialFactory
+from test.inventory.factories import (LabelMaterialFactory,
+                                      PackagingMaterialFactory)
 
 import factory
 

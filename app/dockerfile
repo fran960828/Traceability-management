@@ -9,9 +9,8 @@ ENV PYTHONUNBUFFERED=1
 
 # new
 # install system dependencies
-RUN apt-get update \
-  && apt-get -y install netcat-traditional gcc postgresql \
-  && apt-get clean
+COPY ./scripts/install_sys_deps.sh ./scripts/install_sys_deps.sh
+RUN chmod +x ./scripts/install_sys_deps.sh && ./scripts/install_sys_deps.sh
 
 # install dependencies
 RUN pip install --upgrade pip

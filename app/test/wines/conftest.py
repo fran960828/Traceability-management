@@ -1,8 +1,5 @@
-from test.wines.factories import (
-    LabelMaterialFactory,
-    PackagingMaterialFactory,
-    WineFactory,
-)
+from test.wines.factories import (LabelMaterialFactory,
+                                  PackagingMaterialFactory, WineFactory)
 
 import pytest
 
