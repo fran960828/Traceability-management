@@ -1,5 +1,6 @@
 import hashlib
 import json
+from .get_material_batch import get_actual_batches_used
 
 def generate_snapshot(production_order):
     """
@@ -27,6 +28,7 @@ def generate_snapshot(production_order):
                 "category": label, # 'Envase', 'Cierre', etc.
                 "material_name": material.name if material else "No definido",
                 "total_quantity": production_order.quantity_produced,
+                "lot":get_actual_batches_used(production_order, material),
                 "unit": "unidades"
             }
             # Usamos el método interno que ya definimos en el modelo
@@ -39,6 +41,7 @@ def generate_snapshot(production_order):
                 "material": item.material.name,
                 "quantity_used": str(item.quantity_used),
                 "unit": item.material.unit_mesure,
+                "lot": get_actual_batches_used(production_order, item.material),
                 "dosage_ratio": str(item.quantity_used / production_order.quantity_produced) 
                                 if production_order.quantity_produced > 0 else "0"
             } for item in production_order.enological_materials.all()

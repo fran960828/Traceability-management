@@ -1,13 +1,15 @@
 from drf_spectacular.utils import (OpenApiParameter, extend_schema,
                                    extend_schema_view)
-from rest_framework import filters, viewsets, mixins
+from rest_framework import filters, status, viewsets
 from rest_framework.permissions import IsAuthenticated
-
-
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from django.http import HttpResponse
 from utils.permissions import PurchaseRolePermission # Mantenemos coherencia de roles
 
 from .models import LotTraceability
 from .serializers import LotTraceabilitySerializer
+from traceability.utils.pdf_generator import export_traceability_pdf
 
 @extend_schema_view(
     list=extend_schema(
@@ -47,6 +49,37 @@ class LotTraceabilityViewSet(viewsets.ReadOnlyModelViewSet):
     # Permitimos buscar un lote directamente en la URL si queremos: /api/traceability/L26-001/
     lookup_field = 'production_order__lot_number'
     lookup_url_kwarg = 'lot_number'
+
+    @extend_schema(
+        summary="Descargar informe de trazabilidad en PDF",
+        description="Genera y descarga el informe técnico oficial con sello de integridad.",
+        tags=["Calidad y Trazabilidad"],
+        responses={200: 'application/pdf'}
+    )
+    @action(detail=True, methods=['get'], url_path='download-pdf')
+    def download_pdf(self, request, lot_number=None):
+        """
+        Endpoint: GET /api/traceability/{lot_number}/download-pdf/
+        """
+        # 1. Recuperamos la instancia (usando el lookup_field de la clase)
+        instance = self.get_object()
+
+        try:
+            # 2. Generamos el PDF usando la utilidad de WeasyPrint
+            pdf_content = export_traceability_pdf(instance)
+
+            # 3. Preparamos la respuesta HTTP
+            filename = f"Informe_Trazabilidad_{instance.production_order.lot_number}.pdf"
+            response = HttpResponse(pdf_content, content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename="{filename}"'
+            
+            return response
+
+        except Exception as e:
+            return Response(
+                {"detail": f"Error al generar el PDF: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     def get_queryset(self):
         queryset = super().get_queryset()

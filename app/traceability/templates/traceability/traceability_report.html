@@ -2,16 +2,15 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Informe de Trazabilidad - {{ order_details.lot_number }}</title>
+    <title>Informe de Trazabilidad - {{ content.order_details.lot_number }}</title>
     <style>
-        /* Configuración de la página física */
         @page {
             size: A4;
-            margin: 2.5cm;
+            margin: 2cm;
             @bottom-left {
-                content: "ID de Integridad: {{ integrity_hash|truncatechars:15 }}";
-                font-size: 8pt;
-                color: #666;
+                content: "Sello de Integridad: {{ integrity_hash|slice:":12" }}...";
+                font-size: 7pt;
+                color: #777;
             }
             @bottom-right {
                 content: "Página " counter(page) " de " counter(pages);
@@ -19,46 +18,96 @@
             }
         }
 
-        /* Estilos generales */
         body {
-            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
             font-size: 10pt;
-            line-height: 1.4;
-            color: #333;
+            color: #222;
+            line-height: 1.5;
         }
 
+        /* Cabecera Estilo Bodega */
         .header {
             text-align: center;
-            border-bottom: 2px solid #800020; /* Color Burdeos/Vino */
-            margin-bottom: 20px;
+            border-bottom: 3px solid #630d16; /* Granate Vino */
+            margin-bottom: 30px;
             padding-bottom: 10px;
         }
 
-        h1 { color: #800020; margin-bottom: 5px; }
-        h2 { border-left: 4px solid #800020; padding-left: 10px; margin-top: 20px; background: #f9f9f9; }
+        .header h1 { 
+            color: #630d16; 
+            margin: 0; 
+            font-size: 22pt; 
+            letter-spacing: 1px;
+        }
 
-        /* Tablas de datos */
+        .status-badge {
+            display: inline-block;
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 9pt;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        h2 { 
+            color: #630d16; 
+            font-size: 13pt; 
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+            margin-top: 25px;
+        }
+
+        /* Tablas */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-top: 10px;
         }
 
         th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
+            padding: 10px 8px;
+            border: 1px solid #e0e0e0;
             text-align: left;
         }
 
-        th { background-color: #f2f2f2; font-weight: bold; }
+        th { 
+            background-color: #f8f8f8; 
+            color: #444;
+            font-weight: 600;
+            font-size: 9pt;
+            text-transform: uppercase;
+        }
+
+        .highlight { font-weight: bold; color: #630d16; }
+        .lot-pill { 
+            font-family: monospace; 
+            background: #f0f0f0; 
+            padding: 2px 5px; 
+            border-radius: 3px; 
+        }
+
+        /* Secciones de balance */
+        .grid-container {
+            display: table;
+            width: 100%;
+        }
+        .grid-item {
+            display: table-cell;
+            width: 50%;
+            vertical-align: top;
+        }
 
         .footer-hash {
-            margin-top: 50px;
-            padding: 10px;
-            background: #eee;
+            margin-top: 40px;
+            padding: 15px;
+            background: #fafafa;
+            border: 1px dashed #ccc;
             font-family: monospace;
             font-size: 8pt;
-            word-break: break-all;
+            color: #555;
+            page-break-inside: avoid;
         }
     </style>
 </head>
@@ -66,60 +115,74 @@
 
     <div class="header">
         <h1>INFORME DE TRAZABILIDAD</h1>
-        <p>Bodega Digital - Registro de Control de Calidad</p>
+        <p>Sistema de Control Ontalba Digital | Fecha Emisión: {{ generated_at }}</p>
+        <div class="status-badge">✓ DOCUMENTO ORIGINAL VERIFICADO</div>
     </div>
 
     <section>
-        <h2>1. Información del Lote</h2>
+        <h2>1. Identificación del Producto</h2>
         <table>
             <tr>
-                <th>Número de Lote:</th>
-                <td>{{ order_details.lot_number }}</td>
-                <th>Fecha de Producción:</th>
-                <td>{{ generated_at }}</td>
+                <th>Vino / Marca:</th>
+                <td colspan="3" class="highlight">{{ content.order_details.wine_name }}</td>
             </tr>
             <tr>
-                <th>Producto:</th>
-                <td>{{ order_details.wine_name }}</td>
-                <th>Responsable:</th>
-                <td>{{ order_details.user_responsible }}</td>
+                <th>Lote de Embotellado:</th>
+                <td class="highlight">{{ content.order_details.lot_number }}</td>
+                <th>Fecha Producción:</th>
+                <td>{{ content.order_details.production_date }}</td>
             </tr>
         </table>
     </section>
 
     <section>
-        <h2>2. Balance de Masas y Eficiencia</h2>
-        <table>
-            <tr>
-                <th>Cantidad Producida:</th>
-                <td>{{ order_details.quantity_produced }} uds.</td>
-                <th>Merma/Pérdida:</th>
-                <td>{{ efficiency.loss_percentage }}</td>
-            </tr>
-        </table>
-    </section>
-    <section>
-        <h2>3. Componentes de Envasado</h2>
+        <h2>2. Rendimiento y Balance de Bodega</h2>
         <table>
             <thead>
                 <tr>
-                    <th>Componente</th>
-                    <th>Referencia/Nombre</th>
+                    <th>Concepto</th>
+                    <th>Valor</th>
+                    <th>Detalle</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Vino Retirado (Granel)</td>
+                    <td>{{ content.efficiency.bulk_liters_withdrawn }} L</td>
+                    <td>Volumen inicial desde depósitos</td>
+                </tr>
+                <tr>
+                    <td>Vino Embotellado Final</td>
+                    <td>{{ content.efficiency.total_liters_bottled }} L</td>
+                    <td>Total: {{ content.order_details.quantity_produced }} unidades</td>
+                </tr>
+                <tr>
+                    <td>Eficiencia del Proceso</td>
+                    <td class="highlight">{{ content.efficiency.loss_percentage }} (Mermas)</td>
+                    <td>Pérdida neta: {{ content.efficiency.loss_liters }} L</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section>
+        <h2>3. Trazabilidad de Insumos (Packaging)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Categoría</th>
+                    <th>Material</th>
                     <th>Lote Proveedor</th>
                     <th>Cantidad</th>
                 </tr>
             </thead>
             <tbody>
-                {% for item in packaging_materials %}
+                {% for item in content.packaging_materials %}
                 <tr>
-                    <td>{{ item.type|capitalize }}</td>
-                    <td>{{ item.name }}</td>
-                    <td><strong>{{ item.lot_number }}</strong></td>
-                    <td>{{ item.quantity }} {{ item.unit }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="4">No se han registrado materiales de envasado.</td>
+                    <td>{{ item.category }}</td>
+                    <td>{{ item.material_name }}</td>
+                    <td><span class="lot-pill">{{ item.lot }}</span></td>
+                    <td>{{ item.total_quantity }} {{ item.unit }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -127,33 +190,35 @@
     </section>
 
     <section>
-        <h2>4. Tratamientos y Productos Enológicos</h2>
+        <h2>4. Productos Enológicos y Aditivos</h2>
         <table>
             <thead>
                 <tr>
                     <th>Producto</th>
-                    <th>Lote Proveedor</th>
-                    <th>Dosis Utilizada</th>
+                    <th>Lote Insumo</th>
+                    <th>Dosis Real</th>
+                    <th>Cantidad Total</th>
                 </tr>
             </thead>
             <tbody>
-                {% for item in enological_additives %}
+                {% for item in content.enological_additives %}
                 <tr>
-                    <td>{{ item.name }}</td>
-                    <td><strong>{{ item.lot_number }}</strong></td>
-                    <td>{{ item.quantity }} {{ item.unit }}</td>
+                    <td>{{ item.material }}</td>
+                    <td><span class="lot-pill">{{ item.lot }}</span></td>
+                    <td>{{ item.dosage_ratio }} {{ item.unit }}/ud</td>
+                    <td>{{ item.quantity_used }} {{ item.unit }}</td>
                 </tr>
                 {% empty %}
-                <tr>
-                    <td colspan="3">No se han registrado aditivos enológicos.</td>
-                </tr>
+                <tr><td colspan="4">No se registran aditivos en este lote.</td></tr>
                 {% endfor %}
             </tbody>
         </table>
     </section>
 
     <div class="footer-hash">
-        <strong>FIRMA DIGITAL DE INTEGRIDAD (SHA-256):</strong><br>
+        <strong>CERTIFICADO DE INTEGRIDAD CRIPTOGRÁFICA</strong><br>
+        Este documento ha sido sellado digitalmente en el momento de la confirmación de la orden de producción. 
+        Cualquier alteración de los datos invalidará la firma SHA-256 expuesta a continuación:<br><br>
         {{ integrity_hash }}
     </div>
 
