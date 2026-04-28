@@ -10,10 +10,9 @@ router = DefaultRouter()
 
 # Registramos el ViewSet de Trazabilidad
 # Al ser ReadOnlyModelViewSet, solo generará rutas GET (list y retrieve)
-router.register(
-    r"lot-traceability", LotTraceabilityViewSet, basename="lot-traceability"
-)
+router.register(r"lot-traceability", LotTraceabilityViewSet, basename="lot-traceability")
 
 urlpatterns = [
     path("", include(router.urls)),
 ]
+

@@ -85,28 +85,25 @@ class ProductionOrder(models.Model):
         """Porcentaje de merma sobre el total extraído"""
         if self.bulk_liters_withdrawn and self.bulk_liters_withdrawn > 0:
             # Convertimos el resultado final a Decimal para evitar el error de float
-            percentage = (self.loss_liters / self.bulk_liters_withdrawn) * Decimal(
-                "100"
-            )
-            return percentage.quantize(Decimal("0.01"))  # Porcentaje con 2 decimales
+            percentage = (self.loss_liters / self.bulk_liters_withdrawn) * Decimal("100")
+            return percentage.quantize(Decimal("0.01")) # Porcentaje con 2 decimales
         return Decimal("0.00")
-
+    
     def _check_immutability(self):
         """Valida que no se alteren datos críticos en órdenes confirmadas"""
         if self.pk and self.status == self.Status.CONFIRMED:
             original = self.__class__.objects.get(pk=self.pk)
-
+            
             if original.quantity_produced != self.quantity_produced:
                 raise ValidationError(
-                    "No se puede modificar la cantidad de una orden confirmada."
-                )
+                    "No se puede modificar la cantidad de una orden confirmada.")
 
     def clean(self):
         """Validaciones de robustez antes de guardar"""
         self._check_immutability()
         validate_production_volume_integrity(
             total_liters=self.total_liters,
-            bulk_liters_withdrawn=self.bulk_liters_withdrawn,
+            bulk_liters_withdrawn=self.bulk_liters_withdrawn
         )
 
     def __str__(self):
