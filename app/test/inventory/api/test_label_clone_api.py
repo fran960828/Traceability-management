@@ -2,8 +2,6 @@ import pytest
 from django.urls import reverse
 from rest_framework import status
 
-from inventory.models.label_material_model import LabelMaterialModel
-
 
 @pytest.mark.django_db
 class TestLabelCloneAPI:

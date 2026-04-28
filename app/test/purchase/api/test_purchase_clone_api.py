@@ -40,10 +40,10 @@ class TestPurchaseCloneAPI:
             status="CLOSED", order_number="PO-2024-ORIGINAL"
         )
         # Añadimos ítems con cantidades recibidas
-        item1 = purchase_order_item_factory(
+        purchase_order_item_factory(
             purchase_order=order_original, quantity_ordered=1000, quantity_received=1000
         )
-        item2 = purchase_order_item_factory(
+        purchase_order_item_factory(
             purchase_order=order_original, quantity_ordered=500, quantity_received=500
         )
 

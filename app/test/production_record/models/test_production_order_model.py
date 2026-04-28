@@ -113,36 +113,37 @@ class TestProductionOrder:
         # Escenario: 1000 botellas de 0.75L = 750L teóricos.
         # Extraemos 800L del depósito. Merma = 50L (6.25%)
         order = production_order_factory(
-            quantity_produced=Decimal("1000"),
-            bulk_liters_withdrawn=Decimal("800")
+            quantity_produced=Decimal("1000"), bulk_liters_withdrawn=Decimal("800")
         )
         # Forzamos capacidad para asegurar el cálculo del test
-        order.wine.default_container.capacity =Decimal("0.750") 
+        order.wine.default_container.capacity = Decimal("0.750")
         # --- AQUÍ USAMOS LOS ASSERTS ---
         # 1. Verificar total litros embotellados
         assert order.total_liters == 750.0
-        
+
         # 2. Verificar litros de merma (800 - 750)
         assert order.loss_liters == 50.0
-        
+
         # 3. Verificar porcentaje de merma (50 / 800 * 100)
         assert order.loss_percentage == 6.25
 
-    def test_cannot_modify_quantity_on_confirmed_order(self, escenario_produccion_con_stock):
+    def test_cannot_modify_quantity_on_confirmed_order(
+        self, escenario_produccion_con_stock
+    ):
         """Verifica la inmutabilidad con asserts de estado."""
         order = escenario_produccion_con_stock
         order.confirm_production()
-        
+
         # Assert de control: asegurar que el estado es el correcto antes de intentar el error
         assert order.status == "CONFIRMED"
-        
-        order.quantity_produced = 9999 
-        
+
+        order.quantity_produced = 9999
+
         with pytest.raises(ValidationError, match="No se puede modificar la cantidad"):
             order.full_clean()
-            
+
         # Assert de persistencia: verificar que en la DB el valor sigue siendo el original
         # Refrescamos desde la base de datos
         order.refresh_from_db()
         assert order.quantity_produced != 9999
-        assert order.quantity_produced == 500  
+        assert order.quantity_produced == 500

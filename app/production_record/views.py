@@ -70,7 +70,7 @@ class ProductionOrderViewSet(CloneMixin, viewsets.ModelViewSet):
     """
 
     queryset = (
-        ProductionOrder.objects.select_related("wine", "user")
+        ProductionOrder.objects.select_related("wine", "user","costing_record")
         .prefetch_related("enological_materials__material")
         .all()
     )
@@ -86,7 +86,7 @@ class ProductionOrderViewSet(CloneMixin, viewsets.ModelViewSet):
         Lógica de clonación proporcional para embotellados múltiples.
         """
         # 1. Identificamos el volumen original
-        original_volume = instance.total_liters
+        instance.total_liters
 
         # 2. Reseteamos datos de cabecera
         data["status"] = "DRAFT"

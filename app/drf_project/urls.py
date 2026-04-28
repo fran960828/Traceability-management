@@ -14,7 +14,8 @@ urlpatterns = [
     path("api/stock/", include("stock.urls")),
     path("api/production/", include("production_record.urls")),
     path("api/analytics/", include("analytics.urls")),
-    path("api/traceability/",include("traceability.urls"))
+    path("api/traceability/", include("traceability.urls")),
+    path("api/pricing/", include("pricing.urls")),
 ]
 
 if settings.DEBUG:

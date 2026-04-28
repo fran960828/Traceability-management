@@ -46,7 +46,7 @@ class TestProductionOrderAPI:
         }
 
         response = auth_client.post(self.list_url, data, format="json")
-        
+
         assert response.status_code == status.HTTP_201_CREATED
         assert response.data["status"] == "DRAFT"
         # Verificamos que el usuario se inyectó automáticamente
@@ -139,8 +139,8 @@ class TestProductionOrderAPI:
         vino_inactivo = wine_factory(name="Vino Obsoleto", is_active=False)
 
         # 2. Creamos órdenes para ambos
-        order_activa = production_order_factory(wine=vino_activo, lot_number="L-ACT")
-        order_inactiva = production_order_factory(
+        production_order_factory(wine=vino_activo, lot_number="L-ACT")
+        production_order_factory(
             wine=vino_inactivo, lot_number="L-OBS"
         )
 

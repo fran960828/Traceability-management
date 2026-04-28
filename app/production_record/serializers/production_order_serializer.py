@@ -2,6 +2,7 @@ from django.db import transaction
 from django.utils import timezone
 from rest_framework import serializers
 
+from pricing.serializers.production_costing_serializer import ProductionCostingSerializer
 from production_record.models import ProductionEnologicalItem, ProductionOrder
 from production_record.serializers import ProductionEnologicalItemSerializer
 from wines.services import WineRecipeService
@@ -21,6 +22,9 @@ class ProductionOrderSerializer(serializers.ModelSerializer):
     wine_name = serializers.ReadOnlyField(source="wine.name")
     user_username = serializers.ReadOnlyField(source="user.username")
     status_display = serializers.CharField(source="get_status_display", read_only=True)
+    # Usamos el related_name que definimos en el modelo (o el nombre del modelo en minúsculas)
+    # Lo marcamos como read_only porque el coste se genera por servicio, no por el usuario
+    costing = ProductionCostingSerializer(source='"costing_record"', read_only=True)
 
     class Meta:
         model = ProductionOrder
@@ -41,6 +45,7 @@ class ProductionOrderSerializer(serializers.ModelSerializer):
             "loss_percentage",
             "notes",
             "enological_materials",
+            "costing",
             "created_at",
         ]
         read_only_fields = ["status", "created_at"]
@@ -51,6 +56,7 @@ class ProductionOrderSerializer(serializers.ModelSerializer):
                 "La fecha de embotellado no puede ser futura."
             )
         return value
+
     def _validate_status_is_draft(self):
         if self.instance and self.instance.status != ProductionOrder.Status.DRAFT:
             raise serializers.ValidationError(
@@ -64,11 +70,16 @@ class ProductionOrderSerializer(serializers.ModelSerializer):
 
         missing_elements = WineRecipeService.get_recipe_deficiencies(wine)
         if missing_elements:
-            container_type = wine.default_container.packaging_type if wine.default_container else "No definido"
-            raise serializers.ValidationError({
-                "wine": f"Receta incompleta para el formato {container_type}. Falta: {', '.join(missing_elements)}"
-            })
-
+            container_type = (
+                wine.default_container.packaging_type
+                if wine.default_container
+                else "No definido"
+            )
+            raise serializers.ValidationError(
+                {
+                    "wine": f"Receta incompleta para el formato {container_type}. Falta: {', '.join(missing_elements)}"
+                }
+            )
 
     def validate(self, data):
         # 1. Validar estado (No editar si está cerrada)

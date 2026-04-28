@@ -1,5 +1,3 @@
-from decimal import Decimal
-
 import pytest
 
 from analytics.serializers import WineAnalysisSerializer
@@ -40,7 +38,7 @@ class TestWineAnalysisSerializer:
 
         # Comprobar acceso a campos de solo lectura (wine_name)
         # Para esto necesitamos que el serializer esté "save-ado" o usar el objeto
-        instance = serializer.save()
+        serializer.save()
         assert serializer.data["wine_name"] == order.wine.name
 
     # --- EDGE CASES (Límites) ---
