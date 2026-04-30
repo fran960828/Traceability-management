@@ -41,8 +41,11 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "rest_framework_simplejwt",
+    'rest_framework_simplejwt.token_blacklist',
     "drf_spectacular",
     "django_extensions",
+    "corsheaders",
+
     "client",
     "supplier",
     "inventory",
@@ -58,6 +61,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -148,6 +152,7 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",  # Protege todos los endpoints por defecto
     ),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_PAGINATION_CLASS": "utils.pagination.StandardResultsSetPagination",
 }
 
 # Modificación de los tiempos por defecto
@@ -155,6 +160,7 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    'BLACKLIST_AFTER_ROTATION': True,
     "AUTH_HEADER_TYPES": ("Bearer",),  # El prefijo que irá en el header de React
 }
 
@@ -166,3 +172,29 @@ SPECTACULAR_SETTINGS = {
     # Esta parte es vital para que el botón "Authorize" de Swagger funcione con JWT:
     "COMPONENT_SPLIT_REQUEST": True,
 }
+
+# Leemos la variable de entorno, si no existe, usamos localhost por defecto
+CORS_ALLOWED_ORIGIN_VALUES = os.environ.get("CORS_ALLOWED_ORIGINS", "http://localhost:5173 http://127.0.0.1:5173")
+
+# En desarrollo, React suele correr en el puerto 5173 (Vite) o 3000 (CRA)
+CORS_ALLOWED_ORIGINS = CORS_ALLOWED_ORIGIN_VALUES.split(" ")
+
+# CSRF: Permite que Django acepte peticiones POST/PUT desde estos dominios
+CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
+
+# Si necesitas permitir que React envíe cookies o use autenticación por sesión/token:
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_HEADERS = [
+    "accept",            # Permite a React decir qué formato espera (JSON)
+    "authorization",     # Obligatorio: transporta el Token JWT (Bearer)
+    "content-type",      # Obligatorio: indica que enviamos datos en JSON
+    "origin",            # Informa al servidor desde qué dominio viene la web
+    "user-agent",        # Envía info del navegador (útil para logs/seguridad)
+    "x-csrftoken",       # Necesario si usas el sistema de Login/Sesión de Django
+    "x-requested-with",  # Indica que es una petición AJAX (evita bloqueos antiguos)
+]
+# En caso de no poner la barra final redirecciona como si la hubiesemos puesto
+APPEND_SLASH = True
+
+CORS_PREFLIGHT_MAX_AGE = 86400

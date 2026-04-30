@@ -1,9 +1,13 @@
 # traceability/signals.py
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+
 from production_record.models import ProductionOrder
+from traceability.utils.hash_snapshot import (generate_integrity_hash,
+                                              generate_snapshot)
+
 from .models import LotTraceability
-from traceability.utils.hash_snapshot import generate_snapshot,generate_integrity_hash
+
 
 @receiver(post_save, sender=ProductionOrder)
 def create_traceability_record(sender, instance, **kwargs):

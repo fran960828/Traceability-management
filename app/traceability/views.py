@@ -1,15 +1,18 @@
+from django.http import HttpResponse
 from drf_spectacular.utils import (OpenApiParameter, extend_schema,
                                    extend_schema_view)
 from rest_framework import filters, status, viewsets
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from django.http import HttpResponse
-from utils.permissions import PurchaseRolePermission # Mantenemos coherencia de roles
+
+from traceability.utils.pdf_generator import export_traceability_pdf
+from utils.permissions import \
+    PurchaseRolePermission  # Mantenemos coherencia de roles
 
 from .models import LotTraceability
 from .serializers import LotTraceabilitySerializer
-from traceability.utils.pdf_generator import export_traceability_pdf
+
 
 @extend_schema_view(
     list=extend_schema(

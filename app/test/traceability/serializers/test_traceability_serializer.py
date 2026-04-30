@@ -1,7 +1,10 @@
-import pytest
-import json
 import hashlib
+import json
+
+import pytest
+
 from traceability.serializers import LotTraceabilitySerializer
+
 
 @pytest.mark.django_db
 class TestLotTraceabilitySerializer:

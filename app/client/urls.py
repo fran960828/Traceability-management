@@ -1,6 +1,6 @@
 from django.urls import path
 
-from client.views import MyTokenObtainPairView, MyTokenRefreshView
+from client.views import MyTokenObtainPairView, MyTokenRefreshView,LogoutView
 
 app_name = "client"
 urlpatterns = [
@@ -8,4 +8,5 @@ urlpatterns = [
     path("login/", MyTokenObtainPairView.as_view(), name="token_obtain_pair"),
     # URL final: /api/auth/refresh/
     path("refresh/", MyTokenRefreshView.as_view(), name="token_refresh"),
+    path('logout/', LogoutView.as_view(), name='auth_logout'),
 ]

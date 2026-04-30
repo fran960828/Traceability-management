@@ -1,9 +1,12 @@
-import pytest
 import hashlib
 import json
 from decimal import Decimal
+
+import pytest
 from django.core.exceptions import ValidationError
+
 from traceability.models import LotTraceability
+
 
 @pytest.mark.django_db
 class TestTraceabilityLogic:

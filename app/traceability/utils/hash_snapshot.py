@@ -1,6 +1,8 @@
 import hashlib
 import json
+
 from .get_material_batch import get_actual_batches_used
+
 
 def generate_snapshot(production_order):
     """

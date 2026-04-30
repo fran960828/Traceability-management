@@ -1,8 +1,11 @@
+from test.pricing.factories import IndirectCostConfigFactory
+
 import pytest
 from django.urls import reverse
 from rest_framework import status
+
 from pricing.models import IndirectCostConfig
-from test.pricing.factories import IndirectCostConfigFactory
+
 
 @pytest.mark.django_db
 class TestIndirectCostsAPI:

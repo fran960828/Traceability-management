@@ -1,7 +1,8 @@
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from django.template.loader import render_to_string
 from weasyprint import HTML
-from django.core.exceptions import ImproperlyConfigured
+
 
 def export_traceability_pdf(traceability_instance):
     """

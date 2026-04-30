@@ -1,9 +1,9 @@
-from rest_framework import serializers
-from pricing.models import ProductionCosting
+from decimal import Decimal
 
 from rest_framework import serializers
+
 from pricing.models import ProductionCosting
-from decimal import Decimal
+
 
 class ProductionCostingSerializer(serializers.ModelSerializer):
     order_lot = serializers.ReadOnlyField(source='production_order.lot_number')

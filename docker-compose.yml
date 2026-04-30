@@ -18,6 +18,20 @@ services:
       - POSTGRES_USER=client
       - POSTGRES_PASSWORD=client
       - POSTGRES_DB=client_dev
-
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules # Volumen anónimo para proteger librerías internas
+    ports:
+      - 5173:5173
+    environment:
+      - VITE_API_URL=http://localhost:8009/api/
+    stdin_open: true
+    tty: true
+    depends_on:
+      - client
 volumes:
   postgres_data:

@@ -1,7 +1,10 @@
 import hashlib
 import json
+
 from rest_framework import serializers
+
 from .models import LotTraceability
+
 
 class LotTraceabilitySerializer(serializers.ModelSerializer):
     # Campos dinámicos para el reporte

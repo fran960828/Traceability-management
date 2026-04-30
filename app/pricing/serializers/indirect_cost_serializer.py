@@ -1,6 +1,8 @@
-from rest_framework import serializers
-from pricing.models import IndirectCostConfig
 from django.db import transaction
+from rest_framework import serializers
+
+from pricing.models import IndirectCostConfig
+
 
 class IndirectCostConfigSerializer(serializers.ModelSerializer):
     """

@@ -1,5 +1,7 @@
 from django.contrib import admin
+
 from .models import WineAnalysis
+
 
 @admin.register(WineAnalysis)
 class WineAnalysisAdmin(admin.ModelAdmin):

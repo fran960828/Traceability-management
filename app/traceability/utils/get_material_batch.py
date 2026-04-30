@@ -1,5 +1,6 @@
 from stock.models import StockMovement
 
+
 def get_actual_batches_used(production_order, material):
     """
     Investiga qué lotes se usaron comparando el material con los campos

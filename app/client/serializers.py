@@ -1,7 +1,8 @@
 from django.contrib.auth import get_user_model
+from rest_framework import serializers
 from rest_framework_simplejwt.serializers import (TokenObtainPairSerializer,
                                                   TokenRefreshSerializer)
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -49,3 +50,25 @@ class MyTokenRefreshSerializer(TokenRefreshSerializer):
         data["username"] = user.username
 
         return data
+
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField(
+        help_text=("El refresh token obtenido durante el login.")
+    )
+
+    def validate(self, attrs):
+        self.token = attrs['refresh']
+        return attrs
+
+    def save(self, **kwargs):
+        """
+        Encapsulamos la lógica de invalidación dentro del método save
+        siguiendo el patrón de diseño de DRF.
+        """
+        try:
+            RefreshToken(self.token).blacklist()
+        except TokenError:
+            # Si el token ya expiró o es inválido, lanzamos un error de validación
+            raise serializers.ValidationError({
+                'refresh': ('El token es inválido o ya se encuentra en la lista negra.')
+            })

@@ -1,8 +1,11 @@
-import pytest
 from decimal import Decimal
+
+import pytest
+
+from pricing.models import ProductionCosting
 from pricing.serializers import ProductionCostingSerializer
 from pricing.utils.services import CostingService
-from pricing.models import ProductionCosting
+
 
 @pytest.mark.django_db
 class TestProductionCostingSerializer:

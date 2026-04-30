@@ -1,6 +1,9 @@
-import factory
-from traceability.models import LotTraceability
 from test.production_record.factories import ProductionOrderFactory
+
+import factory
+
+from traceability.models import LotTraceability
+
 
 class LotTraceabilityFactory(factory.django.DjangoModelFactory):
     class Meta:

@@ -1,5 +1,7 @@
-import pytest
 from test.traceability.conftest import orden_trazada_y_confirmada
+
+import pytest
+
 from traceability.utils.get_material_batch import get_actual_batches_used
 
 

@@ -1,8 +1,11 @@
-import pytest
 from decimal import Decimal
-from pricing.serializers import IndirectCostConfigSerializer
-from pricing.models import IndirectCostConfig
 from test.pricing.factories import IndirectCostConfigFactory
+
+import pytest
+
+from pricing.models import IndirectCostConfig
+from pricing.serializers import IndirectCostConfigSerializer
+
 
 @pytest.mark.django_db
 class TestIndirectCostConfigSerializer:

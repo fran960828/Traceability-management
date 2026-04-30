@@ -1,5 +1,7 @@
-import pytest
 from test.traceability.factories import LotTraceabilityFactory
+
+import pytest
+
 
 @pytest.fixture
 def traceability_record_factory(db, production_order_factory):

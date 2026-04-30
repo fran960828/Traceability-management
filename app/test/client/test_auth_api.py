@@ -98,3 +98,79 @@ class TestAuthentication:
         )
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    # --- LOGOUT TESTS ---
+
+    def test_user_can_logout_successfully(self, api_client, user_factory):
+        """
+        Verifica que el refresh token se invalida correctamente.
+        Usamos api_client (limpio) en lugar de auth_client porque necesitamos 
+        hacer el flujo de login real para obtener los tokens físicos.
+        """
+        # 1. Setup: Crear usuario y obtener URLs
+        user_factory(username="enologo_logout", password="password123")
+        login_url = reverse("client:token_obtain_pair")
+        logout_url = reverse("client:auth_logout")
+        refresh_url = reverse("client:token_refresh")
+
+        # 2. Login Real: Necesitamos los tokens generados por el Serializer
+        login_res = api_client.post(login_url, {
+            "username": "enologo_logout", 
+            "password": "password123"
+        }, format="json")
+        
+        access_token = login_res.data["access"]
+        refresh_token = login_res.data["refresh"]
+
+        # 3. Logout: Autorizamos con el access y enviamos el refresh al blacklist
+        api_client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
+        response = api_client.post(logout_url, {"refresh": refresh_token}, format="json")
+
+        assert response.status_code == status.HTTP_205_RESET_CONTENT
+        assert response.data["detail"] == "La sesión ha sido cerrada correctamente."
+
+        # 4. Verificación de Blacklist: 
+        # Limpiamos credenciales para asegurar que el fallo es por el token y no por la sesión del cliente
+        api_client.credentials() 
+        
+        # Intentamos refrescar con el token que acabamos de invalidar
+        refresh_res = api_client.post(refresh_url, {"refresh": refresh_token}, format="json")
+        
+        assert refresh_res.status_code == status.HTTP_401_UNAUTHORIZED
+        assert refresh_res.data["code"] == "token_not_valid"
+
+    def test_logout_fails_without_authentication(self, client):
+        """Caso: No se puede cerrar sesión si no se envía un Access Token válido"""
+        logout_url = reverse("client:auth_logout")
+        
+        # Intentamos sin headers de autorización
+        response = client.post(logout_url, {"refresh": "un_token_cualquiera"}, format="json")
+        
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_logout_fails_with_invalid_refresh_token(self, api_client, user_factory):
+        """Caso: El Access Token es correcto pero el Refresh Token enviado está mal o malformado"""
+        # 1. Setup: Crear usuario y obtener URLs
+        user_factory(username="enologo_bad_refresh", password="password123")
+        login_url = reverse("client:token_obtain_pair")
+        logout_url = reverse("client:auth_logout")
+
+        # 2. Obtenemos un Access Token válido para poder "entrar" a la vista de logout
+        login_res = api_client.post(login_url, {
+            "username": "enologo_bad_refresh", 
+            "password": "password123"
+        }, format="json")
+        access_token = login_res.data["access"]
+
+        # 3. Autorizamos la petición
+        api_client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
+
+        # 4. Intentamos cerrar sesión con un refresh token inventado
+        response = api_client.post(logout_url, {"refresh": "token_totalmente_falso_123"}, format="json")
+
+        # 5. Verificaciones:
+        # El serializador robusto detectará que el token no es válido y devolverá un 400.
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        
+        # Verificamos que el error viene específicamente del campo 'refresh' 
+        # (gracias a serializers.ValidationError en el backend)
+        assert "refresh" in response.data

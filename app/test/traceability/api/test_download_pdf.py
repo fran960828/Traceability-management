@@ -1,7 +1,8 @@
 import pytest
+from django.template.loader import render_to_string
 from django.urls import reverse
 from rest_framework import status
-from django.template.loader import render_to_string
+
 
 @pytest.mark.django_db
 class TestTraceabilityPDF:

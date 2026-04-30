@@ -1,11 +1,13 @@
 from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework import viewsets, filters
+from rest_framework import filters, viewsets
 from rest_framework.permissions import IsAuthenticated
+
 from utils.permissions import PurchaseRolePermission
 
 from .models import IndirectCostConfig, ProductionCosting
-from .serializers import IndirectCostConfigSerializer
-from .serializers import ProductionCostingSerializer
+from .serializers import (IndirectCostConfigSerializer,
+                          ProductionCostingSerializer)
+
 
 @extend_schema_view(
     list=extend_schema(

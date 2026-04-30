@@ -1,8 +1,10 @@
+import logging
+
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from production_record.models import ProductionOrder
+
 from pricing.utils.services import CostingService
-import logging
+from production_record.models import ProductionOrder
 
 logger = logging.getLogger(__name__)
 
