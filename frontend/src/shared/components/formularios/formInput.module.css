@@ -1,0 +1,56 @@
+.formGroup {
+  margin-bottom: 1.2rem;
+  text-align: left;
+}
+
+.label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 0.5rem;
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: #fff;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #722f37; /* Burdeos */
+  box-shadow: 0 0 0 2px rgba(114, 47, 55, 0.1);
+}
+
+.inputError {
+  border-color: #d32f2f;
+}
+
+.inputError:focus {
+  border-color: #d32f2f;
+  box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.1);
+}
+
+.errorMessage {
+  color: #d32f2f;
+  font-size: 0.75rem;
+  margin-top: 0.35rem;
+  display: block;
+  animation: fadeIn 0.2s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}

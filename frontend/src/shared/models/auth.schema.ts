@@ -1,13 +1,28 @@
 import { z } from 'zod';
 
-// --- USER ---
+export enum ROLES {
+  ENOLOGO = "ENOLOGO",
+  BODEGUERO = 'BODEGUERO',
+  COMPRAS = 'COMPRAS',
+  ADMIN = 'ADMIN'
+}
+
 export const UserSchema = z.object({
-  username: z.string(),
-  role: z.string(),
-  email: z.string().email().optional(),
+  username: z
+    .string()
+    .min(3, { message: "Mínimo 3 caracteres" })
+    .max(20)
+    .trim(),
+  role: z.enum(Object.values(ROLES) as [string, ...string[]]),
+  
+  // Si email() aparece tachado, asegúrate de que no haya un espacio 
+  // o prueba a escribirlo así para "refrescar" el linter:
+  email: z.email().optional(),
+  
   id: z.number().optional(),
   is_staff: z.boolean().optional(),
 });
+
 export type User = z.infer<typeof UserSchema>;
 
 // --- AUTH RESPONSE ---

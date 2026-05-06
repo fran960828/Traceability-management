@@ -1,0 +1,102 @@
+.card {
+  background: var(--bg-card);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 360px; /* Tamaño ideal iPad/Desktop */
+  backdrop-filter: blur(5px);
+  animation: slideUp 0.5s ease-out;
+}
+
+.logoArea {
+  margin-bottom: 1.5rem;
+}
+
+.logoArea h1 {
+  font-size: 1.25rem;
+  color: var(--wine-primary);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.logoArea p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+.eyeButton {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  z-index: 5;
+}
+
+.submitButton {
+  width: 100%;
+  padding: 0.9rem;
+  margin-top: 1.5rem;
+  background-color: var(--wine-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.submitButton:hover:not(:disabled) {
+  background-color: var(--wine-dark);
+  transform: translateY(-2px);
+}
+
+.submitButton:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.apiError {
+  background-color: #fef2f2;
+  color: #991b1b;
+  padding: 0.8rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  border-left: 4px solid #dc2626;
+  text-align: left;
+}
+
+/* --- RESPONSIVE ADJUSTMENTS --- */
+
+/* Mobile (Small) */
+@media (max-width: 480px) {
+  .card {
+    padding: 1.5rem;
+    max-width: 100%;
+    border-radius: 16px;
+  }
+}
+
+/* Tablet / iPad */
+@media (min-width: 481px) and (max-width: 1023px) {
+  .card {
+    max-width: 380px;
+  }
+}
+
+/* Animación de entrada */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,37 @@
+.pageWrapper {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  /* Fondo optimizado */
+  background: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)),
+              url('../../assets/wine-bg.png') no-repeat center center/cover;
+}
+
+.loginSection {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 1rem; /* Espacio para móviles */
+  z-index: 1;
+}
+
+.footer {
+  position: absolute;
+  bottom: 1.5rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.75rem;
+  text-align: center;
+  width: 100%;
+}
+
+/* Ajustes Desktop */
+@media (min-width: 1024px) {
+  .footer {
+    font-size: 0.85rem;
+  }
+}

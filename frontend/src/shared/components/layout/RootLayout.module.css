@@ -1,0 +1,261 @@
+/* src/shared/components/Layout/RootLayout/RootLayout.module.css */
+
+:root {
+  --sidebar-width: 260px;
+  --sidebar-collapsed-width: 80px;
+  --navbar-height: 70px;
+  --bg-main: #f3f4f6; /* Gris muy suave para el fondo del contenido */
+}
+
+.layout {
+  display: grid;
+  min-height: 100vh;
+  /* Por defecto en móvil: una sola columna */
+  grid-template-columns: 1fr; 
+  grid-template-rows: var(--navbar-height) 1fr;
+  grid-template-areas:
+    "navbar"
+    "content";
+  transition: all 0.3s ease;
+}
+
+/* --- NAVBAR (TOP) --- */
+.navbar {
+  grid-area: navbar;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.navLeft {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Botón hamburguesa (solo móvil) */
+.menuBtn {
+  background: none;
+  border: none;
+  color: var(--wine-primary);
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+}
+
+.pageTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.navRight {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.userProfile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: right;
+}
+
+.userName {
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: #111827;
+}
+
+.userRole {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: block;
+}
+
+.logoutBtn {
+  background-color: var(--wine-primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.logoutBtn:hover {
+  background-color: var(--wine-dark);
+}
+
+/* --- SIDEBAR (IZQUIERDA) --- */
+.sidebar {
+  background-color: #111827; /* Gris muy oscuro, casi negro */
+  color: #f3f4f6;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  z-index: 100;
+  
+  /* Comportamiento móvil por defecto: Overlay oculto */
+  position: fixed;
+  left: -100%;
+  top: 0;
+  bottom: 0;
+  width: var(--sidebar-width);
+}
+
+/* Estado abierto en móvil */
+.sidebar.mobileOpen {
+  left: 0;
+}
+
+.sidebarHeader {
+  height: var(--navbar-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  border-bottom: 1px solid #1f2937;
+}
+
+.brand {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: white;
+}
+
+.toggleBtn {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+}
+
+.toggleBtn:hover {
+  color: white;
+}
+
+.navMenu {
+  flex: 1;
+  padding: 1.5rem 0.75rem;
+  overflow-y: auto;
+}
+
+.sectionTitle {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #6b7280;
+  letter-spacing: 1px;
+  margin: 1.5rem 0 0.5rem 0.75rem;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  color: #d1d5db;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: all 0.2s;
+  font-size: 0.95rem;
+}
+
+.navLink:hover {
+  background-color: #1f2937;
+  color: white;
+}
+
+.navLinkActive {
+  background-color: #1f2937;
+  color: white;
+  border-left: 3px solid var(--wine-primary);
+}
+
+/* Ocultar textos al colapsar */
+.navLink span,
+.sectionTitle span {
+  transition: opacity 0.2s;
+}
+
+/* Overlay para cerrar en móvil */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 90;
+  animation: fadeIn 0.3s;
+}
+
+/* --- CONTENIDO PRINCIPAL --- */
+.mainContent {
+  grid-area: content;
+  background-color: var(--bg-main);
+  padding: 1.5rem;
+}
+
+/* --- MEDIA QUERIES (DESKTOP) --- */
+@media (min-width: 1024px) {
+  .layout {
+    /* Layout de dos columnas: Sidebar y Contenido */
+    grid-template-columns: var(--sidebar-width) 1fr;
+    grid-template-areas:
+      "sidebar navbar"
+      "sidebar content";
+  }
+
+  /* La sidebar ya no es fixed overlay, sino parte del grid */
+  .sidebar {
+    position: relative;
+    left: 0;
+    grid-area: sidebar;
+  }
+
+  /* Ocultar botón hamburguesa */
+  .menuBtn {
+    display: none;
+  }
+
+  /* Lógica de colapso en Desktop */
+  .layout.collapsed {
+    grid-template-columns: var(--sidebar-collapsed-width) 1fr;
+  }
+
+  .collapsed .sidebar {
+    width: var(--sidebar-collapsed-width);
+  }
+
+  /* Ocultar textos e iconos al colapsar (solo iconos visibles) */
+  .collapsed .navLink span,
+  .collapsed .sectionTitle {
+    opacity: 0;
+    display: none;
+  }
+  
+  .collapsed .navLink {
+    justify-content: center;
+    padding: 0.75rem 0;
+  }
+
+  .collapsed .brand {
+    opacity: 0;
+    display: none;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
