@@ -81,6 +81,10 @@
 }
 
 .logoutBtn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
   background-color: var(--wine-primary);
   color: white;
   border: none;
@@ -94,7 +98,53 @@
 .logoutBtn:hover {
   background-color: var(--wine-dark);
 }
+.brandLink {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none; /* Quita el subrayado */
+  transition: opacity 0.2s ease;
+  cursor: pointer;
+}
 
+.brandLink:hover {
+  opacity: 0.85;
+}
+
+.brandLogo {
+  background-color: var(--wine-primary);
+  color: white;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 1.2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.brandText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.brandMain {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #ffffff;
+}
+
+.brandSub {
+  font-size: 0.65rem;
+  font-weight: 400;
+  letter-spacing: 1px;
+  color: var(--wine-primary);
+  margin-top: 2px;
+}
 /* --- SIDEBAR (IZQUIERDA) --- */
 .sidebar {
   background-color: #111827; /* Gris muy oscuro, casi negro */

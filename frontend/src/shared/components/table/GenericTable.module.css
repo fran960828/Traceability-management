@@ -1,0 +1,59 @@
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto; /* Scroll horizontal en móviles */
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.table thead {
+  background-color: #f9fafb;
+  border-bottom: 2px solid #f3f4f6;
+}
+
+.table th {
+  padding: 12px 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #6b7280;
+  letter-spacing: 0.05em;
+}
+
+.table tbody tr {
+  border-bottom: 1px solid #f3f4f6;
+  transition: background-color 0.2s;
+}
+
+.table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.actionsCell {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 16px;
+}
+
+.btnAction {
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.btnView:hover { color: #2563eb; border-color: #2563eb; }
+.btnEdit:hover { color: #059669; border-color: #059669; }
+.btnDelete:hover { color: #dc2626; border-color: #dc2626; }
+.btnClone:hover { color: #7c3aed; border-color: #7c3aed; }

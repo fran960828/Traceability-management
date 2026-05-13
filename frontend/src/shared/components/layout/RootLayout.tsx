@@ -6,33 +6,34 @@ import { useAuth } from '../../hooks/useAuth';
 import { useLogout } from '../../../auth/hooks/useLogout';
 import { 
   Menu, X, PanelLeftClose, PanelLeftOpen,
-  LayoutDashboard, Package, Pipette, FlaskConical,
-  Scale, FileText, Users, LogOut
+  PackageSearch,Wine,ShoppingCart,Warehouse,ClipboardCheck,ArrowLeftRight,Calculator,SearchCode ,Users, LogOut
 } from 'lucide-react';
 import styles from './RootLayout.module.css';
 
 // Configuración del menú para evitar repetición de código
 const menuConfig = [
   {
-    title: 'OPERACIONES',
-    links: [
-      { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-      { to: '/stock', label: 'Stock', icon: Package },
-      { to: '/produccion', label: 'Producción', icon: Scale },
-    ],
-  },
-  {
-    title: 'CALIDAD Y SEGUIMIENTO',
-    links: [
-      { to: '/analiticas', label: 'Analíticas', icon: FlaskConical },
-      { to: '/trazabilidad', label: 'Trazabilidad', icon: Pipette },
-      { to: '/vinos', label: 'Nuestros Vinos', icon: FileText },
-    ],
-  },
-  {
-    title: 'ADMINISTRACIÓN',
+    title: 'CONFIGURACIÓN Y ENTIDADES',
     links: [
       { to: '/proveedores', label: 'Proveedores', icon: Users },
+      { to: '/productos', label: 'Catálogo de Productos', icon: PackageSearch }, // Labels, Packaging, Enological
+      { to: '/vinos', label: 'Fichas de Vinos', icon: Wine }, // Definición de materiales por vino
+    ],
+  },
+  {
+    title: 'GESTIÓN OPERATIVA',
+    links: [
+      { to: '/compras', label: 'Órdenes de Compra', icon: ShoppingCart },
+      { to: '/stock', label: 'Inventario / Recepción', icon: Warehouse }, // Recepción con lotes
+      { to: '/embotellado', label: 'Registro Embotellado', icon: ClipboardCheck }, // El corazón del proceso
+    ],
+  },
+  {
+    title: 'TRAZABILIDAD Y COSTES',
+    links: [
+      { to: '/movimientos', label: 'Movimientos de Stock', icon: ArrowLeftRight },
+      { to: '/escandallos', label: 'Escandallos / Costes', icon: Calculator },
+      { to: '/trazabilidad', label: 'Libro de Trazabilidad', icon: SearchCode },
     ],
   },
 ];
@@ -69,9 +70,6 @@ export const RootLayout = () => {
         
         <div className={styles.navRight}>
           <div className={styles.userProfile}>
-            <div className={styles.avatar}>
-              {user?.username.charAt(0).toUpperCase()}
-            </div>
             <div>
               <span className={styles.userName}>{user?.username}</span>
               <span className={styles.userRole}>{user?.role}</span>
@@ -79,7 +77,7 @@ export const RootLayout = () => {
           </div>
           <button onClick={logout} className={styles.logoutBtn}>
             <LogOut size={18} />
-            Cerrar Sesión
+            <span>Cerrar Sesión</span>
           </button>
         </div>
       </header>
@@ -87,7 +85,15 @@ export const RootLayout = () => {
       {/* 2. SIDEBAR (Overlay en móvil, Grid item en desktop) */}
       <aside className={`${styles.sidebar} ${isMobileOpen ? styles.mobileOpen : ''}`}>
         <div className={styles.sidebarHeader}>
-          <span className={styles.brand}>VESTA</span>
+          <NavLink to="/dashboard" className={styles.brandLink}>
+            <div className={styles.brandLogo}>OA</div> 
+            {!isCollapsed && (
+              <div className={styles.brandText}>
+                <span className={styles.brandMain}>ONTALBA</span>
+                <span className={styles.brandSub}>BODEGA</span>
+              </div>
+            )}
+          </NavLink>
           {/* Botón de colapso en Desktop / Cerrar en Móvil */}
           <button 
             className={styles.toggleBtn} 
