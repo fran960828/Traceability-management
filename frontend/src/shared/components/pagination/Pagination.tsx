@@ -50,6 +50,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           onClick={handlePrevious} 
           disabled={currentPage === 1}
           className={styles.pageBtn}
+          title="prev"
         >
           <ChevronLeft size={18} />
         </button>
@@ -62,6 +63,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           onClick={handleNext} 
           disabled={currentPage === totalPages}
           className={styles.pageBtn}
+          title="next"
         >
           <ChevronRight size={18} />
         </button>

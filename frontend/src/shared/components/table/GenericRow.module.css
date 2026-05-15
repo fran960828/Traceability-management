@@ -1,0 +1,84 @@
+/* Contenedor de la fila para efectos de transición */
+.row {
+  border-bottom: 1px solid #f3f4f6;
+  transition: background-color 0.2s ease;
+}
+
+.row:hover {
+  background-color: #f9fafb;
+}
+
+/* Estilo base para cada celda */
+.tableCell {
+  padding: 12px 16px;
+  font-size: 0.875rem;
+  color: #374151;
+  vertical-align: middle;
+  white-space: nowrap; /* Evita que el texto rompa en varias líneas */
+}
+
+/* Columna de acciones: siempre alineada a la derecha */
+.actionsCell {
+  padding: 12px 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* Estilo base de los botones de acción circular/cuadrado suave */
+.btnAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Efectos Hover específicos por tipo de acción */
+.btnView:hover {
+  color: #2563eb; /* Azul */
+  border-color: #2563eb;
+  background-color: #eff6ff;
+}
+
+.btnEdit:hover {
+  color: #059669; /* Verde */
+  border-color: #059669;
+  background-color: #ecfdf5;
+}
+
+.btnClone:hover {
+  color: #7c3aed; /* Violeta */
+  border-color: #7c3aed;
+  background-color: #f5f3ff;
+}
+
+.btnDelete:hover {
+  color: #dc2626; /* Rojo */
+  border-color: #dc2626;
+  background-color: #fef2f2;
+}
+
+/* Utility para el texto en negrita (ej: códigos o nombres) */
+.textBold {
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Estilo para Badges genéricos que puedes usar en las celdas */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background-color: #f3f4f6;
+  color: #374151;
+}

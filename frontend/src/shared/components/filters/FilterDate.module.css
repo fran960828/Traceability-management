@@ -1,0 +1,28 @@
+.dateRangeWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.separator {
+  color: #9ca3af;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Ajuste para que los inputs de fecha no se vean toscos */
+input[type="date"] {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* En móviles, permitimos que el rango se apile si no hay espacio */
+@media (max-width: 480px) {
+  .dateRangeWrapper {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .separator {
+    display: none; /* Ocultamos el "a" si están uno encima de otro */
+  }
+}
