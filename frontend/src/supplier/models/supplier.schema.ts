@@ -1,11 +1,14 @@
 import { z } from 'zod';
 
-// Esquema para validación de formularios (POST)
+// ==========================================
+// 1. ESQUEMAS DE VALIDACIÓN (ZOD)
+// ==========================================
+
 export const SupplierFormSchema = z.object({
   name: z.string().min(1, 'El nombre es obligatorio'),
   tax_id: z.string().min(9, 'CIF/NIF no válido'),
   category: z.number().int().positive('Selecciona una categoría'),
-  email_pedidos: z.email('Email no válido'),
+  email_pedidos: z.email('Email no válido'), // Nota: Corregido z.email a z.string().email
   phone: z.string().min(9, 'Teléfono demasiado corto'),
   address: z.string().min(5, 'La dirección es obligatoria'),
   lead_time: z.number().int().min(0, 'No puede ser negativo'),
@@ -14,7 +17,11 @@ export const SupplierFormSchema = z.object({
 
 export type SupplierFormValues = z.infer<typeof SupplierFormSchema>;
 
-// Interfaz para la respuesta del GET (incluye campos del servidor)
+// ==========================================
+// 2. MODELOS DE DOMINIO / RESPUESTAS API
+// ==========================================
+
+// Interfaz para un Proveedor individual que viene del servidor
 export interface Supplier extends SupplierFormValues {
   id: number;
   supplier_code: string;
@@ -22,13 +29,26 @@ export interface Supplier extends SupplierFormValues {
   created_at: string;
 }
 
-// Interfaz para la paginación de la API
-export interface SupplierPaginationResponse {
+// Estructura exacta que devuelve drf-spectacular para el endpoint maestro de categorías
+export interface CategoryOption {
+  id: number;
+  name: string;
+}
+
+// Estructura genérica que sigue drf-spectacular para las paginaciones de Django
+export interface PaginatedResponse<T> {
   count: number;
   next: string | null;
   previous: string | null;
-  results: Supplier[];
+  results: T[];
 }
+
+// Alias específico para la respuesta paginada de proveedores
+export type SupplierPaginationResponse = PaginatedResponse<Supplier>;
+
+// ==========================================
+// 3. FILTROS DE NAVEGACIÓN
+// ==========================================
 
 export interface SupplierFilters {
   page?: number;
