@@ -1,0 +1,110 @@
+.deleteContainer {
+  width: 100%;
+  max-width: 480px; /* Al ser una alerta, el contenedor es más estrecho */
+  margin: 0 auto;
+  padding: 16px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.iconWrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.warningIcon {
+  width: 56px;
+  height: 56px;
+  color: #dc3545; /* Rojo de peligro */
+  background-color: #fdf2f2;
+  padding: 10px;
+  border-radius: 50%;
+}
+
+.deleteTitle {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1a1f2c;
+  margin: 0 0 12px 0;
+}
+
+.deleteMessage {
+  font-size: 1rem;
+  color: #495057;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+/* Caja de advertencia extendida */
+.alertBox {
+  background-color: #fff3cd; /* Amarillo de advertencia sutil */
+  border: 1px solid #ffeeba;
+  border-radius: 6px;
+  padding: 12px 16px;
+  text-align: left;
+  margin-bottom: 28px;
+}
+
+.alertText {
+  font-size: 0.88rem;
+  color: #856404;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.alertText code {
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-weight: 600;
+}
+
+/* BOTONERA */
+.actionsContainer {
+  display: flex;
+  justify-content: stretch; /* Ocupan todo el ancho distribuido */
+  gap: 12px;
+  width: 100%;
+}
+
+.btnCancel,
+.btnDelete {
+  flex: 1; /* Mismo tamaño para ambos botones */
+  padding: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border: none;
+}
+
+/* Cancelar es la acción primaria por defecto (Gris) */
+.btnCancel {
+  background-color: #f1f3f5;
+  color: #495057;
+}
+
+.btnCancel:hover:not(:disabled) {
+  background-color: #e9ecef;
+}
+
+/* Eliminar es la acción destructiva (Rojo) */
+.btnDelete {
+  background-color: #dc3545;
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.15);
+}
+
+.btnDelete:hover:not(:disabled) {
+  background-color: #bd2130;
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.25);
+}
+
+.btnCancel:disabled,
+.btnDelete:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

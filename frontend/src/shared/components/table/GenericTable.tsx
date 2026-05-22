@@ -3,7 +3,7 @@ import styles from './GenericTable.module.css';
 
 interface GenericTableProps {
   headers: string[];
-  children: React.ReactNode; // Aquí irán las filas (SupplierRow, ProductRow...)
+  children: React.ReactNode; 
 }
 
 export const GenericTable: React.FC<GenericTableProps> = ({ headers, children }) => {
@@ -15,7 +15,6 @@ export const GenericTable: React.FC<GenericTableProps> = ({ headers, children })
             {headers.map((header) => (
               <th key={header}>{header}</th>
             ))}
-            <th style={{ textAlign: 'right' }}>Acciones</th>
           </tr>
         </thead>
         <tbody>

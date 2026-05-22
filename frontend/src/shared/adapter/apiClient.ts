@@ -10,6 +10,19 @@ export const apiClient = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = TokenStorage.getAccessToken();
+    if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 let isRefreshing = false; // Este "semáforo" impide que 10 peticiones 
                           // lancen 10 procesos de refresh a la vez.
 

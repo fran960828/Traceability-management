@@ -4,7 +4,8 @@ import type{
   SupplierFormValues, 
   Supplier,
   SupplierFilters,
-  CategoryOption 
+  CategoryOption,
+  PaginatedResponse 
 } from '../models';
 
 export const SupplierService = {
@@ -58,8 +59,8 @@ export const SupplierService = {
 };
 
 export const CategoryService={
-  getCategories: async (): Promise<CategoryOption[]> => {
-    const { data } = await apiClient.get<CategoryOption[]>('supplier/categories/');
+  getCategories: async (): Promise<PaginatedResponse<CategoryOption>> => {
+    const { data } = await apiClient.get<PaginatedResponse<CategoryOption>>('supplier/categories/');
     return data;
   }
 }

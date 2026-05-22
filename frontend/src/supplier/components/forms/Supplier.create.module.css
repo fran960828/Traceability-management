@@ -1,0 +1,94 @@
+.formContainer {
+  width: 100%;
+  max-width: 800px; /* Tamaño ideal para trabajar cómodamente en modales o vistas dedicadas */
+  margin: 0 auto;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+.formTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1f2c;
+  margin-top: 0;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #f1f3f5;
+  padding-bottom: 12px;
+}
+
+/* 🧱 CONTENEDOR GRID CON FLEX-WRAP */
+.flexGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px; /* Separación homogénea entre columnas y filas */
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+/* Columnas al 50% (restando la mitad del gap para el encuadre perfecto) */
+.gridHalf {
+  flex: 1 1 calc(50% - 10px);
+  min-width: 280px; /* Si la pantalla mide menos de esto, salta de fila automáticamente */
+  box-sizing: border-box;
+}
+
+/* Columnas al 100% (ancho completo como la dirección) */
+.gridFull {
+  flex: 1 1 100%;
+  box-sizing: border-box;
+}
+
+/* 🏁 BOTONERA DE ACCIONES */
+.actionsContainer {
+  display: flex;
+  justify-content: flex-end; /* Alinea los botones a la derecha */
+  align-items: center;
+  gap: 12px;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid #e9ecef;
+  width: 100%;
+}
+
+/* Estilos base de botones */
+.btnCancel,
+.btnSubmit {
+  padding: 10px 20px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border: none;
+}
+
+/* Botón Cancelar (Neutro/Gris) */
+.btnCancel {
+  background-color: #f1f3f5;
+  color: #495057;
+}
+
+.btnCancel:hover:not(:disabled) {
+  background-color: #e9ecef;
+  color: #212529;
+}
+
+/* Botón Guardar / Actualizar (Primario corporativo) */
+.btnSubmit {
+  background-color: #0d6efd; /* Cambiar por tu color de bodega si tienes uno específico */
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(13, 110, 253, 0.15);
+}
+
+.btnSubmit:hover:not(:disabled) {
+  background-color: #0b5ed7;
+  box-shadow: 0 4px 8px rgba(13, 110, 253, 0.25);
+}
+
+/* Estado deshabilitado en carga/envío */
+.btnCancel:disabled,
+.btnSubmit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}

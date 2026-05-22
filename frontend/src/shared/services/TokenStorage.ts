@@ -52,6 +52,7 @@ export class TokenStorage {
   }
 
   static clear(): void {
+    
     Object.values(StorageKeys).forEach(key => localStorage.removeItem(key));
   }
 }

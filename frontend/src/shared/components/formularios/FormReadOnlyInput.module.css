@@ -1,0 +1,39 @@
+.readOnlySection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  background-color: #f8f9fa; /* Fondo grisáceo sutil para denotar área bloqueada */
+  padding: 16px;
+  border-radius: 6px;
+  margin-bottom: 24px;
+  border: 1px solid #e9ecef;
+  width: 100%;
+}
+
+.readOnlyGroup {
+  flex: 1 1 calc(50% - 8px);
+  min-width: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.labelReadOnly {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.inputDisabled {
+  width: 100%;
+  padding: 10px 12px;
+  background-color: #e9ecef;
+  color: #495057;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  cursor: not-allowed;
+  font-family: monospace; /* Opcional: Da un aspecto más técnico/código */
+  font-size: 0.95rem;
+}

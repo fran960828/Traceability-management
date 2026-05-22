@@ -1,6 +1,6 @@
 import React from 'react';
 import {type UseFormRegisterReturn } from 'react-hook-form';
-import styles from './formInput.module.css';
+import styles from './FormInput.module.css';
 
 interface FormInputProps {
   label: string;

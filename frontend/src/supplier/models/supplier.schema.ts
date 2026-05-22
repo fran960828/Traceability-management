@@ -12,7 +12,7 @@ export const SupplierFormSchema = z.object({
   phone: z.string().min(9, 'Teléfono demasiado corto'),
   address: z.string().min(5, 'La dirección es obligatoria'),
   lead_time: z.number().int().min(0, 'No puede ser negativo'),
-  is_active: z.boolean().default(true),
+  is_active: z.boolean(),
 });
 
 export type SupplierFormValues = z.infer<typeof SupplierFormSchema>;

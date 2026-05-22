@@ -42,8 +42,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           // Aquí podrías usar TokenStorage.decodeToken(token) 
           // y validarlo con UserSchema.parse()
 
-          const userData = TokenStorage.getUser(); 
+          const userData = TokenStorage.getUser() 
+          console.log(userData)
+          debugger;
           const validatedUser = UserSchema.parse(userData);
+          //console.log(validatedUser)
           dispatch({ type: 'INITIALIZE', payload: validatedUser });
         } catch (error) {
           TokenStorage.clear();

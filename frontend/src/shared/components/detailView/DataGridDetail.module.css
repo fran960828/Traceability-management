@@ -1,0 +1,52 @@
+.infoGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  width: 100%;
+}
+
+.infoCard {
+  flex: 1 1 calc(50% - 8px);
+  min-width: 260px;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-sizing: border-box;
+}
+
+.fullWidth {
+  flex: 1 1 100%;
+}
+
+.cardLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #8b929a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cardValue {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #2d3748;
+}
+
+.metaCard {
+  background-color: transparent;
+  border: none;
+  border-top: 1px dashed #dee2e6;
+  border-radius: 0;
+  padding: 16px 0 0 0;
+  margin-top: 8px;
+}
+
+.metaValue {
+  font-size: 0.85rem;
+  color: #6c757d;
+  font-style: italic;
+}

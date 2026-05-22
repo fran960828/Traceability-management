@@ -36,9 +36,9 @@ describe('refreshAccessToken', () => {
 
     // Ejecución
     const result = await refreshAccessToken(API_URL);
-
+    const expectedURL = new URL('token/refresh/', API_URL).href;
     // Verificaciones
-    expect(axios.post).toHaveBeenCalledWith(`${API_URL}/token/refresh/`, {
+    expect(axios.post).toHaveBeenCalledWith(expectedURL, {
       refresh: mockRefreshToken,
     });
     expect(TokenStorage.updateAccessToken).toHaveBeenCalledWith(mockNewAccess);

@@ -29,7 +29,7 @@ describe('SupplierService', () => {
       const filters:SupplierFilters = { name: 'Ontalba', page: 1 };
       await SupplierService.getAll(filters);
 
-      expect(apiClient.get).toHaveBeenCalledWith('/suppliers/', { params: filters });
+      expect(apiClient.get).toHaveBeenCalledWith('supplier/suppliers/', { params: filters });
     });
 
     it('create: debería enviar un POST con los datos del nuevo proveedor', async () => {
@@ -38,7 +38,7 @@ describe('SupplierService', () => {
 
       await SupplierService.create(newSupplier as any);
 
-      expect(apiClient.post).toHaveBeenCalledWith('/suppliers/', newSupplier);
+      expect(apiClient.post).toHaveBeenCalledWith('supplier/suppliers/', newSupplier);
     });
   });
 
@@ -49,7 +49,7 @@ describe('SupplierService', () => {
       
       await SupplierService.getAll();
 
-      expect(apiClient.get).toHaveBeenCalledWith('/suppliers/', { params: undefined });
+      expect(apiClient.get).toHaveBeenCalledWith('supplier/suppliers/', { params: undefined });
     });
 
     it('delete: debería gestionar correctamente la eliminación de un ID inexistente (Error de API)', async () => {
@@ -64,7 +64,7 @@ describe('SupplierService', () => {
         expect(error.response.data.detail).toBe('Not found');
       }
       
-      expect(apiClient.delete).toHaveBeenCalledWith('/suppliers/999/');
+      expect(apiClient.delete).toHaveBeenCalledWith('supplier/suppliers/999/');
     });
 
     it('partialUpdate: debería enviar solo los campos modificados con PATCH', async () => {
@@ -73,7 +73,7 @@ describe('SupplierService', () => {
 
       await SupplierService.partialUpdate(1, partialData);
 
-      expect(apiClient.patch).toHaveBeenCalledWith('/suppliers/1/', partialData);
+      expect(apiClient.patch).toHaveBeenCalledWith('supplier/suppliers/1/', partialData);
     });
   });
 });

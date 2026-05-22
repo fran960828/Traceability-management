@@ -37,6 +37,13 @@ export const router = createBrowserRouter([
               return { Component: DashboardPage };
             },
           },
+          {
+            path: "proveedores",
+            async lazy() {
+              const { SupplierPage } = await import("./supplier/pages/supplier.page");
+              return { Component: SupplierPage };
+            },
+          },
         ],
       },
     ],

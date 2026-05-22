@@ -1,0 +1,56 @@
+/* Estilos comunes compartidos por todos los botones */
+.btnBase {
+  padding: 10px 20px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* 🔵 Variante Primaria (Crear, Actualizar, Guardar) */
+.primary {
+  background-color: #0d6efd;
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(13, 110, 253, 0.15);
+}
+
+.primary:hover:not(:disabled) {
+  background-color: #0b5ed7;
+  box-shadow: 0 4px 8px rgba(13, 110, 253, 0.25);
+}
+
+/* ⚪ Variante Secundaria (Cancelar, Cerrar) */
+.secondary {
+  background-color: #f1f3f5;
+  color: #495057;
+}
+
+.secondary:hover:not(:disabled) {
+  background-color: #e9ecef;
+  color: #212529;
+}
+
+/* 🔴 Variante de Peligro / Destructiva (Eliminar) */
+.danger {
+  background-color: #dc3545;
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.15);
+}
+
+.danger:hover:not(:disabled) {
+  background-color: #bd2130;
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.25);
+}
+
+/* Estado bloqueado cuando se envía el formulario */
+.btnBase:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}

@@ -9,10 +9,12 @@ export const refreshAccessToken = async (baseURL: string): Promise<string> => {
   // 2. Si no existe, lanzamos error inmediatamente.
   if (!refreshToken) throw new Error("No refresh token available");
 
+  const cleanURL = new URL('token/refresh/', baseURL).href;
+
   // 3. Hacemos la petición POST a Django. 
   // IMPORTANTE: Usamos 'axios' directamente, no nuestra instancia 'apiClient', 
   // para que esta petición NO pase por los interceptores y no cree un bucle infinito.
-  const response = await axios.post<TokenRefreshResponse>(`${baseURL}/token/refresh/`, {
+  const response = await axios.post<TokenRefreshResponse>(cleanURL, {
     refresh: refreshToken,
   });
 

@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useLogin } from '../hooks/useLogin';
 import { type LoginCredentials, loginFormSchema } from '../models';
 import styles from './LoginForm.module.css';
-import { FormInput } from '../../shared/components/formularios/formInput';
+import { FormInput } from '../../shared/components/formularios/FormInput';
 
 
 

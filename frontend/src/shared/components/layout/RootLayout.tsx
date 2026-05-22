@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useLogout } from '../../../auth/hooks/useLogout';
+import { ModalProvider } from '../modal/context/ModalContext';
 import { 
   Menu, X, PanelLeftClose, PanelLeftOpen,
   PackageSearch,Wine,ShoppingCart,Warehouse,ClipboardCheck,ArrowLeftRight,Calculator,SearchCode ,Users, LogOut
@@ -57,6 +58,7 @@ export const RootLayout = () => {
   const { user } = state;
 
   return (
+    
     <div className={`${styles.layout} ${isCollapsed ? styles.collapsed : ''}`}>
       {/* 1. TOP NAVBAR */}
       <header className={styles.navbar}>
@@ -131,9 +133,14 @@ export const RootLayout = () => {
       )}
 
       {/* 4. CONTENIDO DINÁMICO */}
-      <main className={styles.mainContent}>
-        <Outlet />
-      </main>
+      <ModalProvider>
+
+        <main className={styles.mainContent}>
+          <Outlet />
+        </main>
+      </ModalProvider>
     </div>
+    
+
   );
 };
