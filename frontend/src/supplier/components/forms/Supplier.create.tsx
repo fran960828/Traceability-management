@@ -6,12 +6,8 @@ import { SupplierFormSchema, type SupplierFormValues, type Supplier } from '../.
 import { CategoryService } from '../../services';
 
 // 🔄 NUEVAS IMPORTACIONES: El pack completo de componentes genéricos
-import { FormInput } from '../../../shared/components/formularios/FormInput'; 
-import { FormSelect } from '../../../shared/components/formularios/FormSelect';
-import { FormCheckbox } from '../../../shared/components/formularios/FormCheckBox';
-import { FormReadOnlyInput, type ReadOnlyField } from '../../../shared/components/formularios/FormReadOnlyInput';
-import { FormButton } from '../../../shared/components/formularios/FormButton';
-import { DEFAULT_SUPPLIER_VALUES, INPUTS_CONFIG } from '../constants/constants';
+import { FormInput, FormSelect, FormCheckbox,FormReadOnlyInput,FormButton, type ReadOnlyField } from '../../../shared/components/formularios/'; 
+import { DEFAULT_SUPPLIER_VALUES, INPUTS_CONFIG } from '../../constants/supplier.constants';
 import styles from './Supplier.create.module.css';
 
 export interface SupplierFormProps {

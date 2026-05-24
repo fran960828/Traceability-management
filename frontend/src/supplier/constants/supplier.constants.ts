@@ -1,5 +1,5 @@
 import type { Path } from 'react-hook-form';
-import { type SupplierFormValues } from '../../models/supplier.schema';
+import { type SupplierFormValues } from '../models/supplier.schema';
 
 export interface InputConfig {
   name: Path<SupplierFormValues>; 
