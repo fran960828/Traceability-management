@@ -17,7 +17,7 @@ import { FormButton } from '../../../shared/components/formularios/FormButton';
 import { useModal } from '../../../shared/components/modal/context/ModalContext'; 
 import { Modal } from '../../../shared/components/modal/Modal'; 
 
-import styles from './Label.container.module.css';
+import styles from '../../../supplier/components/Supplier.container.module.css';
 
 const COLUMNS_CONFIG = [
   { header: 'Código', key: 'internal_code' as const },
@@ -168,7 +168,6 @@ export const LabelContainer: React.FC = () => {
           value={filters.label_type}
           options={labelTypeOptions}
           onChange={updateFilters}
-          placeholder="Todas las posiciones"
         />
         <FilterSelect
           label="Añada"
@@ -176,7 +175,6 @@ export const LabelContainer: React.FC = () => {
           value={filters.vintage}
           options={uniqueVintages}
           onChange={updateFilters}
-          placeholder="Todos los años"
         />
       </div>
 
@@ -202,18 +200,8 @@ export const LabelContainer: React.FC = () => {
                     view: () => openModal('detail', label.id),
                     edit: () => openModal('edit', label.id), 
                     delete: () => openModal('delete', label.id),
+                    clone: () => openModal ('clone',label.id)
                   }}
-                  // Extra opcional para añadir el botón de clonar de forma limpia en el listado
-                  extraActions={
-                    <button 
-                      type="button" 
-                      title="Clonar para nueva añada"
-                      className={styles.btnActionClone}
-                      onClick={() => openModal('clone', label.id)}
-                    >
-                      🍷 Clonar
-                    </button>
-                  }
                 />
               ))
             )}

@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery } from '@tanstack/react-query';
+
 import { LabelFormSchema, type LabelFormValues, type LabelMaterial, LABEL_TYPES, UNIT_MESURE } from '../../models/label.schema';
-import { LabelService } from '../../services/label.service'; // Ajusta la ruta a tu servicio de proveedores
 
 import { 
   FormInput, 
@@ -15,6 +14,9 @@ import {
 } from '../../../shared/components/formularios'; 
 import { DEFAULT_LABEL_VALUES, LABEL_INPUTS_CONFIG } from '../../constants/label.constants';
 import styles from '../../../supplier/components/forms/Supplier.create.module.css'; // Mismo archivo CSS que nos has pasado
+import { useDataTable } from '../../../shared/hooks';
+import type { SupplierPaginationResponse } from '../../../supplier/models';
+import { SupplierService } from '../../../supplier/services';
 
 export interface LabelFormProps {
   productInitialData?: LabelMaterial;
@@ -35,10 +37,10 @@ export const LabelForm: React.FC<LabelFormProps> = ({
   const isEditMode = activeAction === 'edit' && !!productInitialData;
 
   // Carga asíncrona de proveedores maestros para alimentar el primer FormSelect
-  const { data: suppliersData, isLoading: isLoadingSuppliers } = useQuery({
-    queryKey: ['suppliers-master-select'],
-    queryFn: () => LabelService.getAll({ page: '1' }), // Trae la primera página de control
-  });
+  const { data:suppliersData, isLoading:isLoadingSuppliers } = useDataTable<SupplierPaginationResponse>({
+      key: 'suppliers',
+      fetchFn: SupplierService.getAll,
+    });
   
   // Mapeamos los proveedores al formato de opciones del select [{ id: X, name: 'Y' }]
   const suppliersOptions = suppliersData?.results || [];

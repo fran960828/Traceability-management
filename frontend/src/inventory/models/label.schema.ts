@@ -5,7 +5,7 @@ import { z } from 'zod';
 // ==========================================
 export enum LABEL_TYPES {
     FRONTAL = "FRONTAL",
-    CONTRA = 'CONTRAETIQUETA',
+    CONTRA = 'CONTRA',
     COLLARIN = 'COLLARIN',
     TIRILLA = 'TIRILLA',
     MEDALLA = 'MEDALLA'

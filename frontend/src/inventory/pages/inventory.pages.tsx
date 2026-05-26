@@ -4,11 +4,11 @@ import { useSearchParams } from 'react-router-dom';
 import { FormButton } from '../../shared/components/formularios';
 
 // Tus 3 contenedores independientes y limpios
-//import { LabelContainer } from '../components/containers/LabelContainer';
+import { LabelContainer } from '../components/containers/Label.container';
 //import { EnologicalContainer } from '../components/containers/EnologicalContainer';
 //import { PackagingContainer } from '../components/containers/PackagingContainer';
 
-import styles from './ProductsPage.module.css';
+import styles from './inventory.pages.module.css';
 
 export const ProductsPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -50,7 +50,7 @@ export const ProductsPage: React.FC = () => {
 
       {/* RENDERIZADO DINÁMICO TOTALMENTE AISLADO */}
       <div className={styles.containerContent}>
-        {/* {activeTab === 'labels' && <LabelContainer />} */}
+        {activeTab === 'labels' && <LabelContainer />} 
         {/* {activeTab === 'enological' && <EnologicalContainer />} */}
         {/* {activeTab === 'packaging' && <PackagingContainer />} */}
       </div>

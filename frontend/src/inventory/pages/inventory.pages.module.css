@@ -1,0 +1,82 @@
+/* ==========================================================================
+   📦 ARCHIVO DE ESTILOS: LAYOUT DEL CATÁLOGO DE PRODUCTOS (PLANTILLA GENERAL)
+   ========================================================================== */
+
+/* Envoltorio principal de la página del catálogo */
+.pageWrapper {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-sizing: border-box;
+}
+
+/* 🧭 BARRA DE PESTAÑAS (SUB-LAYOUT DE BOTONES) */
+.tabBar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 12px;
+  background-color: #ffffff; /* Fondo blanco limpio para aislar la barra */
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+  overflow-x: auto; /* Permite scroll horizontal si la pantalla se vuelve muy estrecha */
+  scrollbar-width: thin; /* Estiliza el scroll en navegadores modernos */
+}
+
+/* Soporte estético para el scroll horizontal en Webkit (Safari/Chrome) */
+.tabBar::-webkit-scrollbar {
+  height: 4px;
+}
+
+.tabBar::-webkit-scrollbar-thumb {
+  background-color: #dee2e6;
+  border-radius: 4px;
+}
+
+/* 🧱 CONTENEDOR CENTRAL DEL CONTEXTO DE INVENTARIO ACTIVE */
+.containerContent {
+  width: 100%;
+  flex: 1; /* Absorbe el espacio restante de la pantalla verticalmente */
+  background-color: transparent;
+  animation: fadeInTab 0.25s ease-in-out; /* Suaviza el cambio visual al desmontar contenedores */
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   🔄 ANIMACIÓN DE TRANSICIÓN (UX PREMIUM)
+   ========================================================================== */
+@keyframes fadeInTab {
+  from {
+    opacity: 0;
+    transform: translateY(4px); /* Sutil efecto de elevación al cambiar de pestaña */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 📱 RESPONSIVE DESIGN (MEDIA QUERIES PARA OPERARIOS CON TABLETS O SMARTPHONES) */
+@media (max-width: 768px) {
+  .pageWrapper {
+    gap: 16px;
+  }
+
+  .tabBar {
+    gap: 8px;
+    padding: 6px;
+    /* Forzamos que los botones no se encojan en dispositivos táctiles */
+    justify-content: flex-start; 
+  }
+  
+  .tabBar :global(.btnBase) {
+    flex-shrink: 0;
+    white-space: nowrap; /* Evita que el texto de los botones salte de línea */
+  }
+}

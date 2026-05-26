@@ -44,6 +44,14 @@ export const router = createBrowserRouter([
               return { Component: SupplierPage };
             },
           },
+          {
+            path: "productos",
+            async lazy() {
+              const { ProductsPage } = await import("./inventory/pages/inventory.pages");
+              return { Component: ProductsPage };
+            },
+          },
+
         ],
       },
     ],
