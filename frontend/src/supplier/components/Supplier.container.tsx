@@ -8,15 +8,16 @@ import { Pagination } from '../../shared/components/pagination/Pagination';
 import { CategoryService, SupplierService } from '../services';
 import type { Supplier, SupplierPaginationResponse, SupplierFormValues } from '../models'; 
 
-// Componentes atómicos y botones desarrollados ayer
-import { SupplierForm, SupplierDeleteForm, SupplierDetailView } from './forms';
-import { FormButton } from '../../shared/components/formularios/FormButton';
+import { GenericDeleteForm } from '../../shared/components/forms/forms.delete';
+import { SupplierForm} from './forms';
+import { FormButton } from '../../shared/components/formInputs/FormButton';
 
 // 🔄 MODIFICACIÓN 1: Consumo del Modal global del proyecto y su contexto
 import { useModal } from '../../shared/components/modal/context/ModalContext'; // Ajusta la ruta a tu archivo de contexto
 import { Modal } from '../../shared/components/modal/Modal'; // Tu componente modal basado en portales
 
 import styles from './Supplier.container.module.css';
+import { GenericDetailView } from '../../shared/components/forms/forms.detail';
 
 const COLUMNS_CONFIG = [
   { header: 'Código', key: 'supplier_code' as const },
@@ -200,13 +201,33 @@ const handleFormSubmit = (values: SupplierFormValues) => {
           showCloseButton={activeAction !== 'delete'} // Ocultamos la X en el borrado para forzar confirmación
         >
           {activeAction === 'detail' && selectedSupplier && (
-            <SupplierDetailView 
-              supplierData={selectedSupplier}
-              onBack={closeModal}
-              onEditClick={(sup) => openModal('edit', sup.id)}
-              onDeleteClick={(sup) => openModal('delete', sup.id)}
-            />
-          )}
+              <GenericDetailView<Supplier>
+                data={selectedSupplier}
+                badgeLabel="Categoría:"
+                badgeValue={selectedSupplier.category_name}
+                titleLabel="Nombre:"
+                titleValue={selectedSupplier.name}
+                codeLabel="Código del sistema"
+                codeValue={selectedSupplier.supplier_code}
+                isActive={selectedSupplier.is_active}
+                fields={[
+                  { label: 'NIF / CIF', value: selectedSupplier.tax_id },
+                  { label: 'Plazo de Entrega Garantizado', value: `${selectedSupplier.lead_time} ${selectedSupplier.lead_time === 1 ? 'día' : 'días'}` },
+                  { label: 'Teléfono de Contacto', value: selectedSupplier.phone },
+                  { label: 'Email de Pedidos', value: selectedSupplier.email_pedidos },
+                  { label: 'Dirección de la Sede', value: selectedSupplier.address, fullWidth: true },
+                  { 
+                    label: 'Información de Registro', 
+                    value: `Dado de alta el ${new Date(selectedSupplier.created_at).toLocaleDateString('es-ES')} (ID Interno: ${selectedSupplier.id})`, 
+                    fullWidth: true, 
+                    isMeta: true 
+                  },
+                ]}
+                onBack={closeModal}
+                onEditClick={(sup) => openModal('edit', sup.id)}
+                onDeleteClick={(sup) => openModal('delete', sup.id)}
+              />
+            )}
 
           {(activeAction === 'create' || activeAction === 'edit') && (
             <SupplierForm 
@@ -218,8 +239,14 @@ const handleFormSubmit = (values: SupplierFormValues) => {
           )}
 
           {activeAction === 'delete' && selectedSupplier && (
-            <SupplierDeleteForm 
-              supplierData={selectedSupplier}
+            <GenericDeleteForm<number>
+              id={selectedSupplier.id}
+              title="¿Eliminar Proveedor?"
+              name={selectedSupplier.name}
+              subtitle={selectedSupplier.tax_id}
+              codeLabel="código"
+              codeValue={selectedSupplier.supplier_code}
+              impactMessage="Los pedidos de compra históricos asociados a este proveedor podrían verse afectados o quedar congelados."
               onCancel={closeModal}
               onConfirm={(id) => deleteMutation.mutate(id)}
               isSubmitting={deleteMutation.isPending}

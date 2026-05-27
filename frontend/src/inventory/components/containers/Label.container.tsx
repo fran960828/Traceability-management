@@ -9,15 +9,17 @@ import { type LabelMaterial, type LabelPaginationResponse, type LabelFormValues,
 
 // Subcomponentes de etiquetas estructurados en simetría con proveedores
 import { LabelForm } from '../forms/Label.create';
-import { LabelDeleteForm } from '../forms/Label.delete';
-import { LabelDetailView } from '../forms/Label.detail';
-import { FormButton } from '../../../shared/components/formularios/FormButton';
+import { GenericDeleteForm } from '../../../shared/components/forms/forms.delete';
+import { GenericDetailView } from '../../../shared/components/forms/forms.detail';
+import { FormButton } from '../../../shared/components/formInputs/FormButton';
 
 // Sistema de Modales global basado en Portales y URLs
 import { useModal } from '../../../shared/components/modal/context/ModalContext'; 
 import { Modal } from '../../../shared/components/modal/Modal'; 
 
+
 import styles from '../../../supplier/components/Supplier.container.module.css';
+
 
 const COLUMNS_CONFIG = [
   { header: 'Código', key: 'internal_code' as const },
@@ -227,13 +229,35 @@ export const LabelContainer: React.FC = () => {
           showCloseButton={activeAction !== 'delete'} 
         >
           {activeAction === 'detail' && selectedLabel && (
-            <LabelDetailView 
-              labelData={selectedLabel}
-              onBack={closeModal}
-              onEditClick={(lbl) => openModal('edit', lbl.id)}
-              onDeleteClick={(lbl) => openModal('delete', lbl.id)}
-            />
-          )}
+            <GenericDetailView<LabelMaterial>
+                    data={selectedLabel}
+                    badgeLabel="Posición:"
+                    badgeValue={selectedLabel.label_type_display}
+                    titleLabel="Material:"
+                    titleValue={selectedLabel.name}
+                    codeLabel="Código único de sistema"
+                    codeValue={selectedLabel.internal_code}
+                    isActive={selectedLabel.is_active}
+                    fields={[
+                      { label: 'Referencia de Marca / Vino', value: selectedLabel.brand_reference },
+                      { label: 'Añada / Cosecha', value: String(selectedLabel.vintage) },
+                      { label: 'Posición de Etiqueta', value: selectedLabel.label_type_display },
+                      { label: 'Unidad de Medida', value: selectedLabel.unit_mesure_display },
+                      { label: 'Existencias Actuales', value: `${selectedLabel.current_stock} ${selectedLabel.unit_mesure_display.toLowerCase()}` },
+                      { label: 'Nivel de Stock Mínimo', value: `${selectedLabel.min_stock_level} ${selectedLabel.unit_mesure_display.toLowerCase()}` },
+                      { label: 'Descripción Técnica', value: selectedLabel.description || 'Sin descripción.', fullWidth: true },
+                      { 
+                        label: 'Información de Registro', 
+                        value: `Dado de alta el ${new Date(selectedLabel.created_at).toLocaleDateString('es-ES')} (ID Interno: ${selectedLabel.id})`, 
+                        fullWidth: true, 
+                        isMeta: true 
+                      },
+                    ]}
+                    onBack={closeModal}
+                    onEditClick={(lbl) => openModal('edit', lbl.id)}
+                    onDeleteClick={(lbl) => openModal('delete', lbl.id)}
+                  />
+                )}
 
           {(activeAction === 'create' || activeAction === 'edit' || activeAction === 'clone') && (
             isLoadingClonePrefill ? (
@@ -250,8 +274,14 @@ export const LabelContainer: React.FC = () => {
           )}
 
           {activeAction === 'delete' && selectedLabel && (
-            <LabelDeleteForm 
-              labelData={selectedLabel}
+            <GenericDeleteForm<number>
+              id={selectedLabel.id}
+              title="¿Eliminar Etiqueta?"
+              name={selectedLabel.name}
+              subtitle={selectedLabel.brand_reference}
+              codeLabel="código"
+              codeValue={selectedLabel.internal_code}
+              impactMessage="Los registros de stock históricos y las órdenes de embotellado asociadas a este material podrían verse afectados o quedar congelados."
               onCancel={closeModal}
               onConfirm={(id) => deleteMutation.mutate(id)}
               isSubmitting={deleteMutation.isPending}

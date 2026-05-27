@@ -1,7 +1,7 @@
 // src/modules/products/pages/ProductsPage.tsx
 import React from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { FormButton } from '../../shared/components/formularios';
+import { FormButton } from '../../shared/components/formInputs';
 
 // Tus 3 contenedores independientes y limpios
 import { LabelContainer } from '../components/containers/Label.container';

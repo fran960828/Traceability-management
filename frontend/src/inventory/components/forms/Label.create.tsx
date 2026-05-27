@@ -11,7 +11,7 @@ import {
   FormReadOnlyInput, 
   FormButton, 
   type ReadOnlyField 
-} from '../../../shared/components/formularios'; 
+} from '../../../shared/components/formInputs'; 
 import { DEFAULT_LABEL_VALUES, LABEL_INPUTS_CONFIG } from '../../constants/label.constants';
 import styles from '../../../supplier/components/forms/Supplier.create.module.css'; // Mismo archivo CSS que nos has pasado
 import { useDataTable } from '../../../shared/hooks';

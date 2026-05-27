@@ -55,3 +55,4 @@ export const LABEL_INPUTS_CONFIG: LabelInputConfig[] = [
     halfWidth: true 
   },
 ];
+
