@@ -1,3 +1,4 @@
+// src/modules/products/components/containers/Label.container.tsx
 import React from 'react';
 import { useQuery } from '@tanstack/react-query'; 
 import { useDataMutation, useDataTable } from '../../../shared/hooks';
@@ -7,52 +8,21 @@ import { Pagination } from '../../../shared/components/pagination/Pagination';
 import { LabelService } from '../../services/label.service';
 import { type LabelMaterial, type LabelPaginationResponse, type LabelFormValues, LABEL_TYPES } from '../../models/label.schema'; 
 
-// Subcomponentes de etiquetas estructurados en simetría con proveedores
 import { LabelForm } from '../forms/Label.create';
 import { GenericDeleteForm } from '../../../shared/components/forms/forms.delete';
 import { GenericDetailView } from '../../../shared/components/forms/forms.detail';
 import { FormButton } from '../../../shared/components/formInputs/FormButton';
-
-// Sistema de Modales global basado en Portales y URLs
 import { useModal } from '../../../shared/components/modal/context/ModalContext'; 
 import { Modal } from '../../../shared/components/modal/Modal'; 
 
-
+// 🌟 Importamos la metadata limpia del módulo de inventario
+import { LABEL_COLUMNS_CONFIG, LABEL_DELETE_CONFIG, getLabelDetailFields } from '../../constants/label.constants';
 import styles from '../../../supplier/components/Supplier.container.module.css';
 
-
-const COLUMNS_CONFIG = [
-  { header: 'Código', key: 'internal_code' as const },
-  { header: 'Nombre Material', key: 'name' as const },
-  { header: 'Referencia Vino', key: 'brand_reference' as const },
-  { header: 'Añada', key: 'vintage' as const }, 
-  { header: 'Posición', key: 'label_type_display' as const },
-  { 
-    header: 'Stock Actual', 
-    key: 'current_stock' as const,
-    render: (item: LabelMaterial) => (
-      <span style={{ fontWeight: item.is_low_stock ? 'bold' : 'normal', color: item.is_low_stock ? '#dc3545' : 'inherit' }}>
-        {item.current_stock} {item.unit_mesure_display.toLowerCase()}
-        {item.is_low_stock && ' ⚠️'}
-      </span>
-    )
-  },
-  { 
-    header: 'Estado', 
-    key: 'is_active' as const,
-    render: (item: LabelMaterial) => (
-      <span className={`${styles.badge} ${item.is_active ? styles.active : styles.inactive}`}>
-        {item.is_active ? 'Activo' : 'Inactivo'}
-      </span>
-    )
-  },
-];
-
 export const LabelContainer: React.FC = () => {
-  // Extraemos el control de estados persistido en los query parameters
   const { activeAction, activeId, openModal, closeModal } = useModal();
 
-  // Hook genérico de tabla conectado al endpoint de inventario
+  // 1. Estados de Red y Sincronización de Filtros
   const { data, isLoading, isError, filters, updateFilters } = useDataTable<LabelPaginationResponse>({
     key: 'labels-inventory',
     fetchFn: LabelService.getAll,
@@ -60,38 +30,22 @@ export const LabelContainer: React.FC = () => {
 
   const labelsList = data?.results || [];
   const totalCount = data?.count || 0;
-  const currentPage = Number(filters.page) || 1;
-
-  const tableHeaders = [...COLUMNS_CONFIG.map(col => col.header), 'Acciones'];
-
-  // Mapeamos las opciones estáticas del enum de tipos para el filtro superior
-  const labelTypeOptions = Object.values(LABEL_TYPES).map(type => ({
-    id: type,
-    name: type
-  }));
-
-  // Generamos un listado dinámico de añadas basado en los datos de la bodega para filtrar
-  const uniqueVintages = Array.from(new Set(labelsList.map(l => String(l.vintage)))).sort().map(v => ({
-    id: v,
-    name: v
-  }));
-
-  const handlePageChange = (newPage: number) => {
-    updateFilters({ page: newPage });
-  };
-
-  // Buscamos el material seleccionado localmente para las vistas de lectura/edición/borrado
   const selectedLabel = labelsList.find(lbl => lbl.id === Number(activeId));
+  const tableHeaders = [...LABEL_COLUMNS_CONFIG.map(col => col.header), 'Acciones'];
 
-  // 🌟 QUERY EXTRA: Recuperamos el pre-llenado de clonación asíncrono desde Django si la acción es 'clone'
+  // Mapeos estáticos y dinámicos para los selectores de cabecera
+  const labelTypeOptions = Object.values(LABEL_TYPES).map(type => ({ id: type, name: type }));
+  const uniqueVintages = Array.from(new Set(labelsList.map(l => String(l.vintage)))).sort().map(v => ({ id: v, name: v }));
+
+  // Query asíncrona dedicada al borrador de relevo de añadas de Django
   const { data: clonePrefillData, isLoading: isLoadingClonePrefill } = useQuery({
     queryKey: ['label-clone-prefill', activeId],
     queryFn: () => LabelService.clone(Number(activeId)),
     enabled: activeAction === 'clone' && !!activeId,
-    staleTime: 0, // Forzamos a que siempre consulte los datos más frescos
+    staleTime: 0, 
   });
 
-  // Mutaciones CRUD controladas por el hook genérico de Ontalba
+  // 2. Operaciones de Mutación Mutuamente Excluyentes
   const createMutation = useDataMutation({
     mutationFn: LabelService.create,
     invalidateKeys: ['labels-inventory'],
@@ -99,8 +53,7 @@ export const LabelContainer: React.FC = () => {
   });
 
   const updateMutation = useDataMutation({
-    mutationFn: ({ id, values }: { id: number; values: LabelFormValues }) => 
-      LabelService.update(id, values),
+    mutationFn: ({ id, values }: { id: number; values: LabelFormValues }) => LabelService.update(id, values),
     invalidateKeys: ['labels-inventory'],
     onSuccess: () => closeModal(),
   });
@@ -111,21 +64,18 @@ export const LabelContainer: React.FC = () => {
     onSuccess: () => closeModal(),
   });
 
-  // Gestiona centralizadamente el envío final de datos hacia Django
   const handleFormSubmit = (values: LabelFormValues) => {
     if (activeAction === 'edit' && selectedLabel) {
       updateMutation.mutate({ id: selectedLabel.id, values });
     } else {
-      // Tanto 'create' como 'clone' se consolidan mediante una inserción limpia (POST)
       createMutation.mutate(values);
     }
   };
 
-  // Resolvemos qué datos inyectar en el formulario de forma transparente
   const getFormInitialData = () => {
     if (activeAction === 'edit') return selectedLabel;
-    if (activeAction === 'clone') return clonePrefillData; // Inyectamos el payload purificado por el backend
-    return undefined; // Modo creación arranca limpio con los defaults de las constantes
+    if (activeAction === 'clone') return clonePrefillData;
+    return undefined;
   };
 
   if (isError) {
@@ -187,22 +137,18 @@ export const LabelContainer: React.FC = () => {
         ) : (
           <GenericTable headers={tableHeaders}>
             {labelsList.length === 0 ? (
-              <tr>
-                <td colSpan={tableHeaders.length} className={styles.emptyState}>
-                  No se han encontrado materiales de etiquetado con los criterios seleccionados.
-                </td>
-              </tr>
+              <tr><td colSpan={tableHeaders.length} className={styles.emptyState}>No se han encontrado materiales de etiquetado.</td></tr>
             ) : (
               labelsList.map((label) => (
                 <GenericRow<LabelMaterial>
                   key={label.id}
                   item={label}
-                  columns={COLUMNS_CONFIG}
+                  columns={LABEL_COLUMNS_CONFIG}
                   actions={{
                     view: () => openModal('detail', label.id),
                     edit: () => openModal('edit', label.id), 
                     delete: () => openModal('delete', label.id),
-                    clone: () => openModal ('clone',label.id)
+                    clone: () => openModal('clone', label.id)
                   }}
                 />
               ))
@@ -215,49 +161,31 @@ export const LabelContainer: React.FC = () => {
       <footer className={styles.footerSection}>
         <Pagination
           count={totalCount}
-          currentPage={currentPage}
-          onPageChange={handlePageChange}
+          currentPage={Number(filters.page) || 1}
+          onPageChange={(newPage) => updateFilters({ page: newPage })}
           pageSize={10} 
         />
       </footer>
 
-      {/* ORQUESTACIÓN DE MODALES DINÁMICOS MEDIANTE PORTAL */}
+      {/* PORTAL DE MODALES CON COMPONENTES REUTILIZABLES POR CONFIGURACIÓN */}
       {activeAction && (
-        <Modal 
-          onClose={closeModal} 
-          title={getModalTitle()}
-          showCloseButton={activeAction !== 'delete'} 
-        >
+        <Modal onClose={closeModal} title={getModalTitle()} showCloseButton={activeAction !== 'delete'}>
           {activeAction === 'detail' && selectedLabel && (
             <GenericDetailView<LabelMaterial>
-                    data={selectedLabel}
-                    badgeLabel="Posición:"
-                    badgeValue={selectedLabel.label_type_display}
-                    titleLabel="Material:"
-                    titleValue={selectedLabel.name}
-                    codeLabel="Código único de sistema"
-                    codeValue={selectedLabel.internal_code}
-                    isActive={selectedLabel.is_active}
-                    fields={[
-                      { label: 'Referencia de Marca / Vino', value: selectedLabel.brand_reference },
-                      { label: 'Añada / Cosecha', value: String(selectedLabel.vintage) },
-                      { label: 'Posición de Etiqueta', value: selectedLabel.label_type_display },
-                      { label: 'Unidad de Medida', value: selectedLabel.unit_mesure_display },
-                      { label: 'Existencias Actuales', value: `${selectedLabel.current_stock} ${selectedLabel.unit_mesure_display.toLowerCase()}` },
-                      { label: 'Nivel de Stock Mínimo', value: `${selectedLabel.min_stock_level} ${selectedLabel.unit_mesure_display.toLowerCase()}` },
-                      { label: 'Descripción Técnica', value: selectedLabel.description || 'Sin descripción.', fullWidth: true },
-                      { 
-                        label: 'Información de Registro', 
-                        value: `Dado de alta el ${new Date(selectedLabel.created_at).toLocaleDateString('es-ES')} (ID Interno: ${selectedLabel.id})`, 
-                        fullWidth: true, 
-                        isMeta: true 
-                      },
-                    ]}
-                    onBack={closeModal}
-                    onEditClick={(lbl) => openModal('edit', lbl.id)}
-                    onDeleteClick={(lbl) => openModal('delete', lbl.id)}
-                  />
-                )}
+              data={selectedLabel}
+              badgeLabel="Posición:"
+              badgeValue={selectedLabel.label_type_display}
+              titleLabel="Material:"
+              titleValue={selectedLabel.name}
+              codeLabel="Código único de sistema"
+              codeValue={selectedLabel.internal_code}
+              isActive={selectedLabel.is_active}
+              fields={getLabelDetailFields(selectedLabel)}
+              onBack={closeModal}
+              onEditClick={(lbl) => openModal('edit', lbl.id)}
+              onDeleteClick={(lbl) => openModal('delete', lbl.id)}
+            />
+          )}
 
           {(activeAction === 'create' || activeAction === 'edit' || activeAction === 'clone') && (
             isLoadingClonePrefill ? (
@@ -276,12 +204,10 @@ export const LabelContainer: React.FC = () => {
           {activeAction === 'delete' && selectedLabel && (
             <GenericDeleteForm<number>
               id={selectedLabel.id}
-              title="¿Eliminar Etiqueta?"
               name={selectedLabel.name}
               subtitle={selectedLabel.brand_reference}
-              codeLabel="código"
               codeValue={selectedLabel.internal_code}
-              impactMessage="Los registros de stock históricos y las órdenes de embotellado asociadas a este material podrían verse afectados o quedar congelados."
+              {...LABEL_DELETE_CONFIG}
               onCancel={closeModal}
               onConfirm={(id) => deleteMutation.mutate(id)}
               isSubmitting={deleteMutation.isPending}

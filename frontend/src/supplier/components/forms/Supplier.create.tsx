@@ -7,7 +7,7 @@ import { CategoryService } from '../../services';
 
 // 🔄 NUEVAS IMPORTACIONES: El pack completo de componentes genéricos
 import { FormInput, FormSelect, FormCheckbox,FormReadOnlyInput,FormButton, type ReadOnlyField } from '../../../shared/components/formInputs'; 
-import { DEFAULT_SUPPLIER_VALUES, INPUTS_CONFIG } from '../../constants/supplier.constants';
+import { DEFAULT_SUPPLIER_VALUES, INPUTS_CONFIG } from '../../constants/';
 import styles from './Supplier.create.module.css';
 
 export interface SupplierFormProps {

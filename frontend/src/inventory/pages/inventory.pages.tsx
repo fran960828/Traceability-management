@@ -5,8 +5,8 @@ import { FormButton } from '../../shared/components/formInputs';
 
 // Tus 3 contenedores independientes y limpios
 import { LabelContainer } from '../components/containers/Label.container';
-//import { EnologicalContainer } from '../components/containers/EnologicalContainer';
-//import { PackagingContainer } from '../components/containers/PackagingContainer';
+import { EnologicalContainer } from '../components/containers/Enological.container';
+import { PackagingContainer } from '../components/containers/Packaging.container';
 
 import styles from './inventory.pages.module.css';
 
@@ -51,8 +51,8 @@ export const ProductsPage: React.FC = () => {
       {/* RENDERIZADO DINÁMICO TOTALMENTE AISLADO */}
       <div className={styles.containerContent}>
         {activeTab === 'labels' && <LabelContainer />} 
-        {/* {activeTab === 'enological' && <EnologicalContainer />} */}
-        {/* {activeTab === 'packaging' && <PackagingContainer />} */}
+        {activeTab === 'enological' && <EnologicalContainer />}
+        {activeTab === 'packaging' && <PackagingContainer />}
       </div>
 
     </div>

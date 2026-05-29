@@ -14,7 +14,7 @@ export enum LABEL_TYPES {
 export enum UNIT_MESURE {
     UNIDAD='UNIDAD',
     MILLAR='MILLAR',
-    KILOS='KILOS',
+    KG='KG',
     LITROS='LITROS'
 }
 

@@ -50,7 +50,7 @@ export function GenericDeleteForm<TId>({
       
       <div className={styles.alertBox}>
         <p className={styles.alertText}>
-          <strong>Atención:</strong> Esta acción dará de baja el {codeLabel} <code>{codeValue}</code>. {impactMessage}
+          <strong>Atención:</strong> Esta acción dará de baja el {codeLabel} <code>{codeValue}</code>. <span>{impactMessage}</span> 
         </p>
       </div>
 
