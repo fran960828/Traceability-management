@@ -323,19 +323,6 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "capacity",
-                    models.DecimalField(
-                        blank=True,
-                        decimal_places=3,
-                        help_text="Capacidad en litros. Solo para botellas, BIB, etc.",
-                        max_digits=5,
-                        null=True,
-                        validators=[
-                            django.core.validators.MinValueValidator(Decimal("0.001"))
-                        ],
-                    ),
-                ),
-                (
                     "supplier",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.PROTECT,

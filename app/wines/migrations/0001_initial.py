@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("inventory", "0001_initial"),
+         ("inventory", "0001_initial"),
     ]
 
     operations = [
@@ -101,18 +101,7 @@ class Migration(migrations.Migration):
                         to="inventory.labelmaterialmodel",
                     ),
                 ),
-                (
-                    "default_capsule",
-                    models.ForeignKey(
-                        blank=True,
-                        limit_choices_to={"packaging_type": "CAPSULA"},
-                        null=True,
-                        on_delete=django.db.models.deletion.SET_NULL,
-                        related_name="wine_capsules",
-                        to="inventory.packagingmaterialmodel",
-                        verbose_name="Cápsula",
-                    ),
-                ),
+                
                 (
                     "default_container",
                     models.ForeignKey(

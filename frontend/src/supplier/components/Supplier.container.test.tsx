@@ -139,7 +139,7 @@ describe('SuppliersContainer - Deep Integration Tests', () => {
 
     // 🔄 CORRECCIÓN ASÍNCRONA: Esperamos a que el render detecte el array vacío
     await waitFor(() => {
-      expect(screen.getByText(/No se han encontrado proveedores con los criterios seleccionados/i)).toBeInTheDocument();
+      expect(screen.getByText('No se han encontrado proveedores.')).toBeInTheDocument();
     });
   });
 

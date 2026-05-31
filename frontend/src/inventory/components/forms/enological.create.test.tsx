@@ -117,7 +117,7 @@ describe('EnologicalForm - Unit & Integration Tests', () => {
     // Rellenamos los selectores unificados
     fireEvent.change(screen.getByLabelText(/Clasificación Enológica \*/i), { target: { value: 'ACIDIFICANTE' } });
     fireEvent.change(screen.getByLabelText(/Proveedor Homologado \*/i), { target: { value: '3' } });
-    fireEvent.change(screen.getByLabelText(/Unidad de Medida Balanza \*/i), { target: { value: 'KILOS' } });
+    fireEvent.change(screen.getByLabelText(/Unidad de Medida Balanza \*/i), { target: { value: 'KG' } });
 
     fireEvent.click(screen.getByRole('button', { name: /Crear Producto/i }));
 
@@ -129,7 +129,7 @@ describe('EnologicalForm - Unit & Integration Tests', () => {
           min_stock_level: '250.00',
           enological_type: 'ACIDIFICANTE',
           supplier: 3,
-          unit_mesure: 'KILOS',
+          unit_mesure: 'KG',
           is_active: true,
           description: ''
         }),
