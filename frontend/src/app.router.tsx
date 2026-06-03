@@ -58,6 +58,13 @@ export const router = createBrowserRouter([
               return { Component: WinePage };
             },
           },
+          {
+            path: "compras",
+            async lazy() {
+              const { PurchasePage } = await import("./purchase/pages/purchase.page");
+              return { Component: PurchasePage };
+            },
+          },
 
         ],
       },

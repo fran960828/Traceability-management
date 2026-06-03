@@ -12,7 +12,7 @@ import {
   ENOLOGICAL_TYPES 
 } from '../../models/enological.schema'; 
 
-import { EnologicalForm } from '../forms/enological.create';
+import { EnologicalForm } from '../forms/Enological.create';
 import { GenericDeleteForm } from '../../../shared/components/forms/forms.delete';
 import { GenericDetailView } from '../../../shared/components/forms/forms.detail';
 import { FormButton } from '../../../shared/components/formInputs/FormButton';
