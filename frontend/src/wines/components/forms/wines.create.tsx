@@ -126,9 +126,6 @@ export const WineForm: React.FC<WineFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={styles.formContainer} noValidate>
-      <h2 className={styles.formTitle}>
-        {isEditMode ? 'Modificar Ficha de Vino' : activeAction === 'clone' ? 'Clonar Ficha de Vino (Nueva Añada)' : 'Registrar Nuevo Vino'}
-      </h2>
 
       <FormReadOnlyInput fields={readOnlyFields} />
 

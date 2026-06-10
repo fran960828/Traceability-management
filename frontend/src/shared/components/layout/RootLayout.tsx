@@ -7,7 +7,8 @@ import { useLogout } from '../../../auth/hooks/useLogout';
 import { ModalProvider } from '../modal/context/ModalContext';
 import { 
   Menu, X, PanelLeftClose, PanelLeftOpen,
-  PackageSearch,Wine,ShoppingCart,Warehouse,ClipboardCheck,ArrowLeftRight,Calculator,SearchCode ,Users, LogOut
+  PackageSearch,Wine,ShoppingCart,Warehouse,ClipboardCheck,ArrowLeftRight,Calculator,SearchCode ,Users, LogOut,
+  Truck
 } from 'lucide-react';
 import styles from './RootLayout.module.css';
 
@@ -18,14 +19,15 @@ const menuConfig = [
     links: [
       { to: '/proveedores', label: 'Proveedores', icon: Users },
       { to: '/productos', label: 'Catálogo de Productos', icon: PackageSearch }, // Labels, Packaging, Enological
-      { to: '/vinos', label: 'Fichas de Vinos', icon: Wine }, // Definición de materiales por vino
+      { to: '/vinos', label: 'Fichas de Vinos', icon: Wine },
+      { to: '/almacenes', label: 'Almacenes', icon: Warehouse }, // Definición de materiales por vino
     ],
   },
   {
     title: 'GESTIÓN OPERATIVA',
     links: [
       { to: '/compras', label: 'Órdenes de Compra', icon: ShoppingCart },
-      { to: '/stock', label: 'Inventario / Recepción', icon: Warehouse }, // Recepción con lotes
+      { to: '/recepcion', label: 'Recepción', icon: Truck }, // Recepción con lotes
       { to: '/embotellado', label: 'Registro Embotellado', icon: ClipboardCheck }, // El corazón del proceso
     ],
   },

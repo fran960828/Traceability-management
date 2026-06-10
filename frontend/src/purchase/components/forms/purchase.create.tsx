@@ -4,6 +4,7 @@ import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import {
+  PURCHASE_ORDER_STATUS_LABELS,
   PurchaseOrderFormSchema,
   type PurchaseOrderFormValues,
   type PurchaseOrder,
@@ -24,7 +25,8 @@ import { PackagingService } from '../../../inventory/services/packaging.service'
 import { LabelService } from '../../../inventory/services/label.service';
 import { EnologicalService } from '../../../inventory/services/enological.service';
 
-import styles from '../../../supplier/components/forms/Supplier.create.module.css';
+// 🟢 Cambiamos la hoja de estilos por la nueva específica del módulo
+import styles from './purchase.create.module.css';
 
 export interface PurchaseFormProps {
   productInitialData?: PurchaseOrder;
@@ -51,31 +53,43 @@ export const PurchaseForm: React.FC<PurchaseFormProps> = ({
   const { data: labelsData } = useDataTable({ key: 'lbl-select', fetchFn: LabelService.getAll });
   const { data: enologicalData } = useDataTable({ key: 'eno-select', fetchFn: EnologicalService.getAll });
 
-  const supplierOptions = (suppliersData?.results || []).map(s => ({ id: s.id, name: s.name }));
+  const rawSuppliersList = suppliersData?.results || [];
+  const supplierOptions = rawSuppliersList.map(s => ({ id: s.id, name: s.name }));
   const packagingOptions = (packagingData?.results || []).map(p => ({ id: p.id, name: `${p.name} (${p.specification})` }));
   const labelOptions = (labelsData?.results || []).map(l => ({ id: l.id, name: l.name }));
   const enologicalOptions = (enologicalData?.results || []).map(e => ({ id: e.id, name: `${e.name} [${e.commercial_format}]` }));
-
+  const statusOptions = Object.entries(PURCHASE_ORDER_STATUS_LABELS).map(([key, value]) => ({
+  id: key,
+  name: value
+}));
   // =======================================================
   // 🔧 ORQUESTACIÓN DEL FORMULARIO
   // =======================================================
-    const {
+  const {
     register,
     control,
     handleSubmit,
     reset,
     formState: { errors },
-    } = useForm<PurchaseOrderFormValues>({
+  } = useForm<PurchaseOrderFormValues>({
     resolver: zodResolver(PurchaseOrderFormSchema) as any,
     defaultValues: DEFAULT_PURCHASE_ORDER_VALUES,
-    });
+  });
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'items',
   });
 
-  const watchedItems = useWatch({ control, name: 'items' });
+  // 🟢 OBSERVADORES MÁGICOS EN TIEMPO REAL
+  const selectedSupplierId = useWatch({ control, name: 'supplier' });
+  const currentStatus = useWatch({ control, name: 'status' });
+
+  // Averiguamos la categoría del proveedor seleccionado actualmente
+  const currentSupplierObj = rawSuppliersList.find(s => String(s.id) === String(selectedSupplierId));
+  const supplierCategory = currentSupplierObj?.category_name; 
+  // Nota: Si en tu modelo de Supplier el campo se llama 'supplier_type' o similar, cámbialo aquí.
+  // Ejemplo de enums esperados del backend: 'PACKAGING', 'LABEL', 'ENOLOGICAL'
 
   useEffect(() => {
     if (productInitialData) {
@@ -99,6 +113,14 @@ export const PurchaseForm: React.FC<PurchaseFormProps> = ({
     }
   }, [productInitialData, reset]);
 
+  // Limpieza preventiva si el usuario cambia de proveedor a mitad de la edición
+  useEffect(() => {
+    if (!isEditMode && fields.length > 0) {
+      // Si cambia el proveedor, es buena UX vaciar los artículos para evitar inconsistencias de categoría
+      remove();
+    }
+  }, [selectedSupplierId, remove, isEditMode]);
+
   const readOnlyFields: ReadOnlyField[] = isEditMode && productInitialData
     ? [
         { label: 'Código Único de Pedido', value: productInitialData.order_number },
@@ -108,14 +130,10 @@ export const PurchaseForm: React.FC<PurchaseFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmit) as any} className={styles.formContainer} noValidate>
-      <h2 className={styles.formTitle}>
-        {isEditMode ? 'Modificar Orden de Compra' : activeAction === 'clone' ? 'Clonación de Pedido Recurrente' : 'Emitir Orden de Compra'}
-      </h2>
-
       <FormReadOnlyInput fields={readOnlyFields} />
 
       {/* 🧾 SECCIÓN 1: CABECERA DEL PEDIDO */}
-      <h3 className={styles.formTitle} style={{ fontSize: '1.1rem', marginBottom: '16px' }}>
+      <h3 className={styles.formTitle}>
         Datos de Cabecera y Distribuidor
       </h3>
       
@@ -128,6 +146,16 @@ export const PurchaseForm: React.FC<PurchaseFormProps> = ({
             options={supplierOptions}
             error={errors.supplier?.message}
             disabled={isEditMode}
+          />
+        </div>
+        <div className={styles.gridHalf}>
+          <FormSelect
+            label="Estado de Gestión *"
+            placeholder="Selecciona estado..."
+            register={register('status')}
+            options={statusOptions}
+            error={errors.status?.message}
+            disabled={currentStatus === 'CLOSED' || currentStatus === 'CANCELLED'}
           />
         </div>
 
@@ -144,7 +172,7 @@ export const PurchaseForm: React.FC<PurchaseFormProps> = ({
         ))}
       </div>
 
-      {/* 📦 SECCIÓN 2: LÍNEAS DINÁMICAS SIN INLINE STYLES */}
+      {/* 📦 SECCIÓN 2: LÍNEAS COMPACTADAS EN UNA SOLA LÍNEA HORIZONTAL */}
       <h3 className={styles.formTitle} style={{ fontSize: '1.1rem', marginTop: '24px', marginBottom: '16px' }}>
         Líneas de Suministros Solicitados *
       </h3>
@@ -155,100 +183,101 @@ export const PurchaseForm: React.FC<PurchaseFormProps> = ({
         </p>
       )}
 
-      {fields.map((field, index) => {
-        const currentValues = watchedItems?.[index] || {};
-        const hasPackaging = !!currentValues.packaging;
-        const hasLabel = !!currentValues.label;
-        const hasEnological = !!currentValues.enological;
-
-        return (
-          <div key={field.id} className={styles.flexGrid} style={{ borderBottom: '1px solid #f1f3f5', paddingBottom: '16px', marginBottom: '16px' }}>
-            
-            {/* Columna de Selección de Artículo (Ancho completo para albergar los 3 subtipos cómodamente) */}
-            <div className={styles.gridFull}>
-              <div className={styles.flexGrid}>
-                <div className={styles.gridHalf} style={{ minWidth: '220px' }}>
+      {/* Si no se ha escogido distribuidor, bloqueamos amigablemente las líneas */}
+      {!selectedSupplierId ? (
+        <div className={styles.gridFull} style={{ padding: '20px', textAlign: 'center', color: '#6b7280', backgroundColor: '#f8f9fa', borderRadius: '6px', fontStyle: 'italic' }}>
+          Por favor, selecciona primero un Proveedor Homologado para habilitar la carga de materiales de su categoría correspondiente.
+        </div>
+      ) : (
+        fields.map((field, index) => {
+          return (
+            <div key={field.id} className={styles.itemRow}>
+              
+              {/* 🟢 DROPDOWN CONDICIONAL EXCLUSIVO SEGÚN LA CATEGORÍA DEL PROVEEDOR */}
+              <div>
+                {/* Caso A: Suministrador de Acondicionamiento / Vidrios / Corchos */}
+                {(supplierCategory === 'PACKAGING' || !supplierCategory) && (
                   <FormSelect
-                    label={`Línea #${index + 1} - Material de Acondicionamiento`}
-                    placeholder="Botella, corcho, caja, cápsula..."
+                    label={`Línea #${index + 1} - Artículo`}
+                    placeholder="Selecciona botella, corcho, caja..."
                     register={register(`items.${index}.packaging` as const)}
                     options={packagingOptions}
-                    disabled={hasLabel || hasEnological}
+                    error={errors.items?.[index]?.packaging?.message}
                   />
-                </div>
-                <div className={styles.gridHalf} style={{ minWidth: '220px' }}>
+                )}
+
+                {/* Caso B: Suministrador de Artes Gráficas / Etiquetas */}
+                {supplierCategory === 'LABELS' && (
                   <FormSelect
-                    label="Material de Etiquetado"
-                    placeholder="Frontal, contra, tirilla DOP..."
+                    label={`Línea #${index + 1} - Etiqueta`}
+                    placeholder="Selecciona etiqueta frontal, contra..."
                     register={register(`items.${index}.label` as const)}
                     options={labelOptions}
-                    disabled={hasPackaging || hasEnological}
+                    error={errors.items?.[index]?.label?.message}
                   />
-                </div>
-                <div className={styles.gridFull}>
+                )}
+
+                {/* Caso C: Suministrador de Productos Químicos / Enológicos */}
+                {supplierCategory === 'ENOLOGICAL' && (
                   <FormSelect
-                    label="Material Enológico"
-                    placeholder="Sulfitos, levaduras, clarificantes..."
+                    label={`Línea #${index + 1} - Compuesto Enológico`}
+                    placeholder="Selecciona levadura, clarificante, sulfito..."
                     register={register(`items.${index}.enological` as const)}
                     options={enologicalOptions}
-                    disabled={hasPackaging || hasLabel}
+                    error={errors.items?.[index]?.enological?.message}
                   />
-                </div>
+                )}
               </div>
-              {errors.items?.[index]?.packaging?.message && (
-                <span style={{ color: '#ef4444', fontSize: '0.75rem' }}>{errors.items?.[index]?.packaging?.message}</span>
-              )}
-            </div>
 
-            {/* Campos de Métricas de Compra (Mitad de ancho cada uno para cuadrar en paralelo) */}
-            <div className={styles.gridHalf}>
-              <FormInput
-                label="Cantidad Solicitada *"
-                type="number"
-                placeholder="Ej: 5000"
-                register={register(`items.${index}.quantity_ordered` as const, { valueAsNumber: true })}
-                error={errors.items?.[index]?.quantity_ordered?.message}
-              />
-            </div>
+              {/* Cantidad Solicitada */}
+              <div>
+                <FormInput
+                  label="Cantidad *"
+                  type="number"
+                  placeholder="Ej: 5000"
+                  register={register(`items.${index}.quantity_ordered` as const, { valueAsNumber: true })}
+                  error={errors.items?.[index]?.quantity_ordered?.message}
+                />
+              </div>
 
-            <div className={styles.gridHalf}>
-              <FormInput
-                label="Precio Unitario Pactado (€) *"
-                type="text"
-                placeholder="Ej: 0.2500"
-                register={register(`items.${index}.unit_price` as const)}
-                error={errors.items?.[index]?.unit_price?.message}
-              />
-            </div>
+              {/* Precio Unitario */}
+              <div>
+                <FormInput
+                  label="Precio (€/u) *"
+                  type="text"
+                  placeholder="Ej: 0.25"
+                  register={register(`items.${index}.unit_price` as const)}
+                  error={errors.items?.[index]?.unit_price?.message}
+                />
+              </div>
 
-            {/* Botón de Eliminación de Fila */}
-            <div className={styles.gridFull} style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <FormButton
-                type="button"
-                variant="secondary"
-                onClick={() => remove(index)}
-              >
-                Remover Línea #{index + 1}
-              </FormButton>
+              {/* 🟢 BOTÓN ELIMINAR EN FORMA DE X LIMPIA AL FINAL */}
+              <div className={styles.btnRemoveX}>
+                <FormButton type="button" variant="danger" onClick={() => remove(index)}>
+                          X
+                </FormButton>
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })
+      )}
 
       {/* Botón estructural para añadir ítems */}
-      <div className={styles.flexGrid}>
-        <div className={styles.gridFull}>
-          <FormButton
-            type="button"
-            variant="secondary"
-            onClick={() => append({ packaging: '', label: '', enological: '', quantity_ordered: 1, quantity_received: 0, unit_price: '' })}
-          >
-            + Añadir Línea de Suministro
-          </FormButton>
+      {selectedSupplierId && (
+        <div className={styles.flexGrid} style={{ marginTop: '12px' }}>
+          <div className={styles.gridFull}>
+            <FormButton
+              type="button"
+              variant="secondary"
+              onClick={() => append({ packaging: '', label: '', enological: '', quantity_ordered: 1, quantity_received: 0, unit_price: '' })}
+            >
+              + Añadir Artículo
+            </FormButton>
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* 🔘 ACCIONES DE EMISIÓN FINAL */}
+      {/* 🔘 BOTONERA DE ACCIONES DE EMISIÓN */}
       <div className={styles.actionsContainer}>
         <FormButton variant="secondary" onClick={onCancel} disabled={isSubmitting}>
           Cancelar

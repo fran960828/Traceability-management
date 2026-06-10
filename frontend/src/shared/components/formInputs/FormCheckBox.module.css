@@ -24,7 +24,7 @@
 
 .checkboxLabel {
   font-size: 0.95rem;
-  color: #495057;
+  color: #f5efef;
   user-select: none; /* Evita que se seleccione el texto por error al hacer click rápido */
   cursor: pointer;
   line-height: 1.4;

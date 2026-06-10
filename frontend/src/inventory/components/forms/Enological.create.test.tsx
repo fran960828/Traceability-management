@@ -57,7 +57,6 @@ describe('EnologicalForm - Unit & Integration Tests', () => {
   it('1. Debe renderizar el formulario de creación en blanco con los placeholders iniciales', () => {
     render(<EnologicalForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} activeAction="create" />);
 
-    expect(screen.getByRole('heading', { name: /Registrar Producto Enológico/i })).toBeInTheDocument();
     expect(screen.getByLabelText(/Nombre del Producto/i)).toHaveValue('');
     expect(screen.getByLabelText(/Formato de Envase/i)).toHaveValue('');
     expect(screen.getByLabelText(/Nivel de Stock Mínimo/i)).toHaveValue('');
@@ -74,8 +73,6 @@ describe('EnologicalForm - Unit & Integration Tests', () => {
         activeAction="edit" 
       />
     );
-
-    expect(screen.getByRole('heading', { name: /Modificar Parámetros de Producto/i })).toBeInTheDocument();
     
     // Verificamos el bloque informativo de solo lectura (ReadOnly)
     expect(screen.getByText(/Código de Trazabilidad ENO/i)).toBeInTheDocument();

@@ -96,9 +96,6 @@ export const PackagingForm: React.FC<PackagingFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={styles.formContainer} noValidate>
-      <h2 className={styles.formTitle}>
-        {isEditMode ? 'Modificar Material de Acondicionamiento' : 'Registrar Material de Packaging'}
-      </h2>
 
       <FormReadOnlyInput fields={readOnlyFields} />
 

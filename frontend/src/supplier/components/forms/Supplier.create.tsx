@@ -55,9 +55,6 @@ export const SupplierForm: React.FC<SupplierFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={styles.formContainer} noValidate>
-      <h2 className={styles.formTitle}>
-        {isEditMode ? 'Editar Proveedor' : 'Nuevo Proveedor'}
-      </h2>
 
       {/* 🔄 REEMPLAZO 1: Bloque de Solo Lectura Automatizado */}
       <FormReadOnlyInput fields={readOnlyFields} />

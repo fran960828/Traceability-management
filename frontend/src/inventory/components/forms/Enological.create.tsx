@@ -95,9 +95,6 @@ export const EnologicalForm: React.FC<EnologicalFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={styles.formContainer} noValidate>
-      <h2 className={styles.formTitle}>
-        {isEditMode ? 'Modificar Parámetros de Producto' : 'Registrar Producto Enológico'}
-      </h2>
 
       <FormReadOnlyInput fields={readOnlyFields} />
 

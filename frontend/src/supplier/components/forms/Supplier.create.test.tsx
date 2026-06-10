@@ -66,8 +66,7 @@ describe('SupplierForm - Deep Integration Tests', () => {
       <SupplierForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />
     );
 
-    // Validamos el estado visual inicial
-    expect(screen.getByRole('heading', { name: /Nuevo Proveedor/i })).toBeInTheDocument();
+   
     expect(screen.getByRole('button', { name: /Crear Proveedor/i })).toBeInTheDocument();
 
     // Comprobamos que el componente ReadOnly no pintó nada porque no hay ID ni código aún
@@ -88,7 +87,6 @@ describe('SupplierForm - Deep Integration Tests', () => {
     );
 
     // El título y botón deben mutar semánticamente
-    expect(screen.getByRole('heading', { name: /Editar Proveedor/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Actualizar Proveedor/i })).toBeInTheDocument();
 
     // Comprobamos la inyección del componente de solo lectura con los valores fijos de Django

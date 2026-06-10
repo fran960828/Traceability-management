@@ -10,6 +10,7 @@ from .purchase_order_item_serializer import PurchaseOrderItemSerializer
 class PurchaseOrderSerializer(serializers.ModelSerializer):
     # Relación anidada: 'many=True' indica que 'items' es una lista de objetos.
     items = PurchaseOrderItemSerializer(many=True)
+    supplier_name = serializers.ReadOnlyField(source="supplier.name")
 
     class Meta:
         model = PurchaseOrder
@@ -22,6 +23,7 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
             "date_delivery_expected",
             "notes",
             "items",
+            "supplier_name"
         ]
         # Estos campos son automáticos, el usuario no puede enviarlos para hackear la fecha o el ID.
         read_only_fields = ["order_number", "date_issued"]

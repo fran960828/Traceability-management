@@ -43,7 +43,7 @@ describe('PurchaseService - Unit & Integration Tests', () => {
     const result = await PurchaseService.getAll(filters);
 
     // Verificamos que eliminó 'supplier' del objeto enviado porque venía como string vacío
-    expect(apiClient.get).toHaveBeenCalledWith('/api/purchase/orders/', {
+    expect(apiClient.get).toHaveBeenCalledWith('/purchase/orders/', {
       params: { search: 'Ontalba', status: 'DRAFT' }
     });
     expect(result.results[0].order_number).toBe('PO-2026-0001');
@@ -75,7 +75,7 @@ describe('PurchaseService - Unit & Integration Tests', () => {
     const result = await PurchaseService.create(formValues as any);
 
     // Verificamos el casteo de tipos para el Serializer de Django
-    expect(apiClient.post).toHaveBeenCalledWith('/api/purchase/orders/', {
+    expect(apiClient.post).toHaveBeenCalledWith('/purchase/orders/', {
       supplier: 3, // Transformado a número
       status: 'DRAFT',
       date_delivery_expected: '2026-06-15',
@@ -100,7 +100,7 @@ describe('PurchaseService - Unit & Integration Tests', () => {
 
     const result = await PurchaseService.clone(1);
 
-    expect(apiClient.get).toHaveBeenCalledWith('/api/purchase/orders/1/clone_prefill/');
+    expect(apiClient.get).toHaveBeenCalledWith('/purchase/orders/1/clone-prefill/');
     expect(result.status).toBe(PURCHASE_ORDER_STATUS.DRAFT);
   });
 
@@ -113,7 +113,7 @@ describe('PurchaseService - Unit & Integration Tests', () => {
 
     await PurchaseService.getAll();
 
-    expect(apiClient.get).toHaveBeenCalledWith('/api/purchase/orders/', { params: {} });
+    expect(apiClient.get).toHaveBeenCalledWith('/purchase/orders/', { params: {} });
   });
 
   it('5. update - Debe propagar limpiamente los errores de validación de Django (Ej: Orden Cerrada)', async () => {
@@ -137,6 +137,6 @@ describe('PurchaseService - Unit & Integration Tests', () => {
 
     await PurchaseService.delete(5);
 
-    expect(apiClient.delete).toHaveBeenCalledWith('/api/purchase/orders/5/');
+    expect(apiClient.delete).toHaveBeenCalledWith('/purchase/orders/5/');
   });
 });

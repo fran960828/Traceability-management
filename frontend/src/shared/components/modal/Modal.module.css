@@ -15,7 +15,7 @@
   background-color: #1f2937; /* Un gris oscuro profundo, más moderno que el negro puro */
   color: #f9fafb;
   width: 100%;
-  max-width: 600px; /* Un poco más ancho para formularios complejos */
+  max-width: 800px; /* Un poco más ancho para formularios complejos */
   max-height: 90vh;
   border-radius: 12px;
   display: flex;

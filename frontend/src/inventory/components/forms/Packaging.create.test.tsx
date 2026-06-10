@@ -59,7 +59,6 @@ describe('PackagingForm - Unit & Integration Tests', () => {
   it('1. Debe renderizar el formulario de creación en blanco con campos fijos iniciales', () => {
     render(<PackagingForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} activeAction="create" />);
 
-    expect(screen.getByRole('heading', { name: /Registrar Material de Packaging/i })).toBeInTheDocument();
     expect(screen.getByLabelText(/Nombre del Material/i)).toHaveValue('');
     expect(screen.getByLabelText(/Especificación Técnica/i)).toHaveValue('');
     
@@ -79,8 +78,6 @@ describe('PackagingForm - Unit & Integration Tests', () => {
         activeAction="edit" 
       />
     );
-
-    expect(screen.getByRole('heading', { name: /Modificar Material de Acondicionamiento/i })).toBeInTheDocument();
     
     // Comprobamos la inyección del componente de solo lectura
     expect(screen.getByText(/Código PAC Técnico/i)).toBeInTheDocument();

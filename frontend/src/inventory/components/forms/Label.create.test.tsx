@@ -66,7 +66,6 @@ describe('LabelForm - Unit & Integration Tests', () => {
       />
     );
 
-    expect(screen.getByRole('heading', { name: /Registrar Nueva Etiqueta/i })).toBeInTheDocument();
     expect(screen.getByLabelText(/Nombre de la Etiqueta/i)).toHaveValue('');
     expect(screen.getByLabelText(/Referencia de Marca/i)).toHaveValue('');
     expect(screen.getByRole('button', { name: /Crear Etiqueta/i })).toBeInTheDocument();
@@ -81,9 +80,6 @@ describe('LabelForm - Unit & Integration Tests', () => {
         activeAction="edit" 
       />
     );
-
-    expect(screen.getByRole('heading', { name: /Modificar Etiqueta/i })).toBeInTheDocument();
-    
     // Validamos que se inyectan los campos informativos bloqueados (ReadOnly)
     expect(screen.getByText(/Código Único de Material/i)).toBeInTheDocument();
     expect(screen.getByDisplayValue(/1200.00 unidades/i)).toBeInTheDocument();
@@ -101,8 +97,6 @@ describe('LabelForm - Unit & Integration Tests', () => {
         activeAction="clone" 
       />
     );
-
-    expect(screen.getByRole('heading', { name: /Clonar Añada de Etiqueta/i })).toBeInTheDocument();
     
     // 🛡️ CONTROL CRÍTICO: En clonación NO deben aparecer los códigos informativos del registro viejo
     expect(screen.queryByText(/Código Único de Material/i)).not.toBeInTheDocument();

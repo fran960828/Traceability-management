@@ -1,6 +1,7 @@
+// src/modules/purchase/components/forms/__tests__/PurchaseForm.test.tsx
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { PurchaseForm } from './purchase.create';
+import { PurchaseForm } from './purchase.create'; // Ajusta la ruta exacta de importación
 import { useDataTable } from '../../../shared/hooks';
 import { PURCHASE_ORDER_STATUS, type PurchaseOrder } from '../../models/purchase.schema';
 
@@ -39,7 +40,8 @@ describe('PurchaseForm - Unit & Integration Tests', () => {
   };
 
   // Mocks de respuestas de los inventarios cruzados para alimentar los combo-box
-  const mockSuppliersResponse = { results: [{ id: 5, name: 'Distribuciones Riojanas S.L.' }] };
+  // 🟢 Enriquecemos el proveedor con la propiedad 'category' para que funcione el condicional
+  const mockSuppliersResponse = { results: [{ id: 5, name: 'Distribuciones Riojanas S.L.', category: 'PACKAGING' }] };
   const mockPackagingResponse = { results: [{ id: 10, name: 'Botella Bordelesa Élite', specification: '75cl' }] };
   const mockLabelsResponse = { results: [{ id: 20, name: 'Frontal Ontalba Reserva' }] };
   const mockEnologicalResponse = { results: [{ id: 30, name: 'Metabisulfito Potásico', commercial_format: 'Saco 25kg' }] };
@@ -64,8 +66,8 @@ describe('PurchaseForm - Unit & Integration Tests', () => {
   it('1. Debe renderizar la cabecera en blanco y la advertencia de lista vacía', () => {
     render(<PurchaseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} activeAction="create" />);
 
-    expect(screen.getByRole('heading', { name: /Emitir Orden de Compra/i })).toBeInTheDocument();
     expect(screen.getByText('Datos de Cabecera y Distribuidor')).toBeInTheDocument();
+    expect(screen.getByText(/Por favor, selecciona primero un Proveedor Homologado/i)).toBeInTheDocument();
   });
 
   it('2. Debe hidratar cabecera, bloquear el proveedor y pintar las líneas en modo edición', () => {
@@ -77,8 +79,6 @@ describe('PurchaseForm - Unit & Integration Tests', () => {
         activeAction="edit"
       />
     );
-
-    expect(screen.getByRole('heading', { name: /Modificar Orden de Compra/i })).toBeInTheDocument();
     expect(screen.getByText('Código Único de Pedido')).toBeInTheDocument();
     
     // Verificamos que el selector de proveedor queda bloqueado en edición (requisito ERP)
@@ -90,25 +90,29 @@ describe('PurchaseForm - Unit & Integration Tests', () => {
   // ⚡ COMPORTAMIENTOS DINÁMICOS E INTERACTIVOS
   // ==========================================
 
-  it('3. Debe añadir una tarjeta de línea en blanco y deshabilitar los selectores excluyentes en cascada', async () => {
+  it('3. Debe añadir una línea con el selector exclusivo correspondiente a la categoría del proveedor', async () => {
     render(<PurchaseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} activeAction="create" />);
 
-    // Añadimos línea de material interactiva
-    fireEvent.click(screen.getByRole('button', { name: /\+ Añadir Línea de Suministro/i }));
+    // 🟢 PASO INTERMEDIO NUEVO: Primero seleccionamos un distribuidor para que se habiliten las líneas
+    fireEvent.change(screen.getByLabelText(/Proveedor Homologado \*/i), { target: { value: '5' } });
 
-    const packagingSelect = screen.getByLabelText(/Línea #1 - Material de Acondicionamiento/i);
-    const labelSelect = screen.getByLabelText(/Material de Etiquetado/i);
-    const enologicalSelect = screen.getByLabelText(/Material Enológico/i);
+    // Añadimos artículo interactivo con el nuevo nombre de botón
+    fireEvent.click(screen.getByRole('button', { name: /\+ Añadir Artículo/i }));
 
-    // Activamos la opción de packaging en el primer dropdown
+    // 🟢 Verificamos el selector unificado condicional bajo el nuevo texto de etiqueta
+    const packagingSelect = screen.getByLabelText(/Línea #1 - Artículo/i);
+    expect(packagingSelect).toBeInTheDocument();
+    
+    // Las otras etiquetas de las otras categorías NO deben existir en el DOM por el render condicional
+    expect(screen.queryByLabelText(/Línea #1 - Etiqueta/i)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/Línea #1 - Compuesto Enológico/i)).not.toBeInTheDocument();
+
+    // Seleccionamos la opción de packaging
     fireEvent.change(packagingSelect, { target: { value: '10' } });
+    expect(packagingSelect).toHaveValue('10');
 
-    // Verificamos la regla de exclusividad mutua inyectada en caliente
-    expect(labelSelect).toBeDisabled();
-    expect(enologicalSelect).toBeDisabled();
-
-    // Si removemos el ítem, la rejilla limpia la fila
-    fireEvent.click(screen.getByRole('button', { name: /Remover Línea #1/i }));
+    // 🟢 Si removemos el ítem pulsando la nueva aspa "×" mediante su título de accesibilidad
+    fireEvent.click(screen.getByRole('button', { name: /x/i }));
     expect(packagingSelect).not.toBeInTheDocument();
   });
 
@@ -138,11 +142,11 @@ describe('PurchaseForm - Unit & Integration Tests', () => {
     fireEvent.change(screen.getByLabelText(/Fecha de Entrega Estimada/i), { target: { value: '2026-06-15' } });
     fireEvent.change(screen.getByLabelText(/Observaciones/i), { target: { value: 'Entrega prioritaria' } });
 
-    // Agregamos material e inyectamos valores válidos
-    fireEvent.click(screen.getByRole('button', { name: /\+ Añadir Línea de Suministro/i }));
-    fireEvent.change(screen.getByLabelText(/Línea #1 - Material de Acondicionamiento/i), { target: { value: '10' } });
-    fireEvent.change(screen.getByLabelText(/Cantidad Solicitada \*/i), { target: { value: '2500' } });
-    fireEvent.change(screen.getByLabelText(/Precio Unitario Pactado/i), { target: { value: '0.1250' } });
+    // Agregamos material e inyectamos valores válidos (usando los nuevos nombres de controles)
+    fireEvent.click(screen.getByRole('button', { name: /\+ Añadir Artículo/i }));
+    fireEvent.change(screen.getByLabelText(/Línea #1 - Artículo/i), { target: { value: '10' } });
+    fireEvent.change(screen.getByLabelText(/Cantidad \*/i), { target: { value: '2500' } });
+    fireEvent.change(screen.getByLabelText(/Precio \(€\/u\) \*/i), { target: { value: '0.1250' } });
 
     fireEvent.click(screen.getByRole('button', { name: /Registrar Orden de Compra/i }));
 
@@ -167,7 +171,8 @@ describe('PurchaseForm - Unit & Integration Tests', () => {
       );
     });
   });
-  it('6. Edge Case - Debe bloquear campos críticos de la orden si el estado inicial de la instancia es CLOSED', () => {
+
+  it('6. Edge Case - Debe bloquear campos críticos de la orden si el estado inicial de la instancia es CLOSED o CANCELLED', () => {
     // Forzamos una orden con estado CERRADA para la prueba
     const mockClosedOrder: PurchaseOrder = {
       ...mockPurchaseInitialData,
@@ -183,15 +188,15 @@ describe('PurchaseForm - Unit & Integration Tests', () => {
       />
     );
 
-    // 🔒 Verificaciones de Inmutabilidad en la UI:
-    // 1. El título debe reflejar la modificación
-    expect(screen.getByRole('heading', { name: /Modificar Orden de Compra/i })).toBeInTheDocument();
-    
-    // 2. El proveedor DEBE estar deshabilitado para evitar alterar el histórico contable de la bodega
+    // 🔒 Verificaciones de Inmutabilidad en la UI:    
+    // 1. El proveedor DEBE estar deshabilitado
     expect(screen.getByLabelText(/Proveedor Homologado/i)).toBeDisabled();
 
-    // 3. Verificamos que los campos de la primera línea de material se cargaron pero respetan la exclusividad
-    const packagingSelect = screen.getByLabelText(/Línea #1 - Material de Acondicionamiento/i);
+    // 2. El selector de Estado de Gestión DEBE estar deshabilitado por el nuevo bloqueo inteligente
+    expect(screen.getByLabelText(/Estado de Gestión/i)).toBeDisabled();
+
+    // 3. Verificamos que la línea cargada renderiza el selector condicional de Artículo bloqueado/disponible según corresponda
+    const packagingSelect = screen.getByLabelText(/Línea #1 - Artículo/i);
     expect(packagingSelect).toHaveValue('10');
   });
 });

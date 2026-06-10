@@ -83,9 +83,6 @@ export const LabelForm: React.FC<LabelFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={styles.formContainer} noValidate>
-      <h2 className={styles.formTitle}>
-        {isEditMode ? 'Modificar Etiqueta' : activeAction === 'clone' ? 'Clonar Añada de Etiqueta' : 'Registrar Nueva Etiqueta'}
-      </h2>
 
       {/* Bloque de Solo Lectura Automatizado */}
       <FormReadOnlyInput fields={readOnlyFields} />

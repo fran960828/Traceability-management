@@ -93,7 +93,7 @@ export const PurchaseService = {
    * reseteando las cantidades recibidas a 0 y el estado a DRAFT para agilizar las compras recurrentes.
    */
   clone: async (id: number): Promise<PurchaseOrderFormValues> => {
-    const { data } = await apiClient.get<PurchaseOrderFormValues>(`/purchase/orders/${id}/clone_prefill/`);
+    const { data } = await apiClient.get<PurchaseOrderFormValues>(`/purchase/orders/${id}/clone-prefill/`);
     return data;
   }
 };

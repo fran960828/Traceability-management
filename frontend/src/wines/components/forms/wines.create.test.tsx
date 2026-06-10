@@ -78,9 +78,6 @@ describe('WineForm - Unit & Integration Tests', () => {
   
   it('1. Debe renderizar el formulario en blanco con agrupaciones técnicas legibles', () => {
     render(<WineForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} activeAction="create" />);
-
-    expect(screen.getByRole('heading', { name: /Registrar Nuevo Vino/i })).toBeInTheDocument();
-    
     // 🔄 CORRECCIÓN: Sincronizamos las strings exactas de los encabezados <h3>
     expect(screen.getByText('Datos Técnicos del Vino')).toBeInTheDocument();
     expect(screen.getByText('Configuración del Escandallo (Materiales por Defecto)')).toBeInTheDocument();
@@ -98,8 +95,6 @@ describe('WineForm - Unit & Integration Tests', () => {
         activeAction="edit" 
       />
     );
-
-    expect(screen.getByRole('heading', { name: /Modificar Ficha de Vino/i })).toBeInTheDocument();
     expect(screen.getByText(/Código Único WN/i)).toBeInTheDocument();
     
     expect(screen.getByLabelText(/Nombre Comercial del Vino/i)).toHaveValue('ONTALBA MONASTRELL CRITICAL');
@@ -119,8 +114,6 @@ describe('WineForm - Unit & Integration Tests', () => {
         activeAction="clone" 
       />
     );
-
-    expect(screen.getByRole('heading', { name: /Clonar Ficha de Vino/i })).toBeInTheDocument();
     expect(screen.queryByText(/Código Único WN/i)).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Confirmar Nueva Añada/i })).toBeInTheDocument();
   });

@@ -88,7 +88,7 @@ export const PURCHASE_ORDER_COLUMNS_CONFIG = [
   {
     header: 'Líneas',
     key: 'items' as const,
-    render: (item: PurchaseOrder) => `${item.items?.length || 0} art.`
+    render: (item: PurchaseOrder) => `${item.items?.length || 0} item/s`
   },
   { 
     header: 'Estado', 
