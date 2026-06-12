@@ -5,7 +5,7 @@ import { useDataMutation, useDataTable } from '../../shared/hooks';
 import { FilterInput, FilterSelect } from '../../shared/components/filters'; 
 import { GenericTable, GenericRow } from '../../shared/components/table';
 import { Pagination } from '../../shared/components/pagination/Pagination';
-import { PurchaseService } from '../service/purchase.service';
+import { PurchaseService } from '../services/purchase.service';
 import { SupplierService } from '../../supplier/services/supplier.service';
 import { 
   type PurchaseOrder, 

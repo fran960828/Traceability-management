@@ -1,0 +1,132 @@
+/* src/modules/inventory/components/forms/ReceptionForm.module.css */
+
+.formContainer {
+  width: 100%;
+  max-width: 1050px; /* Un poco más de ancho para albergar cómodamente las 4 columnas del muelle */
+  margin: 0 auto;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+.formTitle {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #f1f3f5;
+  margin-top: 0;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #f1f3f5;
+  padding-bottom: 8px;
+}
+
+.formSubtitle {
+  font-size: 1.1rem;
+  color: #f1f3f5;
+  margin-top: 24px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 6px;
+}
+
+.flexGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  width: 100%;
+  margin-bottom: 24px; /* Margen para separar limpiamente de las líneas */
+}
+
+.gridHalf {
+  flex: 1 1 calc(50% - 10px);
+  min-width: 280px;
+  box-sizing: border-box;
+}
+
+.gridFull {
+  flex: 1 1 100%;
+  box-sizing: border-box;
+}
+
+/* 🚚 CONTENEDOR DE INFORMACIÓN DEL PROVEEDOR EN CABECERA */
+.supplierCard {
+  padding: 8px 12px;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  margin-top: 20px;
+}
+
+.supplierLabel {
+  font-size: 0.85rem;
+  color: #6b7280;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.supplierValue {
+  font-size: 0.95rem;
+  color: #1f2937;
+  font-weight: 700;
+}
+
+/* 🛑 MENSAJES DE ERROR DE VALIDACIÓN GLOBAL */
+.errorMessage {
+  color: #ef4444;
+  font-size: 0.85rem;
+  margin: -8px 0 16px 0;
+}
+
+/* ========================================================
+   📦 REJILLA ASIMÉTRICA HORIZONTAL PARA LAS LÍNEAS DEL CAMIÓN
+   ======================================================== */
+.itemRow {
+  display: grid;
+  /* El material toma la porción grande, lote, cantidad y fecha toman tamaños estables */
+  grid-template-columns: 2fr 1.2fr 1fr 1.5fr;
+  gap: 16px;
+  align-items: start;
+  width: 100%;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #f1f3f5;
+}
+
+.inputLabel {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4b5563;
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* Tarjeta informativa del saldo de materiales que calcula React */
+.materialDisplay {
+  padding: 10px;
+  background-color: #f1f3f5;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: #212529;
+  min-height: 38px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pendingBadge {
+  font-size: 0.8rem;
+  color: #0d6efd;
+  font-weight: bold;
+}
+
+/* 🏁 BOTONERA DE ACCIONES */
+.actionsContainer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid #e9ecef;
+  width: 100%;
+}
