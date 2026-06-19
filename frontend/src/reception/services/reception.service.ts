@@ -1,6 +1,6 @@
 // src/modules/inventory/services/reception.service.ts
 import { apiClient } from '../../shared/adapter';
-import type { BulkReceptionValues } from '../models/reception.schema';
+import type { BulkReceptionOutput } from '../models/reception.schema';
 
 export const ReceptionService = {
   /**
@@ -10,7 +10,7 @@ export const ReceptionService = {
    * * @param payload Estructura que contiene el array de ítems validados por BulkReceptionSchema
    * @returns Mensaje de confirmación del backend {"detail": "Entrada registrada."}
    */
-  bulkReceive: async (payload: BulkReceptionValues): Promise<{ detail: string }> => {
+  bulkReceive: async (payload: BulkReceptionOutput): Promise<{ detail: string }> => {
     const { data } = await apiClient.post<{ detail: string }>(
       'stock/movements/bulk-receive/', 
       payload

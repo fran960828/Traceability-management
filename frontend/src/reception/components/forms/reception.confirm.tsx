@@ -1,9 +1,8 @@
 // src/modules/inventory/components/forms/ReceptionForm.tsx
 import React, { useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-
-import { BulkReceptionSchema, type BulkReceptionValues } from '../../models/reception.schema';
+import { zodResolver } from '@hookform/resolvers/zod';;
+import { BulkReceptionSchema, type BulkReceptionInput,type BulkReceptionOutput } from '../../models/reception.schema';
 import type { PurchaseOrder } from '../../../purchase/models/purchase.schema';
 import { useDataTable } from '../../../shared/hooks';
 import { LocationService } from '../../../locations/services/location.service';
@@ -14,29 +13,18 @@ import {
   FormButton,
 } from '../../../shared/components/formInputs';
 
+// Usamos tus estilos mapeados correctamente
 import styles from './reception.confirm.module.css';
 
 export interface ReceptionFormProps {
   purchaseOrderData: PurchaseOrder;
-  onSubmit: (values: BulkReceptionValues) => void;
+  onSubmit: (values: BulkReceptionOutput) => void;
   onCancel: () => void;
   isSubmitting?: boolean;
 }
 
-// 🟢 Estructura 100% nativa con drf-spectacular: la localización pertenece a cada ítem
-interface FormReceptionValues {
-  items: {
-    order_item: number;
-    location: string; // ID de la ubicación elegida para ESTE material específico
-    material_name: string; 
-    pending_quantity: number; 
-    batch_number: string;
-    quantity: number;
-    expiry_date: string;
-    notes: string;
-    
-  }[];
-}
+// 🟢 Unificación de tipos usando Zod como única fuente de verdad para evitar rupturas de referencias
+
 
 export const ReceptionForm: React.FC<ReceptionFormProps> = ({
   purchaseOrderData,
@@ -54,15 +42,15 @@ export const ReceptionForm: React.FC<ReceptionFormProps> = ({
     .filter(loc => loc.is_active)
     .map(loc => ({ id: loc.id, name: loc.name }));
 
-  // 2. Orquestación del formulario acoplado directamente al validador de Zod
+  // 2. Orquestación del formulario acoplado directamente al validador de Zod sin parches de tipos "as any"
   const {
     register,
     control,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<FormReceptionValues>({
-    resolver: zodResolver(BulkReceptionSchema) as any,
+  } = useForm<BulkReceptionInput, any, BulkReceptionOutput>({
+    resolver: zodResolver(BulkReceptionSchema),
     defaultValues: {
       items: [],
     },
@@ -81,7 +69,7 @@ export const ReceptionForm: React.FC<ReceptionFormProps> = ({
           const pending = item.quantity_ordered - item.quantity_received;
           return {
             order_item: item.id,
-            location: '', // Cada línea arranca sin almacén asignado para obligar al operario a elegirlo
+            location: '' as any, // Forzamos cadena vacía inicial para disparar la validación si no se selecciona
             material_name: item.material_name || 'Insumo de Bodega',
             pending_quantity: pending > 0 ? pending : 0,
             batch_number: '',
@@ -98,26 +86,15 @@ export const ReceptionForm: React.FC<ReceptionFormProps> = ({
     }
   }, [purchaseOrderData, reset]);
 
-  // 4. El Submit es directo y transparente. Transmuta los strings numéricos nativamente
-  const handleFormSubmit = (data: FormReceptionValues) => {
-    const formattedPayload: BulkReceptionValues = {
-      items: data.items.map(item => ({
-        order_item: item.order_item,
-        location: Number(item.location), // Casteo limpio por línea
-        batch_number: item.batch_number,
-        quantity: Number(item.quantity),
-        expiry_date: item.expiry_date || null,
-        notes: item.notes || '',
-      })),
-    };
-
-    onSubmit(formattedPayload);
+  // 4. El Submit ya recibe la estructura depurada y parseada directamente por el validador de Zod
+  const handleFormSubmit = (data: BulkReceptionOutput) => {
+    onSubmit(data);
   };
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className={styles.formContainer} noValidate>
       
-      {/* 🧾 CABECERA SIMPLE INFORMATIVA */}
+      {/* 🧾 CABECERA INFORMATIVA */}
       <h3 className={styles.formTitle}>
         Recepción de Pedido - {purchaseOrderData.order_number}
       </h3>
@@ -136,56 +113,62 @@ export const ReceptionForm: React.FC<ReceptionFormProps> = ({
         Desglose de Entrada y Destinos en Muelle *
       </h3>
 
+      {/* Alerta de error global del array (por ejemplo si el array viene vacío) */}
       {errors.items?.root?.message && (
-        <p className={`${styles.gridFull} ${styles.errorMessage}`}>
+        <p className={`${styles.gridFull} ${styles.errorMessage}`} style={{ color: 'var(--color-error, #dc2626)', margin: '10px 0' }}>
           {errors.items.root.message}
         </p>
       )}
 
       {fields.map((field, index) => {
+        // Obtenemos los posibles errores específicos de esta iteración de fila
+        const itemErrors = errors.items?.[index];
+
         return (
-          // Reajustamos la cuadrícula de la fila para dar espacio al selector de localización por línea
-          <div key={field.id} className={styles.itemRow}>
+          <div key={field.id} className={styles.itemRow} style={{ marginBottom: '15px' }}>
             
             {/* Columna 1: Detalle del material e informativo de saldos */}
             <div>
               <label className={styles.inputLabel}>Material</label>
               <div className={styles.materialDisplay}>
                 <span>{field.material_name}</span>
+                <span style={{ fontSize: '0.85em', color: '#666', display: 'block' }}>
+                  (Máx. esperado: {field.pending_quantity})
+                </span>
               </div>
             </div>
 
             {/* Columna 2: Selector de destino INDEPENDIENTE para cada artículo 🏢 */}
             <div>
               <FormSelect
-                label="Almacen*"
+                label="Almacén *"
                 placeholder="Selecciona zona..."
-                register={register(`items.${index}.location` as const, { required: true })}
+                register={register(`items.${index}.location` as const)}
                 options={locationOptions}
-                error={errors.items?.[index]?.location?.message}
+                error={itemErrors?.location?.message}
                 isLoading={isLoadingLocations}
               />
             </div>
 
-            {/* Columna 3: Número de Lote del Proveedor */}
+            {/* Columna 3: Número de Lote del Proveedor 🏷️ */}
             <div>
               <FormInput
                 label="Lote Físico *"
                 type="text"
                 placeholder="Ej: L2026-A"
                 register={register(`items.${index}.batch_number` as const)}
-                error={errors.items?.[index]?.batch_number?.message}
+                error={itemErrors?.batch_number?.message}
               />
             </div>
 
-            {/* Columna 4: Cantidad del conteo físico */}
+            {/* Columna 4: Cantidad del conteo físico 🔢 */}
             <div>
               <FormInput
-                label="Pendiente *"
+                label="Cantidad a Recibir *"
                 type="number"
                 placeholder="1000"
                 register={register(`items.${index}.quantity` as const, { valueAsNumber: true })}
-                error={errors.items?.[index]?.quantity?.message}
+                error={itemErrors?.quantity?.message}
               />
             </div>
 

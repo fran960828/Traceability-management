@@ -2,7 +2,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ReceptionService } from './reception.service';
 import { apiClient } from '../../shared/adapter';
-import type { BulkReceptionValues } from '../models/reception.schema';
+import type { BulkReceptionOutput } from '../models/reception.schema';
 
 // Mockeamos de forma aislada la instancia central de Axios
 vi.mock('../../shared/adapter', () => ({
@@ -17,13 +17,14 @@ describe('ReceptionService - Unit & Robustness Tests', () => {
   });
 
   // Payload base válido que simula la entrada de un palet de botellas por el muelle
-  const mockValidPayload: BulkReceptionValues = {
+  const mockValidPayload: BulkReceptionOutput = {
     items: [
       {
         order_item: 10,
         location: 2, // ALMACEN_GENERAL
         batch_number: 'LOTE-BOT-2026-A',
         quantity: 5000,
+        pending_quantity:5000,
         expiry_date: null,
         notes: 'Recepción conforme de frascos',
       }

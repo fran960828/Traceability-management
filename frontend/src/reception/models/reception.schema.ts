@@ -13,26 +13,25 @@ export const GoodsReceptionItemSchema = z.object({
   location: z.coerce.number().int().positive('Debes seleccionar una localización de destino'),
   batch_number: z.string().min(1, 'El número de lote es obligatorio').max(50),
   quantity: z.number().int().min(1, 'La cantidad mínima a recibir es 1 unidad'),
-  expiry_date: z.string().optional().or(z.literal('')).nullable(),
+  expiry_date: z.string().optional().or(z.literal('')).nullable().transform((val) => (val === '' || val === undefined ? null : val)),
   notes: z.string().default(''),
   
   // 🟢 CAMPOS INFORMATIVOS DE LA UI: Los agregamos como opcionales para que el resolver de TS encaje perfecto
   material_name: z.string().optional(),
-  pending_quantity: z.number().optional(),
+  pending_quantity: z.number()
+}).refine((data) => data.quantity <= data.pending_quantity, {
+  message: "La cantidad supera el saldo pendiente de la orden",
+  path: ["quantity"], // 👈 CRUCIAL: Esto enlaza el error directamente con el input de cantidad
 });
 
 export const BulkReceptionSchema = z.object({
   items: z.array(GoodsReceptionItemSchema).min(1, 'Debes añadir al menos un artículo')
-}).refine((data) => {
-  const batches = data.items.map(i => i.batch_number).filter(b => b !== '');
-  return batches.length === new Set(batches).size;
-}, {
-  message: 'Hay números de lote duplicados en esta recepción.',
-  path: ['items']
 });
 
-export type GoodsReceptionItemValues = z.infer<typeof GoodsReceptionItemSchema>;
-export type BulkReceptionValues = z.infer<typeof BulkReceptionSchema>;
+export type BulkReceptionInput = z.input<typeof BulkReceptionSchema>;
+export type BulkReceptionOutput = z.output<typeof BulkReceptionSchema>;
+
+
 
 // ========================================================
 // 📊 2. MODELOS DE DOMINIO / LIBRO DE REGISTRO DE STOCK

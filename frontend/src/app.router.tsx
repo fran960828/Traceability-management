@@ -79,6 +79,13 @@ export const router = createBrowserRouter([
               return { Component: ReceptionPage };
             },
           },
+          {
+            path: "movimientos",
+            async lazy() {
+              const { StockPage } = await import("./stock/pages/Stock.page");
+              return { Component: StockPage };
+            },
+          },
 
         ],
       },

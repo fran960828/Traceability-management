@@ -23,6 +23,7 @@ import { Modal } from '../../shared/components/modal/Modal';
 // Reutilizamos las columnas o declaramos las específicas del muelle de descarga
 import { PURCHASE_ORDER_COLUMNS_CONFIG } from '../../purchase/constants/purchase.constants';
 import styles from '../../supplier/components/Supplier.container.module.css';
+import { queryClient } from '../../shared/client';
 
 export const ReceptionContainer: React.FC = () => {
   const { activeAction, activeId, openModal, closeModal } = useModal();
@@ -62,7 +63,15 @@ export const ReceptionContainer: React.FC = () => {
   const receptionMutation = useDataMutation({
     mutationFn: (values: BulkReceptionValues) => ReceptionService.bulkReceive(values),
     invalidateKeys: ['reception-purchase-orders', 'locations-select'],
-    onSuccess: () => closeModal(),
+    onSuccess: async() => {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['purchase-orders-inventory'] }),
+      queryClient.invalidateQueries({ queryKey: ['labels-inventory'] }),
+      queryClient.invalidateQueries({ queryKey: ['enological-inventory'] }),
+      queryClient.invalidateQueries({ queryKey: ['packaging-inventory'] })
+    ]);
+    closeModal();
+  },
   });
 
   const handleReceptionSubmit = (formValues: BulkReceptionValues) => {

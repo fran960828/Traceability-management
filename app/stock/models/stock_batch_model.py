@@ -5,7 +5,7 @@ from django.db.models import Sum
 class Batch(models.Model):
     # El número de lote físico que viene en el palet/caja
     batch_number = models.CharField(
-        max_length=50, unique=True, verbose_name="Número de Lote"
+        max_length=50, verbose_name="Número de Lote"
     )
 
     # El origen de este lote: una línea específica de un pedido

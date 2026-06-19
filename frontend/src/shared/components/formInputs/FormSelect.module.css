@@ -3,6 +3,7 @@
   flex-direction: column;
   gap: 6px;
   width: 100%;
+ 
 }
 
 .label {
@@ -28,12 +29,13 @@
   transition: border-color 0.15s ease-in-out;
   cursor: pointer;
   /* Para que el select nativo tenga consistencia estética */
-  appearance: none;
+  appearance:none;
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right 12px center;
   background-size: 12px 12px;
   padding-right: 36px;
+  
 }
 
 .select:focus {
@@ -53,4 +55,12 @@
   font-size: 0.8rem;
   color: #dc3545;
   margin-top: 2px;
+}
+
+.readOnlySelect {
+  pointer-events: none; /* 🚫 Evita que el ratón pueda desplegar las opciones */
+  background-color: #f3f4f6; /* Fondo grisáceo corporativo de auditoría */
+  color: #4b5563;
+  cursor: not-allowed;
+  border-color: #e5e7eb;
 }
