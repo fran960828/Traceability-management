@@ -44,8 +44,8 @@ class TestPurchaseOrderViewSet:
 
         # Filtramos por DRAFT
         response = auth_client.get(self.list_url, {"status": "DRAFT"})
-        assert len(response.data) == 1
-        assert response.data[0]["status"] == "DRAFT"
+        assert len(response.data['results']) == 1
+        assert response.data['results'][0]["status"] == "DRAFT"
 
     # --- EDGE CASES & PERMISOS ---
     def test_bodeguero_cannot_delete_order(

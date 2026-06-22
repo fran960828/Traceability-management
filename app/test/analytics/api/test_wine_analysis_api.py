@@ -19,9 +19,9 @@ class TestWineAnalysisViewSet:
         response = auth_client.get(self.list_url)
 
         assert response.status_code == status.HTTP_200_OK
-        assert len(response.data) == 1
+        assert len(response.data['results']) == 1
         # Verificamos que el wine_name (Read Only) aparece en la respuesta
-        assert response.data[0]["wine_name"] == analysis_dop_premium.wine.name
+        assert response.data['results'][0]["wine_name"] == analysis_dop_premium.wine.name
 
     def test_create_analysis_via_api(
         self, auth_client, production_order_factory, user_factory
@@ -76,7 +76,7 @@ class TestWineAnalysisViewSet:
         response = auth_client.get(self.list_url, {"start_date": start_date})
 
         assert response.status_code == status.HTTP_200_OK
-        assert len(response.data) == 2
+        assert len(response.data['results']) == 2
 
     def test_search_by_wine_name(
         self, auth_client, analysis_factory, production_order_factory, wine_factory
@@ -95,8 +95,8 @@ class TestWineAnalysisViewSet:
         response = auth_client.get(self.list_url, {"search": "Albariño"})
 
         assert response.status_code == status.HTTP_200_OK
-        assert len(response.data) == 1
-        assert "ALBARIÑO" in response.data[0]["wine_name"]
+        assert len(response.data['results']) == 1
+        assert "ALBARIÑO" in response.data['results'][0]["wine_name"]
 
     def test_create_invalid_range_blocks_api(
         self, auth_client, production_order_factory, user_factory

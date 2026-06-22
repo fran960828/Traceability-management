@@ -20,7 +20,7 @@ class TestProductionOrderAPI:
         response = auth_client.get(self.list_url)
 
         assert response.status_code == status.HTTP_200_OK
-        assert len(response.data) == 2
+        assert len(response.data['results']) == 2
 
     def test_create_production_order_draft(
         self, auth_client, wine_factory, user_factory
@@ -147,11 +147,11 @@ class TestProductionOrderAPI:
         # --- CASO A: Filtrar por el vino activo ---
         response = auth_client.get(self.list_url, {"wine": vino_activo.id})
         assert response.status_code == status.HTTP_200_OK
-        assert len(response.data) == 1
-        assert response.data[0]["lot_number"] == "L-ACT"
+        assert len(response.data['results']) == 1
+        assert response.data['results'][0]["lot_number"] == "L-ACT"
 
         # --- CASO B: Filtrar por el vino inactivo ---
         # El filtro 'wine__is_active=True' debería hacer que no devuelva nada
         response = auth_client.get(self.list_url, {"wine": vino_inactivo.id})
         assert response.status_code == status.HTTP_200_OK
-        assert len(response.data) == 0
+        assert len(response.data['results']) == 0

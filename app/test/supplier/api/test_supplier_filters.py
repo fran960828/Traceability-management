@@ -26,8 +26,8 @@ class TestSupplierFilters:
 
         assert response.status_code == status.HTTP_200_OK
         # Deben venir exactamente 2, no los 3
-        assert len(response.data) == 2
-        assert all(s["category_name"] == "VIDRIO" for s in response.data)
+        assert len(response.data['results']) == 2
+        assert all(s["category_name"] == "VIDRIO" for s in response.data['results'])
 
     def test_search_suppliers_by_name_or_tax_id(self, auth_client, supplier_factory):
         """Verifica que el parámetro ?search= filtra por nombre o NIF"""
@@ -38,10 +38,10 @@ class TestSupplierFilters:
 
         # A. Búsqueda por nombre parcial
         response_name = auth_client.get(f"{url}?search=Ontalba")
-        assert len(response_name.data) == 1
-        assert response_name.data[0]["name"] == "Bodegas Ontalba"
+        assert len(response_name.data['results']) == 1
+        assert response_name.data['results'][0]["name"] == "Bodegas Ontalba"
 
         # B. Búsqueda por tax_id
         response_tax = auth_client.get(f"{url}?search=A9999")
-        assert len(response_tax.data) == 1
-        assert response_tax.data[0]["name"] == "Transportes Garcia"
+        assert len(response_tax.data['results']) == 1
+        assert response_tax.data['results'][0]["name"] == "Transportes Garcia"

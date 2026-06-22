@@ -48,7 +48,7 @@ class TestLotTraceabilityViewSet:
         
         assert response.status_code == status.HTTP_200_OK
         # Verificamos que el resultado filtrado contiene el nombre buscado
-        assert all(wine_name in r['content']['order_details']['wine_name'] for r in response.data)
+        assert all(wine_name in r['content']['order_details']['wine_name'] for r in response.data['results'])
 
     def test_search_filter_global(self, api_client, user_factory, orden_trazada_y_confirmada):
         """Prueba el SearchFilter configurado en el ViewSet."""
@@ -62,7 +62,7 @@ class TestLotTraceabilityViewSet:
         response = api_client.get(url, {'search': lot})
         
         assert response.status_code == status.HTTP_200_OK
-        assert response.data[0]['content']['order_details']['lot_number'] == lot
+        assert response.data['results'][0]['content']['order_details']['lot_number'] == lot
 
     # --- EDGE CASES ---
 

@@ -20,8 +20,8 @@ class TestPurchaseOrderItemViewSet:
 
         assert response.status_code == status.HTTP_200_OK
         # Verificamos que el ReadOnlyField 'material_name' que definimos funciona
-        assert "material_name" in response.data[0]
-        assert response.data[0]["material_name"] is not None
+        assert "material_name" in response.data['results'][0]
+        assert response.data['results'][0]["material_name"] is not None
 
     # --- FILTERS ---
     def test_filter_items_by_purchase_order(
@@ -35,8 +35,8 @@ class TestPurchaseOrderItemViewSet:
 
         response = auth_client.get(self.list_url, {"purchase_order": order1.id})
 
-        assert len(response.data) == 1
-        assert response.data[0]["purchase_order"] == order1.id
+        assert len(response.data['results']) == 1
+        assert response.data['results'][0]["purchase_order"] == order1.id
 
     def test_search_items_by_material_name(
         self, auth_client, packaging_factory, purchase_order_item_factory
@@ -48,8 +48,8 @@ class TestPurchaseOrderItemViewSet:
 
         response = auth_client.get(self.list_url, {"search": "Corcho"})
 
-        assert len(response.data) == 1
-        assert "CORCHO" in response.data[0]["material_name"]
+        assert len(response.data['results']) == 1
+        assert "CORCHO" in response.data['results'][0]["material_name"]
 
     # --- EDGE CASES ---
     def test_bodeguero_user_cannot_delete_item(

@@ -170,28 +170,6 @@ class TestStockOperationsIntegration:
         assert movements.filter(movement_type="OUT", quantity=-50).exists()
         assert movements.filter(movement_type="IN", quantity=50).exists()
 
-    # --- TESTS DE DISPOSE (Retirada/Merma) ---
-
-    def test_dispose_happy_path(
-        self, bodeguero_client, batch_factory, location_factory
-    ):
-        """HAPPY PATH: Retirada de stock por rotura o merma."""
-        client, user = bodeguero_client
-        batch = batch_factory()
-        loc = location_factory()
-
-        url = reverse("stock:movement-stock-dispose")
-        data = {
-            "batch": batch.id,
-            "location": loc.id,
-            "quantity": -5,  # Cantidad negativa para salida
-            "notes": "Botella rota en picking",
-        }
-        response = client.post(url, data)
-
-        assert response.status_code == status.HTTP_201_CREATED
-        assert response.data["movement_type"] == "OUT"
-        assert response.data["user"] == user.id
 
     # --- TESTS DE BULK RECEIVE (Recepción masiva) ---
 

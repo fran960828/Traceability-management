@@ -30,7 +30,7 @@ class TestStockMovementViewSet:
 
         response = client.get(self.list_url)
         assert response.status_code == status.HTTP_200_OK
-        assert len(response.data) == 5
+        assert len(response.data['results']) == 5
 
     def test_enologo_can_retrieve_detail(self, enologo_data, stock_movement_factory):
         client, enologo = enologo_data
@@ -76,7 +76,7 @@ class TestStockMovementViewSet:
         response = client.get(f"{self.list_url}?product_name={p_name}")
 
         assert response.status_code == status.HTTP_200_OK
-        assert any(item["id"] == m.id for item in response.data)
+        assert any(item["id"] == m.id for item in response.data['results'])
 
     def test_enologo_filter_by_date_range(self, enologo_data, stock_movement_factory):
         client, enologo = enologo_data
@@ -92,7 +92,7 @@ class TestStockMovementViewSet:
         response = client.get(f"{self.list_url}?date_from={date_from}")
 
         assert response.status_code == status.HTTP_200_OK
-        assert len(response.data) == 1
+        assert len(response.data['results']) == 1
 
     # --- EDGE CASES: INMUTABILIDAD ---
     def test_enologo_cannot_delete_movement(self, enologo_data, stock_movement_factory):

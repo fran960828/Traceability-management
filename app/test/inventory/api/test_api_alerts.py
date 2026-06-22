@@ -46,8 +46,9 @@ class TestInventoryAlertsAPI:
         # Verificaciones
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
+       
         assert len(data) == 1
-        assert data[0]["name"] == "ETIQUETA BAJA"
+        assert data[0]["label_type_display"] == "Etiqueta Frontal"
         assert data[0]["current_stock"] == 100
         assert data[0]["is_low_stock"] is True
 

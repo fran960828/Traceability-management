@@ -70,9 +70,8 @@ class TestLabelAPI:
             "min_stock_level": 10,
         }
         response = api_client.post(self.get_url("list"), data)
-
         assert response.status_code == status.HTTP_201_CREATED
-        assert response.data["name"] == "ETIQUETA TINTO CRIANZA"
+        assert response.data["name"] == "BODEGA REAL [Etiqueta Frontal - 2022]"
         assert response.data["brand_reference"] == "BODEGA REAL"
         assert "ETI-" in response.data["internal_code"]
 
@@ -126,10 +125,10 @@ class TestLabelAPI:
 
         # Filtramos por año 2024
         response = auth_client.get(self.get_url("list"), {"vintage": 2024})
-        assert len(response.data) == 2
+        assert len(response.data['results']) == 2
 
         # Filtramos por año 2024 Y tipo FRONT
         response = auth_client.get(
             self.get_url("list"), {"vintage": 2024, "label_type": "FRONTAL"}
         )
-        assert len(response.data) == 1
+        assert len(response.data['results']) == 1

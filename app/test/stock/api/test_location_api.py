@@ -19,7 +19,7 @@ class TestLocationViewSet:
         response = auth_client.get(self.list_url)
 
         assert response.status_code == status.HTTP_200_OK
-        assert len(response.data) == 3
+        assert len(response.data['results']) == 3
 
     def test_create_location_enologo(self, api_client, user_factory):
         """HAPPY PATH: El Enólogo puede crear nuevas ubicaciones."""

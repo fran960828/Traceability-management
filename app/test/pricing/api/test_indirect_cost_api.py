@@ -61,5 +61,5 @@ class TestIndirectCostsAPI:
         IndirectCostConfigFactory(name="Normal")
         
         response = api_client.get(f"{self.list_url}?search=Especial")
-        assert len(response.data) == 1
-        assert response.data[0]['name'] == "Especial"
+        assert len(response.data['results']) == 1
+        assert response.data['results'][0]['name'] == "Especial"

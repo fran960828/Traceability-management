@@ -107,4 +107,4 @@ class TestEnologicalAPI:
         response = auth_client.get(
             self.get_url("list"), {"enological_type": "CONSERVANTE"}
         )
-        assert len(response.data) == 1
+        assert len(response.data['results']) == 1

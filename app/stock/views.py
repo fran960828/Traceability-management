@@ -226,15 +226,3 @@ class StockMovementViewSet(viewsets.ReadOnlyModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @extend_schema(summary="Retirada/Merma de Stock", tags=["Operaciones de Almacén"])
-    @action(detail=False, methods=["post"], url_path="dispose")
-    def stock_dispose(self, request):
-        data = request.data.copy()
-        data["movement_type"] = StockMovement.MovementType.OUT
-        serializer = StockMovementSerializer(data=data, context={"request": request})
-        if serializer.is_valid():
-            serializer.save(
-                user=request.user, movement_type=StockMovement.MovementType.OUT
-            )
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

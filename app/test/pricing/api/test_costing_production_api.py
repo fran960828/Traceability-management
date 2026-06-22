@@ -66,8 +66,8 @@ class TestProductionCostingAPI:
         response = api_client.get(f"{self.list_url}?wine={wine_id}")
         
         assert response.status_code == status.HTTP_200_OK
-        assert len(response.data) == 1
-        assert response.data[0]['wine_name'] == escenario_escandallo_completo.wine.name
+        assert len(response.data['results']) == 1
+        assert response.data['results'][0]['wine_name'] == escenario_escandallo_completo.wine.name
 
     def test_search_by_lot_number(self, user_factory, api_client, escenario_escandallo_completo):
         """Verifica la búsqueda global por número de lote."""
@@ -79,4 +79,4 @@ class TestProductionCostingAPI:
         
         response = api_client.get(f"{self.list_url}?search={lot}")
         assert response.status_code == status.HTTP_200_OK
-        assert any(item['order_lot'] == lot for item in response.data)
+        assert any(item['order_lot'] == lot for item in response.data['results'])

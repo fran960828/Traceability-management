@@ -62,16 +62,16 @@ class TestWineViewSet:
 
         response = auth_client.get(self.list_url, {"vintage": 2024})
         assert response.status_code == status.HTTP_200_OK
-        assert len(response.data) == 1
-        assert response.data[0]["vintage"] == 2024
+        assert len(response.data['results']) == 1
+        assert response.data['results'][0]["vintage"] == 2024
 
     def test_search_wines_by_name_or_code(self, auth_client, wine_factory):
         """Búsqueda por texto (SearchFilter)"""
         wine_factory(name="ALMA DE GRIAL")
 
         response = auth_client.get(self.list_url, {"search": "GRIAL"})
-        assert len(response.data) == 1
-        assert "GRIAL" in response.data[0]["name"]
+        assert len(response.data['results']) == 1
+        assert "GRIAL" in response.data['results'][0]["name"]
 
     # ==========================================================================
     # 3. EDGE CASES Y REGLAS DE NEGOCIO (POST)

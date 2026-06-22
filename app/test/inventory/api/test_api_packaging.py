@@ -78,8 +78,8 @@ class TestPackagingAPI:
         response = auth_client.get(url, {"packaging_type": "CIERRE"})
 
         assert response.status_code == status.HTTP_200_OK
-        assert len(response.data) == 1
-        assert response.data[0]["packaging_type"] == "CIERRE"
+        assert len(response.data['results']) == 1
+        assert response.data['results'][0]["packaging_type"] == "CIERRE"
 
     def test_search_packaging_by_name(self, auth_client, packaging_factory):
         """Búsqueda: Verificar ?search="""
@@ -88,5 +88,5 @@ class TestPackagingAPI:
         url = self.get_url("list")
         response = auth_client.get(url, {"search": "ESPECIAL"})
 
-        assert len(response.data) == 1
-        assert "ESPECIAL" in response.data[0]["name"]
+        assert len(response.data['results']) == 1
+        assert "ESPECIAL" in response.data['results'][0]["name"]
