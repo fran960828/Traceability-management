@@ -27,7 +27,7 @@ class AbstractBaseMaterialModel(models.Model):
     UNIT_CHOICES = [
         ("UNIDAD", "Unidades"),
         ("KG", "Kilogramos"),
-        ("LITRO", "Litros"),
+        ("LITRO", "Litro"),
         ("MILLAR", "Millares"),
     ]
     unit_mesure = models.CharField(

@@ -1,4 +1,4 @@
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
 from purchase.models import PurchaseOrder
@@ -34,3 +34,13 @@ def update_purchase_order_status(sender, instance, created, **kwargs):
             po.status = PurchaseOrder.Status.PARTIAL
 
         po.save()
+
+@receiver([post_save, post_delete], sender=StockMovement)
+def sync_batch_stock_status(sender, instance, **kwargs):
+    """
+    Intercepta cualquier creación, modificación o eliminación de un movimiento
+    en el libro diario y fuerza la actualización física del lote afectado.
+    """
+    if instance.batch:
+        # Llama de forma aislada al método del lote para actualizar saldo y flag
+        instance.batch.update_availability_status()

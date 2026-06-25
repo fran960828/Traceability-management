@@ -1,6 +1,6 @@
 import pytest
 
-from stock.serializers import StockMovementSerializer
+from stock.serializers import StockMovementSerializer,StockAdjustmentSerializer
 
 
 @pytest.mark.django_db
@@ -28,11 +28,21 @@ class TestStockMovementSerializer:
         assert serializer.data["movement_type"] == "IN"
 
     # --- HAPPY PATH: ESCRITURA (AJUSTES) ---
+    # Importa tu nuevo serializador arriba en el archivo de tests:
+# from stock.serializers import StockAdjustmentSerializer, StockMovementSerializer
+
+    # --- HAPPY PATH ---
     def test_movement_serializer_adjustment_valid(
-        self, batch_con_po, location_factory, rf, admin_user
+        self, batch_con_po, location_factory, rf, admin_user, stock_movement_factory
     ):
-        """HAPPY PATH: El serializer permite crear un ajuste manual inyectando el usuario del contexto."""
+        """HAPPY PATH: El serializer de ajuste permite crear una merma inyectando el usuario."""
         loc = location_factory()
+        
+        # 🟢 CORRECCIÓN 1: Inyectamos stock previo para que el validador no rebote la merma
+        stock_movement_factory(
+            batch=batch_con_po, location=loc, quantity=10, movement_type="IN", user=admin_user
+        )
+
         data = {
             "batch": batch_con_po.id,
             "location": loc.id,
@@ -43,10 +53,11 @@ class TestStockMovementSerializer:
         request = rf.post("/")
         request.user = admin_user
 
-        serializer = StockMovementSerializer(data=data, context={"request": request})
+        # 🟢 CORRECCIÓN 2: Apuntamos al serializador correcto de escritura (POST)
+        serializer = StockAdjustmentSerializer(data=data, context={"request": request})
         assert serializer.is_valid(), serializer.errors
 
-        # Guardamos pasando el tipo (como haría el ViewSet) y el usuario del request
+        # Guardamos pasando los datos contextuales como haría la vista
         movement = serializer.save(movement_type="ADJ", user=request.user)
 
         assert movement.quantity == -5
@@ -57,40 +68,50 @@ class TestStockMovementSerializer:
     def test_movement_serializer_zero_quantity_fails(
         self, batch_con_po, location_factory, rf
     ):
-        """VALIDACIÓN: No se puede registrar un movimiento de 0 unidades."""
+        """VALIDACIÓN: No se puede registrar un ajuste de 0 unidades."""
         data = {
             "batch": batch_con_po.id,
             "location": location_factory().id,
             "quantity": 0,
+            "notes": "Ajuste nulo",
         }
-        # Incluso para fallar en validación, es buena práctica pasar el contexto si el serializer lo espera
         request = rf.post("/")
-        serializer = StockMovementSerializer(data=data, context={"request": request})
+        
+        # 🟢 CORRECCIÓN 3: Apuntamos a StockAdjustmentSerializer
+        serializer = StockAdjustmentSerializer(data=data, context={"request": request})
 
         assert not serializer.is_valid()
         assert "quantity" in serializer.errors
 
     # --- EDGE CASES ---
     def test_movement_serializer_readonly_fields_behavior(
-        self, batch_con_po, location_factory, rf, admin_user
+        self, batch_con_po, location_factory, rf, admin_user, stock_movement_factory
     ):
-        """EDGE CASE: Los campos readonly (user, type, date) son ignorados aunque se envíen en el JSON."""
+        """EDGE CASE: Los campos readonly en el ajuste (user, id) son ignorados si se manipulan."""
+        loc = location_factory()
+        
+        # Inyectamos stock para el caso positivo
+        stock_movement_factory(
+            batch=batch_con_po, location=loc, quantity=20, movement_type="IN", user=admin_user
+        )
+
         data = {
             "batch": batch_con_po.id,
-            "location": location_factory().id,
-            "quantity": 10,
-            "movement_type": "IN",  # Intento de manipulación
-            "user": 999,  # Intento de suplantación
+            "location": loc.id,
+            "quantity": -10,
+            "user": 999,  # Intento de suplantación en un campo readonly del ajuste
+            "notes": "Ajuste de control",
         }
 
         request = rf.post("/")
         request.user = admin_user
 
-        serializer = StockMovementSerializer(data=data, context={"request": request})
-        assert serializer.is_valid()
+        # 🟢 CORRECCIÓN 4: Apuntamos a StockAdjustmentSerializer
+        serializer = StockAdjustmentSerializer(data=data, context={"request": request})
+        assert serializer.is_valid(), serializer.errors
 
-        # Prevalece la lógica del ViewSet/Contexto
         movement = serializer.save(movement_type="ADJ", user=request.user)
 
-        assert movement.movement_type == "ADJ"
+        # Prevalece el usuario inyectado por la vista, ignorando el '999' del JSON
+        assert movement.quantity == -10
         assert movement.user == admin_user

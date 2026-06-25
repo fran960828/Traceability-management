@@ -41,41 +41,59 @@ export enum MOVEMENT_TYPE {
   IN = 'IN',
   OUT = 'OUT',
   ADJUSTMENT = 'ADJ',
-  TRANSFER = 'TRA'
+  TRANS_OUT = 'TRANS_OUT',
+  TRANS_IN = 'TRANS_IN'
 }
 
+// 🟢 2. Mapeamos las etiquetas amigables para el Libro Diario de la interfaz
 export const MOVEMENT_TYPE_LABELS: Record<MOVEMENT_TYPE, string> = {
   [MOVEMENT_TYPE.IN]: 'Entrada (Compra/Recepciones)',
   [MOVEMENT_TYPE.OUT]: 'Salida (Consumo/Embotellado)',
   [MOVEMENT_TYPE.ADJUSTMENT]: 'Ajuste de Inventario (Mermas)',
-  [MOVEMENT_TYPE.TRANSFER]: 'Transferencia de Ubicación'
+  [MOVEMENT_TYPE.TRANS_OUT]: 'Traslado (Salida de Origen)',
+  [MOVEMENT_TYPE.TRANS_IN]: 'Traslado (Entrada a Destino)'
+};
+
+// 🟢 3. Enumerado para el nuevo Flag físico e indexado de disponibilidad del lote
+export enum BATCH_STOCK_STATUS {
+  AVAILABLE = 'AVAILABLE',
+  DEPLETED = 'DEPLETED'
+}
+
+export const BATCH_STATUS_LABELS: Record<BATCH_STOCK_STATUS, string> = {
+  [BATCH_STOCK_STATUS.AVAILABLE]: 'En Existencias',
+  [BATCH_STOCK_STATUS.DEPLETED]: 'Agotado'
 };
 
 export interface Batch {
-    id: number;
-    batch_number: string;
-    material_name: string;
-    arrival_date: string;
-    expiry_date: string | null;
+  id: number;
+  batch_number: string;
+  material_name: string;
+  arrival_date: string;
+  expiry_date: string | null;
+  current_stock_cache: string; // DRF DecimalField mapeado como string para seguridad matemática
+  stock_status: BATCH_STOCK_STATUS;
 }
 
 export interface Location {
-    id: number;
-    name: string;
-    description: string;
+  id: number;
+  name: string;
+  description: string;
 }
+
 /**
  * Interfaz del histórico inmutable de movimientos devuelto por StockMovementViewSet
  */
 export interface StockMovement {
   id: number;
-  batch:Batch;
-  location:Location;
-  quantity: string; // DRF DecimalField viaja como string para evitar pérdidas de precisión en JS
+  batch: Batch;
+  location: Location;
+  quantity: string; 
   movement_type: MOVEMENT_TYPE;
+  movement_type_display?: string; 
   reference_po: number | null;
   reference_po_number?: string;
-  user_name: string; // Traducido por el to_representation de tu serializer
+  user_name: string; 
   notes: string;
   created_at: string;
 }

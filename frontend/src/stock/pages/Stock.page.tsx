@@ -1,7 +1,7 @@
-import { StockMovementContainer } from "../components/Stock.container";
+import { StockMainContainer } from "../components/containers/StockMainContainer";
 
 export const StockPage = ()=>{
     return (
-        <StockMovementContainer/>
+        <StockMainContainer/>
     )
 }

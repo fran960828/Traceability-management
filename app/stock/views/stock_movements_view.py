@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
+from django.db.models import OuterRef, Subquery  # 🟢 Necesarios para el filtrado avanzado
 from drf_spectacular.utils import (OpenApiParameter, extend_schema,
                                    extend_schema_view)
 from rest_framework import filters, status, viewsets
@@ -9,9 +10,9 @@ from rest_framework.response import Response
 
 from utils.permissions import PurchaseRolePermission
 
-from .models import Location, StockMovement
-from .serializers import (BulkReceptionSerializer, LocationSerializer,
-                          StockMovementSerializer, StockTransferSerializer,StockAdjustmentSerializer)
+from stock.models import Location, StockMovement
+from stock.serializers import (BulkReceptionSerializer, LocationSerializer,
+                          StockMovementSerializer, StockTransferSerializer, StockAdjustmentSerializer)
 
 
 @extend_schema_view(
@@ -59,11 +60,13 @@ class LocationViewSet(viewsets.ModelViewSet):
                 name="location", type=int, description="Filtrar por ID de ubicación"
             ),
             OpenApiParameter(
+                name="available_only", type=bool, description="True para aislar lotes vivos sin TRANS_OUT ni stock cero"
+            ),
+            OpenApiParameter(
                 name="date_from",
                 type=str,
                 location=OpenApiParameter.QUERY,
                 description="Fecha inicio (YYYY-MM-DD). Ejemplo: 2026-04-01",
-                # Opcional: puedes añadir un ejemplo real
             ),
             OpenApiParameter(
                 name="date_to",
@@ -97,18 +100,37 @@ class StockMovementViewSet(viewsets.ReadOnlyModelViewSet):
     ]
 
     def get_queryset(self):
+        # 🟢 Solución a ordenamiento por defecto antes del filtrado condicional
         queryset = super().get_queryset()
 
-        # Filtros por Query Params
+        # Captura de Query Params
+        available_only = self.request.query_params.get("available_only", "false") == "true"
         m_type = self.request.query_params.get("movement_type")
         supplier_id = self.request.query_params.get("supplier")
         product_name = self.request.query_params.get("product_name")
         loc_id = self.request.query_params.get("location")
-
         date_from = self.request.query_params.get("date_from")
         date_to = self.request.query_params.get("date_to")
 
-        if m_type:
+        # 🟢 MODIFICACIÓN: Si se solicita el panel operativo de "Existencias y Lotes Disponibles"
+        if available_only:
+            # 1. Subquery para aislar exclusivamente el último movimiento ('id' más alto) de cada lote
+            latest_movement_subquery = StockMovement.objects.filter(
+                batch=OuterRef("batch")
+            ).order_by("-id").values("id")[:1]
+
+            # 2. Forzamos a la base de datos a quedarse solo con esas filas definitivas
+            queryset = queryset.filter(id=Subquery(latest_movement_subquery))
+
+            # 3. Excluimos los que se quedaron sin saldo físico real y los que salieron de la zona vía TRANS_OUT
+            queryset = queryset.filter(
+                batch__current_stock_cache__gt=0
+            ).exclude(
+                movement_type="TRANS_OUT"
+            )
+
+        # --- Filtros Estándar (Compartidos / Aplicables) ---
+        if m_type and not available_only: # Evita colisiones de tipo en la pestaña disponible
             queryset = queryset.filter(movement_type=m_type)
 
         if supplier_id:
@@ -117,7 +139,6 @@ class StockMovementViewSet(viewsets.ReadOnlyModelViewSet):
             )
 
         if product_name:
-            # Filtramos en los tres tipos de materiales posibles
             queryset = queryset.filter(
                 models.Q(batch__order_item__packaging__name__icontains=product_name)
                 | models.Q(batch__order_item__enological__name__icontains=product_name)
@@ -133,6 +154,7 @@ class StockMovementViewSet(viewsets.ReadOnlyModelViewSet):
         if date_to:
             queryset = queryset.filter(created_at__date__lte=date_to)
 
+        # Mantenemos el Libro Diario ordenado cronológicamente con paginación limpia
         return queryset.order_by("-created_at")
 
     @extend_schema(
@@ -163,12 +185,10 @@ class StockMovementViewSet(viewsets.ReadOnlyModelViewSet):
     )
     @action(detail=False, methods=["post"], url_path="transfer")
     def transfer_stock(self, request):
-        # 🟢 1. Pasamos el control al serializador para que valide existencias físicas y ubicaciones
         serializer = StockTransferSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # 🟢 2. Extraemos los datos limpios y tipados por Django
         batch = serializer.validated_data["batch"]
         origin = serializer.validated_data["origin_location"]
         dest = serializer.validated_data["destination_location"]
@@ -177,7 +197,7 @@ class StockMovementViewSet(viewsets.ReadOnlyModelViewSet):
 
         try:
             with transaction.atomic():
-                # 🟢 3. Movimiento de SALIDA por Transferencia.
+                # Movimiento de SALIDA por Transferencia.
                 StockMovement.objects.create(
                     batch=batch,
                     location=origin,
@@ -187,7 +207,7 @@ class StockMovementViewSet(viewsets.ReadOnlyModelViewSet):
                     notes=f"📦 [TRANSFERENCIA] Salida hacia {dest.name}. {notes}".strip(),
                 )
 
-                # 🟢 4. Movimiento de ENTRADA por Transferencia
+                # Movimiento de ENTRADA por Transferencia
                 StockMovement.objects.create(
                     batch=batch,
                     location=dest,
@@ -218,13 +238,11 @@ class StockMovementViewSet(viewsets.ReadOnlyModelViewSet):
     )
     @action(detail=False, methods=["post"], url_path="adjustment")
     def stock_adjustment(self, request):
-        # 🟢 1. Pasamos el payload al serializador especializado
         serializer = StockAdjustmentSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            # 🟢 2. Guardamos el movimiento inyectando los campos del sistema de forma directa
             serializer.save(
                 user=request.user,
                 movement_type=StockMovement.MovementType.ADJUSTMENT

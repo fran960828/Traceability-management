@@ -1,0 +1,186 @@
+/* ==========================================================================
+   📦 CONTROL DE EXISTENCIAS Y MOVIMIENTOS - ESTILOS BASE DE ALMACÉN
+   ========================================================================== */
+
+/* Envoltorio principal de la página del catálogo */
+.pageWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+
+/* 🧭 BARRA DE PESTAÑAS (SUB-LAYOUT DE BOTONES CORPORATIVOS) */
+.tabBar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 12px;
+  background-color: #1f2937; /* Integrado al tema oscuro de almacén */
+  border-radius: 8px;
+  border: 1px solid #374151;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+  overflow-x: auto; /* Permite scroll si se acumulan pestañas en pantallas compactas */
+  scrollbar-width: thin;
+}
+
+/* Estilización del scroll horizontal de la barra en Webkit (Safari/Chrome) */
+.tabBar::-webkit-scrollbar {
+  height: 4px;
+}
+
+.tabBar::-webkit-scrollbar-thumb {
+  background-color: #4b5563;
+  border-radius: 4px;
+}
+
+/* 🧱 CONTENEDOR CENTRAL DEL CONTEXTO DE INVENTARIO ACTIVO */
+.containerContent {
+  width: 100%;
+  flex: 1;
+  background-color: transparent;
+  animation: fadeInTab 0.25s ease-in-out; /* Suaviza el cambio entre pestañas sin parpadeos */
+  box-sizing: border-box;
+}
+
+/* 🔍 SECCIÓN DE FILTROS AVANZADOS CRUZADOS */
+.filtersSection {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.25rem;
+  background-color: #1f2937;
+  padding: 1.25rem;
+  border-radius: 8px;
+  border: 1px solid #374151;
+  box-sizing: border-box;
+  margin-bottom: 1rem;
+}
+
+/* 📊 REJILLA DE TABLAS Y REGISTROS */
+.tableSection {
+  background-color: #1f2937;
+  border-radius: 8px;
+  border: 1px solid #374151;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Estados de carga, errores y vacíos */
+.loadingPlaceholder, .emptyState {
+  padding: 3rem;
+  text-align: center;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.errorContainer {
+  padding: 2rem;
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid #ef4444;
+  color: #f87171;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.footerSection {
+  margin-top: 0.5rem;
+  width: 100%;
+}
+
+/* ==========================================================================
+   🏷️ BADGES DE ESTADO (TRAZABILIDAD Y REGISTROS INMUTABLES)
+   ========================================================================== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+/* 🟩 Verde: Entradas ordinarias (MOVEMENT_TYPE.IN) */
+.active {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+/* 🟥 Rojo oscuro: Salidas ordinarias o consumos (MOVEMENT_TYPE.OUT) */
+.blocked {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* 🟦 Azul: Entrada por transferencia en destino (MOVEMENT_TYPE.TRANS_IN) */
+.verified {
+  background-color: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+/* 🟨 Naranja/Ámbar: Ajustes manuales e informe de mermas (MOVEMENT_TYPE.ADJUSTMENT) */
+.pending {
+  background-color: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+/* ⬜ Gris: Salida por transferencia en origen (MOVEMENT_TYPE.TRANS_OUT) */
+.inactive {
+  background-color: rgba(156, 163, 175, 0.15);
+  color: #9ca3af;
+  border: 1px solid rgba(156, 163, 175, 0.3);
+}
+
+/* Elementos de código inline para celdas de lotes */
+.codeHighlight {
+  font-family: monospace;
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  color: #e5e7eb;
+}
+
+/* ==========================================================================
+   🔄 ANIMACIÓN DE TRANSICIÓN (UX DE ALTA FIDELIDAD)
+   ========================================================================== */
+@keyframes fadeInTab {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 📱 RESPONSIVE DESIGN (OPTIMIZACIÓN PARA TABLETS Y DISPOSITIVOS DE BODEGA) */
+@media (max-width: 768px) {
+  .pageWrapper {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .tabBar {
+    gap: 8px;
+    padding: 8px;
+    justify-content: flex-start;
+  }
+  
+  /* Garantiza que los FormButton sigan las directrices globales sin colapsar el texto */
+  .tabBar button,
+  .tabBar :global(.btnBase) {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+}

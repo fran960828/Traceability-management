@@ -13,7 +13,7 @@ import {
   PURCHASE_ORDER_STATUS,
   PURCHASE_ORDER_STATUS_LABELS
 } from '../../purchase/models/purchase.schema'; 
-import type { BulkReceptionValues } from '../models/reception.schema';
+import type { BulkReceptionOutput } from '../models/reception.schema';
 
 import { ReceptionForm } from './forms/reception.confirm';
 import { FormButton } from '../../shared/components/formInputs/FormButton';
@@ -61,7 +61,7 @@ export const ReceptionContainer: React.FC = () => {
 
   // 2. Única Mutación requerida: Registro masivo de entrada física de mercancía 🚚
   const receptionMutation = useDataMutation({
-    mutationFn: (values: BulkReceptionValues) => ReceptionService.bulkReceive(values),
+    mutationFn: (values: BulkReceptionOutput) => ReceptionService.bulkReceive(values),
     invalidateKeys: ['reception-purchase-orders', 'locations-select'],
     onSuccess: async() => {
     await Promise.all([
@@ -74,7 +74,7 @@ export const ReceptionContainer: React.FC = () => {
   },
   });
 
-  const handleReceptionSubmit = (formValues: BulkReceptionValues) => {
+  const handleReceptionSubmit = (formValues: BulkReceptionOutput) => {
     receptionMutation.mutate(formValues);
   };
 

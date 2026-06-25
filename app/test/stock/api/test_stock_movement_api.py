@@ -44,10 +44,18 @@ class TestStockMovementViewSet:
 
     # --- HAPPY PATH: ACCIONES ---
     def test_enologo_can_perform_adjustment(
-        self, enologo_data, batch_con_po, location_factory
+        self, enologo_data, batch_con_po, location_factory,stock_movement_factory
     ):
         client, enologo = enologo_data
         loc = location_factory(name="ZONA_CATAS")
+
+        stock_movement_factory(
+            batch=batch_con_po,
+            location=loc,
+            quantity=10,
+            movement_type="IN",
+            user=enologo
+        )
 
         data = {
             "batch": batch_con_po.id,

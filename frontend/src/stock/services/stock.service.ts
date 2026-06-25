@@ -4,7 +4,9 @@ import type {
   StockMovementPaginationResponse, 
   StockMovementFilters,
   StockTransferOutput,
-  StockAdjustmentOutput
+  StockAdjustmentOutput,
+  AvailableStockFilters,              // 🟢 Importado desde el nuevo esquema
+  AvailableStockPaginationResponse    // 🟢 Importado desde el nuevo esquema
 } from '../models/stock.schema';
 
 export const StockService = {
@@ -12,7 +14,7 @@ export const StockService = {
    * 📋 LISTAR MOVIMIENTOS DE STOCK (LIBRO DIARIO DE ALMACÉN)
    * Recupera el histórico inmutable paginado aplicando filtros analíticos avanzados cruzados.
    * Mapea con: GET /api/stock/movements/
-   * * @param filters Criterios de búsqueda (tipo de movimiento, rango de fechas, IDs, etc.)
+   * @param filters Criterios de búsqueda (tipo de movimiento, rango de fechas, IDs, etc.)
    */
   getAll: async (filters?: StockMovementFilters): Promise<StockMovementPaginationResponse> => {
     const { data } = await apiClient.get<StockMovementPaginationResponse>(
@@ -22,9 +24,24 @@ export const StockService = {
     return data;
   },
 
-  getAllForSelect: async () => {
-    const response = await apiClient.get('stock/movements/?limit=1000'); // Rompe la paginación de Django
-    return response.data;
+
+  getAvailableStock: async (filters?: AvailableStockFilters): Promise<AvailableStockPaginationResponse> => {
+    // Saneamiento de parámetros: Eliminamos las claves vacías ('') o nulas para no ensuciar la query de Django
+    const cleanParams = filters
+      ? Object.keys(filters).reduce((acc, key) => {
+          const val = (filters as any)[key];
+          if (val !== undefined && val !== null && val !== '') {
+            acc[key] = val;
+          }
+          return acc;
+        }, {} as Record<string, any>)
+      : undefined;
+
+    const { data } = await apiClient.get<AvailableStockPaginationResponse>(
+      'stock/batch/',
+      { params: cleanParams }
+    );
+    return data;
   },
 
   /**
@@ -41,7 +58,7 @@ export const StockService = {
    * 🔄 TRANSFERENCIA DE STOCK ENTRE UBICACIONES
    * Mueve existencias físicas de una zona a otra de la bodega de forma atómica en el backend.
    * Mapea con el @action: POST /api/stock/movements/transfer/
-   * * @param payload Datos de la transferencia validados por StockTransferSchema (en positivo)
+   * @param payload Datos de la transferencia validados por StockTransferSchema (en positivo)
    * @returns Mensaje de confirmación del backend {"detail": "Transferencia completada."}
    */
   transfer: async (payload: StockTransferOutput): Promise<{ detail: string }> => {
@@ -56,7 +73,7 @@ export const StockService = {
    * ⚠️ AJUSTE DE INVENTARIO (SUMAS O RESTAS EN AUDITORÍA)
    * Registra un movimiento diario de tipo 'ADJ' para corregir descuadres físicos en la bodega.
    * Mapea con el @action: POST /api/stock/movements/adjustment/
-   * * @param payload Datos del ajuste manual validados por StockAdjustmentSchema
+   * @param payload Datos del ajuste manual validados por StockAdjustmentSchema
    */
   adjustment: async (payload: StockAdjustmentOutput): Promise<StockMovement> => {
     const { data } = await apiClient.post<StockMovement>(
@@ -64,5 +81,5 @@ export const StockService = {
       payload
     );
     return data;
-  }
+  },
 };

@@ -8,7 +8,9 @@ class StockMovement(models.Model):
         IN = "IN", "Entrada (Compra/Producción)"
         OUT = "OUT", "Salida (Venta/Uso)"
         ADJUSTMENT = "ADJ", "Ajuste de Inventario"
-        TRANSFER = "TRA", "Transferencia entre ubicaciones"
+        TRANS_OUT = "TRANS_OUT", "Salida por Transferencia"
+        TRANS_IN = "TRANS_IN", "Entrada por Transferencia"
+
 
     batch = models.ForeignKey(
         "stock.Batch", on_delete=models.CASCADE, related_name="movements"
@@ -21,7 +23,7 @@ class StockMovement(models.Model):
         decimal_places=3,  # 3 decimales permiten precisión de gramos (0.001 kg)
         help_text="Positivo para entradas, negativo para salidas.",
     )
-    movement_type = models.CharField(max_length=3, choices=MovementType.choices)
+    movement_type = models.CharField(max_length=10, choices=MovementType.choices)
 
     # Trazabilidad
     reference_po = models.ForeignKey(

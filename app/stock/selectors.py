@@ -19,7 +19,7 @@ def get_batches_with_stock(material):
 
     # --- LA MEJORA: Exclusión explícita ---
     # Queremos que el campo 'filter_key' sea nuestro material
-    filters = {filter_key: material}
+    filters = {filter_key: material,"stock_status": Batch.StockStatus.AVAILABLE}
 
     for key in mapping.values():
         if key != filter_key:

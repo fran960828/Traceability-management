@@ -110,13 +110,20 @@ class TestStockOperationsIntegration:
 
     # --- HAPPY PATH: TRANSFERENCIA ENTRE UBICACIONES ---
     def test_transfer_stock_between_locations(
-        self, bodeguero_client, batch_factory, location_factory
+        self, bodeguero_client, batch_factory, location_factory, stock_movement_factory
     ):
         """HAPPY PATH: Mover stock de 'Muelle' a 'Almacén Central'."""
         client, bodeguero = bodeguero_client
         origin = location_factory(name="MUELLE")
         dest = location_factory(name="ALMACEN_CENTRAL")
         batch = batch_factory()
+        stock_movement_factory(
+            batch=batch,
+            location=origin,
+            quantity=100,
+            movement_type="IN",
+            user=bodeguero
+        )
 
         url = reverse("stock:movement-transfer-stock")
         data = {
@@ -127,33 +134,40 @@ class TestStockOperationsIntegration:
         }
 
         response = client.post(url, data)
-
         assert response.status_code == status.HTTP_201_CREATED
         # Debería haber creado 2 movimientos: uno de salida (-50) y uno de entrada (+50)
-        assert StockMovement.objects.filter(batch=batch, movement_type="OUT").exists()
-        assert StockMovement.objects.filter(batch=batch, movement_type="IN").exists()
+        assert StockMovement.objects.filter(batch=batch, movement_type="TRANS_OUT").exists()
+        assert StockMovement.objects.filter(batch=batch, movement_type="TRANS_IN").exists()
 
-    def test_transfer_missing_data_fails(self, bodeguero_client, batch_factory):
+    def test_transfer_missing_data_fails(self, bodeguero_client, batch_factory,location_factory):
         """EDGE CASE: Faltan datos en la transferencia."""
         client, _ = bodeguero_client
+        origin = location_factory(name="MUELLE")
         batch = batch_factory()
 
         # Enviamos datos incompletos (falta destination_location)
-        data = {"batch": batch.id, "origin_location": 1, "quantity": 10}
+        data = {"batch": batch.id, "origin_location": origin.id, "quantity": 10}
         url = reverse("stock:movement-transfer-stock")
         response = client.post(url, data)
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert response.data["detail"] == "Faltan datos para la transferencia."
+        assert response.data["destination_location"][0] == "This field is required."
 
     def test_transfer_happy_path_creates_two_movements(
-        self, bodeguero_client, batch_factory, location_factory
+        self, bodeguero_client, batch_factory, location_factory,stock_movement_factory
     ):
         """HAPPY PATH: Transferencia completa con atomicidad."""
         client, user = bodeguero_client
         loc_a = location_factory(name="ORIGEN")
         loc_b = location_factory(name="DESTINO")
         batch = batch_factory()
+        stock_movement_factory(
+            batch=batch,
+            location=loc_a,
+            quantity=100,
+            movement_type="IN",
+            user=user
+        )
         url = reverse("stock:movement-transfer-stock")
         data = {
             "batch": batch.id,
@@ -166,9 +180,9 @@ class TestStockOperationsIntegration:
         assert response.status_code == status.HTTP_201_CREATED
         # Verificamos que se han creado los 2 registros
         movements = StockMovement.objects.filter(batch=batch)
-        assert movements.count() == 2
-        assert movements.filter(movement_type="OUT", quantity=-50).exists()
-        assert movements.filter(movement_type="IN", quantity=50).exists()
+        assert movements.count() == 3
+        assert movements.filter(movement_type="TRANS_OUT", quantity=-50).exists()
+        assert movements.filter(movement_type="TRANS_IN", quantity=50).exists()
 
 
     # --- TESTS DE BULK RECEIVE (Recepción masiva) ---

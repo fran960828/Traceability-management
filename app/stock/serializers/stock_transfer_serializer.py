@@ -21,6 +21,13 @@ class StockTransferSerializer(serializers.Serializer):
         dest = data["destination_location"]
         qty_to_move = data["quantity"]
 
+        if batch.stock_status == Batch.StockStatus.DEPLETED:
+            raise serializers.ValidationError(
+                {
+                    "batch": f"Operación denegada. El lote {batch.batch_number} está marcado como AGOTADO en el sistema."
+                }
+            )
+
         # 1. Evitar transferencia a la misma ubicación
         if origin == dest:
             raise serializers.ValidationError(

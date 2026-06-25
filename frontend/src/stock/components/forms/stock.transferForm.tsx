@@ -46,8 +46,9 @@ export const StockTransferForm: React.FC<StockTransferFormProps> = ({
   } = useForm<StockTransferInput, any, StockTransferOutput>({
     resolver: zodResolver(StockTransferSchema),
     defaultValues: {
-      batch: initialMovementData.batch, // 🟢 Seteamos el ID del lote nativo directamente
-      origin_location: initialMovementData.location, // 🟢 Ubicación de origen inicial
+      // 🟢 CAMBIO 1: Aseguramos el paso de IDs numéricos planos para evitar objetos anidados en el POST
+      batch: (typeof initialMovementData.batch === 'object' ? (initialMovementData.batch as any).id : initialMovementData.batch), 
+      origin_location: (typeof initialMovementData.location === 'object' ? (initialMovementData.location as any).id : initialMovementData.location),
       destination_location: '' as any,
       quantity: 1,
       notes: '',
@@ -57,8 +58,11 @@ export const StockTransferForm: React.FC<StockTransferFormProps> = ({
   // 3. Hidratación síncrona forzada para asegurar que Zod reciba los números en el envío
   useEffect(() => {
     if (initialMovementData) {
-      setValue('batch', initialMovementData.batch);
-      setValue('origin_location', initialMovementData.location);
+      const batchId = typeof initialMovementData.batch === 'object' ? (initialMovementData.batch as any).id : initialMovementData.batch;
+      const locationId = typeof initialMovementData.location === 'object' ? (initialMovementData.location as any).id : initialMovementData.location;
+      
+      setValue('batch', batchId);
+      setValue('origin_location', locationId);
     }
   }, [initialMovementData, setValue]);
 
@@ -74,7 +78,7 @@ export const StockTransferForm: React.FC<StockTransferFormProps> = ({
         Mueva existencias físicas de forma controlada registrando las trazas correspondientes.
       </p>
 
-      {/* 🟢 METACARD DE AUDITORÍA: Tarjeta visual de solo lectura con el contexto del lote */}
+      {/* METACARD DE AUDITORÍA */}
       <div className={styles.metaCard}>
         <div className={styles.metaRow}>
           <span>Material / Artículo:</span>
@@ -90,7 +94,8 @@ export const StockTransferForm: React.FC<StockTransferFormProps> = ({
         </div>
         <div className={styles.metaRow}>
           <span>Existencias Disponibles:</span>
-          <span className={styles.stockText}>{Number(initialMovementData.quantity).toFixed(2)} uds</span>
+          {/* 🟢 CAMBIO 2: Subimos la precisión a 3 decimales (.toFixed(3)) para reflejar fielmente los gramos/mililitros de Django */}
+          <span className={styles.stockText}>{Number(initialMovementData.quantity).toFixed(3)} uds</span>
         </div>
       </div>
 

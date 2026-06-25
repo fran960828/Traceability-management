@@ -38,27 +38,51 @@
     text-align: center;
   }
   
-  /* Badges de Estado */
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px;
-    font-size: 0.85rem;
-    font-weight: 500;
-  }
-  
-  .active {
-    background-color: rgba(16, 185, 129, 0.15);
-    color: #34d399;
-    border: 1px solid rgba(16, 185, 129, 0.3);
-  }
-  
-  .inactive {
-    background-color: rgba(239, 68, 68, 0.15);
-    color: #f87171;
-    border: 1px solid rgba(239, 68, 68, 0.3);
-  }
+ .badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: uppercase; /* Forzamos mayúsculas limpias en la UI */
+  letter-spacing: 0.025em;
+}
+
+/* 🟩 Verde: Entradas ordinarias (MOVEMENT_TYPE.IN) */
+.active {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+/* 🟥 Rojo oscuro/Bloqueado: Salidas de consumo ordinario (MOVEMENT_TYPE.OUT) */
+.blocked {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* 🟦 Azul: Recepción de traslado en destino (MOVEMENT_TYPE.TRANS_IN) */
+.verified {
+  background-color: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+/* 🟨 Naranja/Pendiente: Ajustes de inventario / Mermas (MOVEMENT_TYPE.ADJUSTMENT) */
+.pending {
+  background-color: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+/* ⬜ Gris/Inactivo: Salida de origen por transferencia (MOVEMENT_TYPE.TRANS_OUT) */
+.inactive {
+  background-color: rgba(156, 163, 175, 0.15);
+  color: #9ca3af;
+  border: 1px solid rgba(156, 163, 175, 0.3);
+}
   
   .footerSection {
     margin-top: 0.5rem;

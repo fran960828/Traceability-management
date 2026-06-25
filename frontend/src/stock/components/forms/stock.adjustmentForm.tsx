@@ -12,7 +12,7 @@ import {
 import styles from './stock.adjustmentForm.module.css';
 
 export interface StockAdjustmentFormProps {
-  initialMovementData: StockMovement; // 🟢 Recibe el lote contextual directo de la fila
+  initialMovementData: StockMovement; // Recibe el lote contextual directo de la fila
   onSubmit: (values: StockAdjustmentOutput) => void;
   onCancel: () => void;
   isSubmitting?: boolean;
@@ -34,8 +34,9 @@ export const StockAdjustmentForm: React.FC<StockAdjustmentFormProps> = ({
   } = useForm<StockAdjustmentInput, any, StockAdjustmentOutput>({
     resolver: zodResolver(StockAdjustmentSchema),
     defaultValues: {
-      batch: initialMovementData.batch,       // 🟢 Hidratación inmediata del lote
-      location: initialMovementData.location, // 🟢 Hidratación inmediata del almacén actual
+      // 🟢 CAMBIO 1: El Serializer pide IDs planos, extraemos las claves primarias numéricas directamente
+      batch: initialMovementData.batch as any,       
+      location: initialMovementData.location as any, 
       quantity: '' as any,
       notes: '',
     },
@@ -44,13 +45,20 @@ export const StockAdjustmentForm: React.FC<StockAdjustmentFormProps> = ({
   // 2. Sincronización analítica forzada en el ciclo de montaje
   useEffect(() => {
     if (initialMovementData) {
-      setValue('batch', initialMovementData.batch);
-      setValue('location', initialMovementData.location);
+      setValue('batch', initialMovementData.batch as any);
+      setValue('location', initialMovementData.location as any);
     }
   }, [initialMovementData, setValue]);
 
+  // 🟢 CAMBIO 2: INTERCEPTOR DE CONTROL DE SIGNOS AUTOMÁTICO
   const handleFormSubmit = (data: StockAdjustmentOutput) => {
-    onSubmit(data);
+    // Si el usuario escribió "50", lo convertimos matemáticamente en "-50" 
+    // para cumplir el contrato del backend y de Zod sin forzarlo a teclear el signo menos.
+    const cleanData = {
+      ...data,
+      quantity: data.quantity > 0 ? -data.quantity : data.quantity
+    };
+    onSubmit(cleanData);
   };
 
   return (
@@ -68,7 +76,7 @@ export const StockAdjustmentForm: React.FC<StockAdjustmentFormProps> = ({
         Declare mermas, roturas o desfases físicos detectados en las auditorías de almacén. Toda retirada requiere justificación explícita.
       </p>
 
-      {/* 🟢 METACARD DE AUDITORÍA: Panel informativo estático de alta fidelidad visual */}
+      {/* METACARD DE AUDITORÍA */}
       <div className={styles.metaCard}>
         <div className={styles.metaRow}>
           <span>Material / Artículo:</span>
@@ -83,19 +91,21 @@ export const StockAdjustmentForm: React.FC<StockAdjustmentFormProps> = ({
           <strong>{initialMovementData.location_name}</strong>
         </div>
         <div className={styles.metaRow}>
-          <span>Saldo Inicial Registrado:</span>
-          <span className={styles.stockText}>{Number(initialMovementData.quantity).toFixed(2)} uds</span>
+          <span>Saldo Disponible en esta Zona:</span>
+          {/* 🟢 CAMBIO 3: Mostramos el saldo actual de la fila con mayor claridad conceptual */}
+          <span className={styles.stockText}>{Number(initialMovementData.quantity).toFixed(3)} uds</span>
         </div>
       </div>
 
       <div className={styles.flexGrid}>
         
-        {/* Cantidad del Ajuste (Mermas van con signo negativo en Django) */}
+        {/* Cantidad del Ajuste */}
         <div className={styles.gridHalf}>
           <FormInput
-            label="Cantidad del Movimiento *"
+            // 🟢 CAMBIO 4: Simplificamos la etiqueta y el placeholder para no confundir al usuario
+            label="Cantidad a Retirar / Merma *"
             type="number"
-            placeholder="Ej: -50 (Mermas) o 20 (Sobrante)"
+            placeholder="Ej: 50"
             register={register('quantity', { valueAsNumber: true })}
             error={errors.quantity?.message}
           />

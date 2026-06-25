@@ -6,6 +6,8 @@ from stock.serializers.stock_location_serializer import LocationSerializer
 from stock.serializers.stock_movements_serializer import \
     StockMovementSerializer
 from stock.serializers.stock_transfer_serializer import StockTransferSerializer
+from stock.serializers.stock_adjustment_serializer import StockAdjustmentSerializer
+from stock.serializers.stock_batch_serializer import BatchSerializer
 
 __all__ = [
     "LocationSerializer",
@@ -13,4 +15,6 @@ __all__ = [
     "BulkReceptionSerializer",
     "StockMovementSerializer",
     "StockTransferSerializer",
+    "StockAdjustmentSerializer",
+    "BatchSerializer"
 ]

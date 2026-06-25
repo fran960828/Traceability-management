@@ -3,6 +3,9 @@ from django.db.models import Sum
 
 
 class Batch(models.Model):
+    class StockStatus(models.TextChoices):
+        AVAILABLE = "AVAILABLE", "En Existencias"
+        DEPLETED = "DEPLETED", "Agotado"
     # El número de lote físico que viene en el palet/caja
     batch_number = models.CharField(
         max_length=50, verbose_name="Número de Lote"
@@ -21,6 +24,19 @@ class Batch(models.Model):
     expiry_date = models.DateField(
         null=True, blank=True, verbose_name="Fecha de Caducidad"
     )
+    current_stock_cache = models.DecimalField(
+        max_digits=12,
+        decimal_places=3,
+        default=0.000,
+        verbose_name="Existencias Vivas (Caché)"
+    )
+    stock_status = models.CharField(
+        max_length=50,
+        choices=StockStatus.choices,
+        default=StockStatus.AVAILABLE,
+        db_index=True,  # 🔥 Indexado para búsquedas ultra rápidas
+        verbose_name="Estado Operativo"
+    )
 
     @property
     def supplier(self):
@@ -36,6 +52,23 @@ class Batch(models.Model):
     def current_stock(self):
         """Calcula el stock actual sumando todos los movimientos de este lote."""
         return self.movements.aggregate(total=Sum("quantity"))["total"] or 0
+    
+    def update_availability_status(self):
+        """
+        Calcula algebraicamente el saldo real actual y asienta el flag
+        de 'Agotado' de forma persistente.
+        """
+        
+        self.current_stock_cache = self.current_stock
+        
+        # 🔒 REGLA DE NEGOCIO: Si no queda stock, el lote pasa a estar DEPLETED
+        if self.current_stock_cache <= 0:
+            self.stock_status = self.StockStatus.DEPLETED
+        else:
+            self.stock_status = self.StockStatus.AVAILABLE
+            
+        # Guardamos únicamente estas dos columnas para no disparar cleans innecesarios
+        self.save(update_fields=["current_stock_cache", "stock_status"])
 
     def clean(self):
         """Elimina espacios accidentales pero mantiene las mayúsculas/minúsculas."""

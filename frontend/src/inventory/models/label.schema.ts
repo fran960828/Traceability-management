@@ -15,7 +15,7 @@ export enum UNIT_MESURE {
     UNIDAD='UNIDAD',
     MILLAR='MILLAR',
     KG='KG',
-    LITROS='LITROS'
+    LITRO='LITRO'
 }
 
 export const LabelFormSchema = z.object({

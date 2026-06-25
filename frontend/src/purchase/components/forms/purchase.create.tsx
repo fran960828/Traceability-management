@@ -196,7 +196,7 @@ export const PurchaseForm: React.FC<PurchaseFormProps> = ({
               {/* 🟢 DROPDOWN CONDICIONAL EXCLUSIVO SEGÚN LA CATEGORÍA DEL PROVEEDOR */}
               <div>
                 {/* Caso A: Suministrador de Acondicionamiento / Vidrios / Corchos */}
-                {(supplierCategory === 'PACKAGING' || !supplierCategory) && (
+                {(supplierCategory === 'PACKAGING PRODUCT' || !supplierCategory) && (
                   <FormSelect
                     label={`Línea #${index + 1} - Artículo`}
                     placeholder="Selecciona botella, corcho, caja..."
@@ -207,7 +207,7 @@ export const PurchaseForm: React.FC<PurchaseFormProps> = ({
                 )}
 
                 {/* Caso B: Suministrador de Artes Gráficas / Etiquetas */}
-                {supplierCategory === 'LABELS' && (
+                {supplierCategory === 'LABEL PRODUCT' && (
                   <FormSelect
                     label={`Línea #${index + 1} - Etiqueta`}
                     placeholder="Selecciona etiqueta frontal, contra..."
@@ -218,7 +218,7 @@ export const PurchaseForm: React.FC<PurchaseFormProps> = ({
                 )}
 
                 {/* Caso C: Suministrador de Productos Químicos / Enológicos */}
-                {supplierCategory === 'ENOLOGICAL' && (
+                {supplierCategory === 'ENOLOGICAL PRODUCT' && (
                   <FormSelect
                     label={`Línea #${index + 1} - Compuesto Enológico`}
                     placeholder="Selecciona levadura, clarificante, sulfito..."
