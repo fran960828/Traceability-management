@@ -7,6 +7,7 @@ from production_record.models import ProductionEnologicalItem
 
 class ProductionEnologicalItemSerializer(serializers.ModelSerializer):
     material_name = serializers.ReadOnlyField(source="material.name")
+    batch_number = serializers.ReadOnlyField(source="batch.batch_number", default="Asignado por FIFO")
     quantity_used = serializers.DecimalField(
         max_digits=10,
         decimal_places=3,
@@ -20,6 +21,7 @@ class ProductionEnologicalItemSerializer(serializers.ModelSerializer):
             "id",
             "material",
             "material_name",
+            "batch_number",
             "quantity_used",
             "dosage_per_liter",
         ]

@@ -1,0 +1,102 @@
+
+.formContainer {
+    width: 100%;
+    max-width: 950px;
+    margin: 0 auto;
+    padding: 12px;
+    box-sizing: border-box;
+  }
+  
+  .formTitle {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #f1f3f5;
+    margin-top: 0;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #f1f3f5;
+    padding-bottom: 8px;
+  }
+  
+  .sectionSubTitle {
+    font-size: 1.1rem;
+    margin-top: 24px;
+    margin-bottom: 16px;
+  }
+  
+  .flexGrid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    width: 100%;
+    margin-bottom: 12px;
+  }
+  
+  .flexGridAppendix {
+    margin-top: 12px;
+  }
+  
+  .gridHalf {
+    flex: 1 1 calc(50% - 10px);
+    min-width: 280px;
+    box-sizing: border-box;
+  }
+  
+  .gridFull {
+    flex: 1 1 100%;
+    box-sizing: border-box;
+  }
+  
+  .emptyStatePlaceholder {
+    padding: 20px;
+    text-align: center;
+    color: #6b7280;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    font-style: italic;
+  }
+  
+  /* ========================================================
+     📦 REJILLA ULTRA-COMPACTA PARA LAS LÍNEAS HORIZONTALES
+     ======================================================== */
+  .itemRow {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 16px;
+    align-items: start;
+    width: 100%;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #f8f9fa;
+  }
+  
+  .inputMaterialFlex {
+    flex: 2;
+  }
+  
+  .inputQuantityFlex {
+    flex: 1;
+  }
+  
+  /* Botón de eliminación en forma de aspa (X) */
+  .btnRemoveX {
+    margin-top: 1.5rem;
+  }
+  
+  .btnRemoveX:hover {
+    background-color: #fff5f5;
+    border-color: #fecaca;
+    transform: scale(1.05);
+  }
+  
+  /* 🏁 BOTONERA DE ACCIONES */
+  .actionsContainer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+    width: 100%;
+  }

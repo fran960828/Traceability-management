@@ -53,6 +53,7 @@ export interface ProductionEnologicalItem {
   id: number;
   material: number;
   material_name: string;
+  batch_number:string;
   quantity_used: string;       // Decimal de Django viaja como String
   dosage_per_liter: string;    // Calculado al vuelo por el backend (kg/L)
 }
