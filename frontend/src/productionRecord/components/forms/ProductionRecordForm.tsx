@@ -5,8 +5,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import {
   ProductionOrderSchema,
-  type ProductionOrderInput,
   type ProductionOrder,
+  type ProductionOrderOutput,
 } from '../../models/productionRecord.schema';
 
 import {
@@ -26,10 +26,11 @@ import styles from './ProductionRecordForm.module.css';
 
 export interface ProductionOrderFormProps {
   productInitialData?: ProductionOrder;
-  onSubmit: (values: ProductionOrderInput) => void;
+  onSubmit: (values: ProductionOrderOutput) => void;
   onCancel: () => void;
   isSubmitting?: boolean;
   activeAction?: 'create' | 'edit' | 'clone';
+  
 }
 
 export const ProductionOrderForm: React.FC<ProductionOrderFormProps> = ({
@@ -65,7 +66,7 @@ export const ProductionOrderForm: React.FC<ProductionOrderFormProps> = ({
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<ProductionOrderInput>({
+  } = useForm<ProductionOrderOutput>({
     resolver: zodResolver(ProductionOrderSchema) as any,
     defaultValues: {
       wine: 0,

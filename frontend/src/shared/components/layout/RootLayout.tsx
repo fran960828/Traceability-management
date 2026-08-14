@@ -35,7 +35,7 @@ const menuConfig = [
     title: 'TRAZABILIDAD Y COSTES',
     links: [
       { to: '/movimientos', label: 'Movimientos de Stock', icon: ArrowLeftRight },
-      { to: '/escandallos', label: 'Escandallos / Costes', icon: Calculator },
+      { to: '/indirectos', label: 'Costes Indirectos', icon: Calculator },
       { to: '/trazabilidad', label: 'Libro de Trazabilidad', icon: SearchCode },
     ],
   },

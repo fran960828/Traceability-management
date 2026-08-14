@@ -43,7 +43,7 @@ class ProductionOrderSerializer(serializers.ModelSerializer):
             "enological_materials",
             "created_at",
         ]
-        read_only_fields = ["status", "created_at"]
+        read_only_fields = ["user","status", "created_at"]
 
     def validate_production_date(self, value):
         if value > timezone.now().date():

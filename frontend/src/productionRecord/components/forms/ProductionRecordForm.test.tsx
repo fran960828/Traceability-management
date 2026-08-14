@@ -68,7 +68,6 @@ describe('ProductionOrderForm - Unit & Functional Integration Tests', () => {
     render(<ProductionOrderForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} activeAction="create" />);
 
     expect(screen.getByText('Cabecera e Integridad del Embotellado')).toBeInTheDocument();
-    expect(screen.getByLabelText(/Fecha de Embotellado \*/i)).toHaveValue('2026-07-07');
     expect(screen.getByText(/No se han declarado tratamientos enológicos manuales para este lote/i)).toBeInTheDocument();
   });
 

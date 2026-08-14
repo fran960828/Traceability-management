@@ -39,7 +39,7 @@ class TestProductionOrderSerializer:
 
         serializer = ProductionOrderSerializer(data=data)
         assert serializer.is_valid(), serializer.errors
-        order = serializer.save()
+        order = serializer.save(user=user)
 
         assert order.enological_materials.count() == 1
         assert order.enological_materials.first().material == eno_mat

@@ -1,0 +1,40 @@
+/* src/modules/pricing/components/forms/IndirectCostForm.module.css */
+
+.formContainer {
+  width: 100%;
+  max-width: 850px;
+  margin: 0 auto;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+.flexGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.gridHalf {
+  flex: 1 1 calc(50% - 10px);
+  min-width: 280px;
+  box-sizing: border-box;
+}
+
+.gridFull {
+  flex: 1 1 100%;
+  box-sizing: border-box;
+}
+
+/* Botonera inferior alineada */
+.actionsContainer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid #e9ecef;
+  width: 100%;
+}

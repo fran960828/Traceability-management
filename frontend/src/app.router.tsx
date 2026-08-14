@@ -86,6 +86,27 @@ export const router = createBrowserRouter([
               return { Component: StockPage };
             },
           },
+          {
+            path: "embotellado",
+            async lazy() {
+              const { ProductionRecordPage } = await import("./productionRecord/pages/ProductionRecord.page");
+              return { Component: ProductionRecordPage };
+            },
+          },
+          {
+            path: "indirectos",
+            async lazy() {
+              const { IndirectCostPage } = await import("./indirectCost/pages/IndirectCosts.page");
+              return { Component: IndirectCostPage};
+            },
+          },
+          {
+            path: "trazabilidad",
+            async lazy() {
+              const { TraceabilityPage } = await import("./traceability/pages/Traceability.page");
+              return { Component: TraceabilityPage};
+            },
+          },
 
         ],
       },
